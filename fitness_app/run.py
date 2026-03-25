@@ -18,7 +18,7 @@ class User(db.Model):
     #class variables
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True, nullable=False)
-    password_hash = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(25), nullable=False)
 
@@ -35,54 +35,78 @@ class User(db.Model):
 #Routes
 
 #Login
-#GET for the page, POST for the
-@app.route("/", methods["GET", "POST"])
+#GET for the page, POST for the form
+@app.route("/", methods=["GET", "POST"])
 def login():
     if "username" in session:
         return redirect(url_for('user_settings'))
 
-@app.route("/register")
-def register():
-    return render_template("register.html")
+    if request.method=="POST":
+        #Collect information from form
+        print("FORM SUBMITTED")
+        username=request.form["username"]
+        password=request.form["password"]
+        user=User.query.filter_by(username=username).first()
 
-#Login
-@app.route("/login", methods=["POST"])
-def login():
-    #Collect information from form
-    username=request.form["username"]
-    password=request.form["password"]
-    user=User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        session['username']=username
-        return redirect(url_for('user_settings'))
-    else:
-        return render_template("login.html")
-    #Check information is in the database (already registered)
+        if user and user.check_password(password):
+            session['username']=username
+            return redirect(url_for('user_settings'))
+        else:
+            return render_template("login.html", error="Invalid username or password")
+            #Check information is in the database (already registered)
+            #show home page if not in database
+    return render_template("login.html")
 
-    #Show home page if not in database
-#Register
-@app.route("/register", methods=["POST"])
+#Register, NEED TO ADD ROLE AND ACTIVITY GOALS, PERMISSION FOR PT TO SEE DATA, SET UP MEETINGS AND LINK TO FORM TO GET HELP/FAQs
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    username=request.form["username"]
-    password=request.form["password"]
-    user=User.query.filter_by(username=username).first()
-    #email+phone+validate pass to do
-    if user:
-        return render_template("login.html", error="This user already exists!")
-    else:
-        new_user=User(username=username)
+    print("REGISTER PAGE LOADED")
+    if request.method=="POST":
+        print("REACHED THE REGISTER ROUTE")
+        #Collect information from form, add extra information compared to login
+        username=request.form["username"]
+        password=request.form["password"]
+        confirm_password=request.form["confirm_password"]
+        email=request.form["email"]
+        phone_number=request.form["phone"]
+        user=User.query.filter_by(username=username).first()
+
+        #validate password and confirm_password are the same
+        if password != confirm_password:
+            return render_template("register.html", error="Passwords don't match, please re-enter")
+        
+        #check username isn't already taken
+        if User.query.filter_by(username=username).first():
+            return render_template("register.html", error="Username is taken, please choose another one")
+    
+        #create and save new user if password and username valid
+        new_user=User(username=username, email=email, phone_number=phone_number)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
-        session['username']=username
+
+        print("USER SAVED:", username)
+
+        session['username']=username # easier for others to use username on their pages if needed
         return redirect(url_for('user_settings'))
+    
+    return render_template("register.html")
 
 
 #User settings
+@app.route("/settings")
+def user_settings():
+    if "username" not in session:
+        return redirect(url_for('login'))
+    user=User.query.filter_by(username=session["username"]).first()
+    return render_template("user_settings.html", user=user)
 
 
 #Logout
-
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    return redirect(url_for('login'))
 
 
 if __name__ == "__main__":
