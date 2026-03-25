@@ -2,9 +2,14 @@
 
 {% block body %}
 <div class="container">
-    <h1>Welcome, {{username}}!</h1>
+    <h1>Welcome, {{user.username}}!</h1>
     <p>Here's the account settings page</p>
-    <a href="" class="btn-logout"
+    <ul>
+        <li><strong>Email:</strong> {{user.email}}</li> <!-- bold so easier to see -->
+        <li><strong>Phone:</strong> {{user.phone_number}}</li> 
+
+    </ul>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </div>
 
 

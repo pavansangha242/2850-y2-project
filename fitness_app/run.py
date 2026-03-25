@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 
+#to:do make password mandatory field and email unique
 app=Flask(__name__)
 #just needs to be randomised and long
 app.secret_key="1c35fe09f628846993187fee18334585"
@@ -19,7 +20,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True, nullable=False)
     password_hash = db.Column(db.String(250), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
     phone_number = db.Column(db.String(25), nullable=False)
 
     def set_password(self, password):
