@@ -4,10 +4,16 @@
 
 <div class="container">
     <h1>Welcome to the login page</h1>
-    <form id="auth-form" action="{{url_for('login')}}" method="post">
-        <input type="text" name="username" placeholder="username" class="input-field" />
-        <input type="password" name="password" placeholder="password" class="input-field" />
-        <input type="submit" value="Login" ckass = "btn-login" />
+    <h3>Please enter your details below to login</h3>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form id="auth-form" action="{{url_for('login')}}" method="POST">
+        <input type="text" name="username" placeholder="Username" class="input-field" required />
+        <input type="password" name="password" placeholder="Password" class="input-field" required />
+        <input type="submit" value="Login" class = "btn-login" />
         <a href="/register">Don't have an account? Register</a>
     </form>
 </div>
