@@ -6,6 +6,36 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <title>Flask trial</title>
 </head>
+<a href="https://forms.gle/TDJYuLFeEpr5Eumb9" target="_blank" class="floating-help" title="Need Help?">
+    ?
+</a>
+
+<style>
+.floating-help {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff; /* main colour */
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.floating-help:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+    color: white;
+}
+</style>
 <body>
     <!-- Change this when we decide on a name -->
     <header>Fitness Tracking App</header>

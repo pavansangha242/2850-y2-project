@@ -240,3 +240,21 @@ input[type="submit"]:active {
 .mt-3 { margin-top: 24px; }
 .mb-1 { margin-bottom: 8px; }
 .mb-2 { margin-bottom: 16px; }
+
+/* Specific style for dangerous actions */
+.btn-danger {
+    background-color: #e74c3c !important; /* Warning Red */
+    color: #ffffff !important;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b !important; /* Darker red on hover */
+}

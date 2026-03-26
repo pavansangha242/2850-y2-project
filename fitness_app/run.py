@@ -181,6 +181,20 @@ def logout():
     session.pop("username", None)
     return redirect(url_for('login'))
 
+@app.route("/delete_account", methods=["POST"])
+def delete_account():
+    if "username" not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.filter_by(username=session["username"]).first()
+    
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        session.pop("username", None) # Log them out
+        print(f"USER DELETED: {user.username}")
+        
+    return redirect(url_for('register')) # Send them back to register
 
 if __name__ == "__main__":
     with app.app_context():
