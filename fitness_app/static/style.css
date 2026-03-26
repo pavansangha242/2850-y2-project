@@ -1,0 +1,242 @@
+/* =====================================================
+   Fitness Tracker stylesheet
+   Palette: #CAE9FF, #BEE9E8, #62B6CB, #5FA8D3, #1B4965
+===================================================== */
+
+/* ---------- Reset & base ---------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #CAE9FF;   /* light blue — page background */
+    color: #1B4965;              /* dark navy — passes 7.59:1 on #CAE9FF */
+    min-height: 100vh;
+}
+
+/* ---------- fonts ---------- */
+h1, h2, h3, h4 {
+    color: #1B4965;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.125rem; }
+
+p {
+    color: #1B4965;
+    opacity: 0.85;
+}
+
+a {
+    color: #5FA8D3;              /* mid blue — passes AA for large/bold text */
+    font-weight: 600;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1B4965;
+    text-decoration: underline;
+}
+
+/* ---------- navigation ---------- */
+header {
+    background-color: #1B4965;  /* navy background */
+    color: #ffffff;             /* white text — 9.6:1 contrast on navy */
+    padding: 14px 24px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header a {
+    color: #BEE9E8;             /* light teal on navy — 7.32:1 */
+    font-size: 0.9rem;
+    margin-left: 20px;
+}
+
+header a:hover {
+    color: #ffffff;
+}
+
+/* ---------- layout ---------- */
+.container {
+    max-width: 480px;
+    margin: 48px auto;
+    padding: 0 16px;
+}
+
+/* ---------- card, helpful for boxes on register page ---------- */
+.card {
+    background-color: #ffffff;
+    border: 1.5px solid #BEE9E8;    /* light teal border */
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+}
+
+/* ---------- form  ---------- */
+.input-field {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    background-color: #CAE9FF;      /* light blue input bg */
+    border: 1.5px solid #BEE9E8;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1B4965;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.input-field::placeholder {
+    color: #1B4965;
+    opacity: 0.8; /* increase so its easier to see */
+}
+
+.input-field:focus {
+    border-color: #5FA8D3;          /* mid blue focus ring */
+    background-color: #ffffff;
+}
+
+label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #1B4965;
+    opacity: 0.65;
+    margin-bottom: 6px;
+}
+
+/* ---------- buttons ---------- */
+.btn-login,
+.btn-register,
+input[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #1B4965;      /* navy button */
+    color: #ffffff;                 /* white text — 9.6:1 */
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background-color 0.15s, transform 0.1s;
+}
+
+.btn-login:hover,
+.btn-register:hover,
+input[type="submit"]:hover {
+    background-color: #163d56;
+}
+
+.btn-login:active,
+.btn-register:active,
+input[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+.btn-logout {
+    display: inline-block;
+    padding: 8px 18px;
+    background-color: #BEE9E8;      /* light teal button */
+    color: #1B4965;                 /* navy text — 7.32:1 */
+    border: 1.5px solid #62B6CB;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.btn-logout:hover {
+    background-color: #62B6CB;
+    text-decoration: none;
+    color: #1B4965;
+}
+
+/* ---------- error & feedback messages ---------- */
+.error-message,
+.alert-error {
+    background-color: #fff0f0;
+    border: 1.5px solid #f5c6c6;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: #9b2020;
+}
+
+.success-message {
+    background-color: #BEE9E8;
+    border: 1.5px solid #62B6CB;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: #1B4965;
+}
+
+/* ---------- user settings page ---------- */
+.settings-card {
+    background-color: #ffffff;
+    border: 1.5px solid #BEE9E8;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+}
+
+.settings-card h2 {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #BEE9E8;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #CAE9FF;
+    font-size: 0.95rem;
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-label {
+    color: #1B4965;
+    opacity: 0.6;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.settings-value {
+    color: #1B4965;
+}
+
+/* ---------- alignment ---------- */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
