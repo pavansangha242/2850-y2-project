@@ -10,81 +10,75 @@
         <p style="color: red;">{{ error }}</p>
     {% endif %}
 
-    <form action="{{ url_for('register') }}" method="POST">
+<form action="{{ url_for('register') }}" method="POST">
 
-    <div class="card mb-2">
-        <h3>Account details</h3>
-        <input type="email" name="email" placeholder="Email" class="input-field" required />
-        <input type="text" name="username" placeholder="Username" class="input-field" required />
-        <input type="password" name="password" placeholder="Password" class="input-field" required />
-        <input type="password" name="confirm_password" placeholder="Confirm Password" class="input-field" required />
-        <input type="tel" name="phone" placeholder="Phone Number" class="input-field" required />
-        
-        <select name="role" class="input-field" required>
-            <option value="" disabled selected>Select Account Type</option>
-            <option value="customer">Customer</option>
-            <option value="pt">PT (Personal Trainer)</option>
-            <option value="administrator">Administrator</option>
-        </select>
-    </div>
-
-    <div id="extra-fields">
         <div class="card mb-2">
-            <h3>Activity Goals</h3>
+            <h3>Account details</h3>
+            <input type="email" name="email" placeholder="Email" class="input-field" required />
+            <input type="text" name="username" placeholder="Username" class="input-field" required />
+            <input type="password" name="password" placeholder="Password" class="input-field" required />
+            <input type="password" name="confirm_password" placeholder="Confirm Password" class="input-field" required />
+            <input type="tel" name="phone" placeholder="Phone Number" class="input-field" required />
+            
+            <select name="role" id="role-select" class="input-field" required onchange="toggleFields()">
+                <option value="" disabled selected>Select Account Type</option>
+                <option value="customer">Customer</option>
+                <option value="pt">PT (Personal Trainer)</option>
+                <option value="administrator">Administrator</option>
+            </select>
+        </div>
+
+        <div id="extra-fields">
+            <div class="card mb-2">
+                <h3>Activity Goals</h3>
+                <label>Daily Step Target</label>
+                <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
+                
+                <label>Weekly Exercise Hours</label>
+                <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
+                
+                <label>Workouts per Week</label>
+                <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
+
+                <hr class="mb-2">
+
+                <h3>Privacy & Permissions</h3>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
+                        <input type="checkbox" name="share_with_pt"> 
+                        Allow PT to see my health and profile data
+                    </label>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
+                        <input type="checkbox" name="allow_meetings"> 
+                        Allow PTs to request meetings with me
+                    </label>
+                </div>
             </div>
-
-        <div class="card mb-2">
-        <h3>Privacy & Permissions</h3>
         </div>
-    </div>
 
-    <div class="card mb-2">
-
-        <h3>Activity Goals</h3>
-        <label>Daily Step Target</label>
-        <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
-        
-        <label>Weekly Exercise Hours</label>
-        <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
-        
-        <label>Workouts per Week</label>
-        <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
-
-        <hr class="mb-2">
-
-        <h3>Privacy & Permissions</h3>
-        <div style="margin-bottom: 15px;">
-            <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
-                <input type="checkbox" name="share_with_pt"> 
-                Allow PT to see my health and profile data
-            </label>
+        <div id="pt-fields" class="card mb-2" style="display: none;">
+            <h3>Professional Profile</h3>
+            <label>About You / Bio</label>
+            <textarea name="bio" placeholder="Tell us about your experience..." class="input-field" style="height: 120px; resize: vertical;"></textarea>
         </div>
-        <div style="margin-bottom: 20px;">
-            <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
-                <input type="checkbox" name="allow_meetings"> 
-                Allow PTs to request meetings with me
-            </label>
+            
+        <input type="submit" value="Register" class="btn-login" />
+        <div class="text-center mt-2">
+            <a href="/">Already have an account? Login</a>
         </div>
-    </div>
-        
-        <input type="submit" value="Register" class = "btn-login" />
-        <a href="/">Already have an account? Login</a>
     </form>
-</div>
-
-<div id="pt-fields" class="card mb-2" style="display: none;">
-    <h3>Professional Profile</h3>
-    <label>About You / Bio</label>
-    <textarea name="bio" placeholder="Tell us about your experience and specialisms..." class="input-field" style="height: 120px; resize: vertical;"></textarea>
-</div>
-
 <script>
 function toggleFields() {
-    const role = document.getElementById('role-select').value;
+    const roleSelect = document.getElementById('role-select');
+    if (!roleSelect) return; // Safety check
+
+    const role = roleSelect.value;
     const extraFields = document.getElementById('extra-fields');
     const ptFields = document.getElementById('pt-fields');
     
-    // Hide if role is PT or Administrator
+    // 1. Handle Display
     if (role === 'pt') {
         extraFields.style.display = 'none';
         ptFields.style.display = 'block';
@@ -92,14 +86,25 @@ function toggleFields() {
         extraFields.style.display = 'none';
         ptFields.style.display = 'none';
     } else {
-        // Customer
         extraFields.style.display = 'block';
         ptFields.style.display = 'none';
     }
+
+    // 2. IMPORTANT: Toggle "disabled" status
+    // This stops "required" from blocking the form when fields are hidden
+    const customerInputs = extraFields.querySelectorAll('input');
+    customerInputs.forEach(input => {
+        input.disabled = (extraFields.style.display === 'none');
+    });
+
+    const ptInputs = ptFields.querySelectorAll('textarea, input');
+    ptInputs.forEach(input => {
+        input.disabled = (ptFields.style.display === 'none');
+    });
 }
 
-// Run once on page load just in case
-toggleFields();
+// Run on load to set initial state
+document.addEventListener('DOMContentLoaded', toggleFields);
 </script>
 
 {% endblock %}

@@ -40,49 +40,46 @@
         </div>
     </div>
 
-    <div class="settings-card mt-2">
-        <h2>Activity Goals</h2>
-        
-        <div class="settings-row">
-            <span class="settings-label">Daily Step Target</span>
-            <span class="settings-value">{{ user.goals.step_target }} steps</span>
-        </div>
-
-        <div class="settings-row">
-            <span class="settings-label">Weekly Exercise</span>
-            <span class="settings-value">{{ user.goals.weekly_exercise_hours }} hours</span>
-        </div>
-
-        <div class="settings-row">
-            <span class="settings-label">Workouts per Week</span>
-            <span class="settings-value">{{ user.goals.workouts_per_week }}</span>
-        </div>
-    </div>
-    
     {% if user.role == 'pt' %}
     <div class="settings-card mt-2">
         <h2>Professional Bio</h2>
         <div class="settings-row" style="flex-direction: column; align-items: flex-start;">
-            <span class="settings-label mb-1">Your Description</span>
             <p class="settings-value">{{ user.bio if user.bio else "No bio added yet." }}</p>
         </div>
     </div>
     {% endif %}
+
+    {% if user.role == 'customer' %}
+    <div class="settings-card mt-2">
+        <h2>Activity Goals</h2>
+        <div class="settings-row">
+            <span class="settings-label">Daily Step Target</span>
+            <span class="settings-value">{{ user.goals.step_target if user.goals else 0 }} steps</span>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">Weekly Exercise</span>
+            <span class="settings-value">{{ user.goals.weekly_exercise_hours if user.goals else 0 }} hours</span>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">Workouts per Week</span>
+            <span class="settings-value">{{ user.goals.workouts_per_week if user.goals else 0 }}</span>
+        </div>
+    </div>
 
     <div class="settings-card mt-2">
         <h2>Privacy & Data</h2>
         <form action="{{ url_for('update_privacy') }}" method="POST">
             <div class="settings-row">
                 <span class="settings-label">Share data with PT</span>
-                <input type="checkbox" name="share_with_pt" {% if user.privacy.share_with_pt %}checked{% endif %} onchange="this.form.submit()">
+                <input type="checkbox" name="share_with_pt" {% if user.privacy and user.privacy.share_with_pt %}checked{% endif %} onchange="this.form.submit()">
             </div>
-            
             <div class="settings-row">
                 <span class="settings-label">Allow PT Meetings</span>
-                <input type="checkbox" name="allow_meetings" {% if user.privacy.allow_meetings %}checked{% endif %} onchange="this.form.submit()">
+                <input type="checkbox" name="allow_meetings" {% if user.privacy and user.privacy.allow_meetings %}checked{% endif %} onchange="this.form.submit()">
             </div>
         </form>
     </div>
+    {% endif %}
 
     <div class="mt-3 text-center">
         <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
