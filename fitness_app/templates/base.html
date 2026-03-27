@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitTrack — Your personal fitness tracking platform">
+    <title>{% block title %}FitTrack{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home.index') }}" class="nav-logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>FitTrack</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home.index') }}" class="{% if request.endpoint == 'home.index' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Home
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <i class="fas fa-running"></i> Workouts
+                </a></li>
+                <li><a href="{{ url_for('events.events_page') }}" class="{% if request.endpoint and 'events' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i> Events
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <i class="fas fa-chart-line"></i> Progress
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <i class="fas fa-user-tie"></i> Trainers
+                </a></li>
+                <li><a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-shield-alt"></i> Admin
+                </a></li>
+            </ul>
+
+            <div class="nav-profile">
+                <a href="#" class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            </div>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>FitTrack</span>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+            <p class="footer-copy">&copy; 2026 FitTrack. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Nav Toggle Script -->
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('nav-open');
+            });
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

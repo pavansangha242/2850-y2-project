@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}FitTrack — Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-shield-alt" style="color: var(--primary);"></i> Admin Dashboard</h1>
+</div>
+
+<div class="admin-layout">
+    <!-- Sidebar — Admin Profile -->
+    <aside class="admin-sidebar">
+        <div class="card profile-card">
+            <div class="avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3>{{ admin_user.first_name + ' ' + admin_user.last_name if admin_user else 'Admin' }}</h3>
+            <span class="role-badge">Admin / Manager</span>
+
+            <ul class="profile-details">
+                <li><strong>Age:</strong> 35</li>
+                <li><strong>Role:</strong> Admin</li>
+                <li><strong>Background:</strong> Tech-savvy admin managing a large fitness centre</li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Panel -->
+    <div class="admin-main">
+        <!-- Manage Users -->
+        <section>
+            <h2 class="section-title">Manage Users</h2>
+
+            <!-- Search -->
+            <form action="{{ url_for('admin.admin_dashboard') }}" method="GET" style="margin-bottom: 1.25rem;">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text"
+                           name="q"
+                           class="form-input"
+                           placeholder="Search users..."
+                           value="{{ search_query }}"
+                           autocomplete="off">
+                </div>
+            </form>
+
+            <h3 class="section-subtitle">Active Users</h3>
+
+            {% if active_users %}
+                {% for user in active_users %}
+                <div class="user-item">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+                        <div class="user-email">{{ user.email }}</div>
+                    </div>
+                    <form action="{{ url_for('admin.delete_user', user_id=user.user_id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete {{ user.first_name }} {{ user.last_name }}?')">
+                            <i class="fas fa-trash-alt"></i> Delete User
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 1.5rem;">
+                    <p style="color: var(--text-muted);">No users found.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Personal Trainers -->
+        <section style="margin-top: 2.5rem;">
+            <h2 class="section-title">Personal Trainers</h2>
+            <h3 class="section-subtitle">Registered PTs</h3>
+
+            {% if pending_pts %}
+                {% for pt in pending_pts %}
+                <div class="user-item">
+                    <div class="user-avatar" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ pt.first_name }} {{ pt.last_name }}</div>
+                        <div class="user-email">{{ pt.email }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 1.5rem;">
+                    <p style="color: var(--text-muted);">No personal trainers registered.</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}
