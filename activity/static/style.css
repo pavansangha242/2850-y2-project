@@ -1,0 +1,555 @@
+
+/* reset so every browser looks the same*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #0F0F1A;
+    color: #EAEAFF;
+}
+
+
+/* the bar at the top of every page*/
+.navbar {
+    background-color: #0F0F1A;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1A1A2E;
+}
+
+/*the fittrack logo on the left */
+.navbar .logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #8B83FF;
+}
+
+.navbar .logo span {
+    color: #6C63FF;
+    margin-right: 6px;
+}
+
+/* the links in the middle */
+.navbar .nav-links {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    align-items: center;
+}
+
+.navbar .nav-links > li {
+    position: relative;
+}
+
+.navbar .nav-links a {
+    text-decoration: none;
+    color: #A0A0C0;
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.navbar .nav-links a:hover {
+    color: #EAEAFF;
+}
+
+/* the active page link gets highlighted purple */
+.navbar .nav-links a.active {
+    background-color: #6C63FF;
+    color: #EAEAFF;
+}
+
+/* the profile icon circle on the right */
+.navbar .profile-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #1A1A2E;
+    border: 2px solid #2a2850;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #A0A0C0;
+}
+
+
+/* dropdown for the exercises  */
+
+.dropdown-trigger {
+    cursor: pointer;
+    color: #A0A0C0;
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.dropdown-trigger:hover {
+    color: #EAEAFF;
+}
+
+.dropdown-trigger.active {
+    background-color: #6C63FF;
+    color: #EAEAFF;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background-color: #1A1A2E;
+    border: 1px solid #2a2850;
+    border-radius: 10px;
+    padding: 8px 0;
+    min-width: 180px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dropdown-menu li {
+    list-style: none;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #A0A0C0;
+    font-size: 13px;
+    text-decoration: none;
+    border-radius: 0;
+    transition: all 0.15s;
+}
+
+.dropdown-menu a:hover {
+    background-color: #0F0F1A;
+    color: #8B83FF;
+}
+
+.dropdown-menu a.active {
+    background-color: #0F0F1A;
+    color: #6C63FF;
+    font-weight: 600;
+}
+
+.nav-links > li:hover .dropdown-menu {
+    display: block;
+}
+
+
+/*the title at the top of each page */
+.page-header {
+    text-align: center;
+    padding: 30px 0 10px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #EAEAFF;
+}
+
+.page-header p {
+    color: #A0A0C0;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* the success messages */
+.flash-messages {
+    max-width: 960px;
+    margin: 10px auto;
+    padding: 0 20px;
+}
+
+.flash-message {
+    background-color: #0d2a2a;
+    color: #00D4AA;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid #00D4AA;
+    margin-bottom: 10px;
+}
+
+
+/* main content */
+.main-content {
+    max-width: 960px;
+    margin: 15px auto;
+    padding: 0 20px;
+}
+
+.grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+
+/* the boxes that hold everything */
+.card {
+    background-color: #1A1A2E;
+    border: 1px solid #2a2850;
+    border-radius: 12px;
+    padding: 22px;
+}
+
+.card h2 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #EAEAFF;
+    border-bottom: 1px solid #2a2850;
+    padding-bottom: 10px;
+}
+
+/*forms */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: #A0A0C0;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #2a2850;
+    border-radius: 8px;
+    font-size: 13px;
+    background-color: #0F0F1A;
+    color: #EAEAFF;
+}
+
+.form-group textarea {
+    height: 50px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #6C63FF;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #A0A0C0;
+}
+
+.form-group select option {
+    background-color: #0F0F1A;
+    color: #EAEAFF;
+}
+
+
+/* button */
+.btn {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: #6C63FF;
+    color: #EAEAFF;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 5px;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #4B44DB;
+}
+
+/*delete button */
+.btn-danger {
+    background-color: #FF6B6B;
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+}
+
+.btn-danger:hover {
+    background-color: #e05555;
+}
+
+
+/* the progress bar and distance breakdown */
+.progress-text {
+    font-size: 14px;
+    color: #A0A0C0;
+    margin-bottom: 10px;
+}
+
+.progress-text strong {
+    color: #EAEAFF;
+}
+
+.progress-bar-bg {
+    background: #0F0F1A;
+    border-radius: 10px;
+    height: 10px;
+    margin-bottom: 15px;
+}
+
+.progress-bar-fill {
+    background: #6C63FF;
+    height: 10px;
+    border-radius: 10px;
+}
+
+.distance-breakdown {
+    margin-top: 12px;
+}
+
+.distance-breakdown h3 {
+    font-size: 14px;
+    color: #EAEAFF;
+    margin-bottom: 8px;
+}
+
+.distance-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 0;
+    color: #A0A0C0;
+    border-bottom: 1px solid #0F0F1A;
+}
+
+
+/* goal type */
+.goal-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.goal-option {
+    display: none;
+}
+
+.goal-label {
+    display: inline-block;
+    padding: 7px 18px;
+    border: 1px solid #2a2850;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #A0A0C0;
+    transition: all 0.2s;
+}
+
+.goal-label:hover {
+    border-color: #6C63FF;
+    color: #8B83FF;
+}
+
+/* when selected it turns purple */
+.goal-option:checked + .goal-label {
+    background-color: #6C63FF;
+    color: #EAEAFF;
+    border-color: #6C63FF;
+}
+
+
+/* calories*/
+.calorie-note {
+    font-size: 12px;
+    color: #FFB347;
+    margin-bottom: 4px;
+    padding: 8px 12px;
+    background: #1A1A2E;
+    border: 1px solid #FFB347;
+    border-radius: 8px;
+}
+
+
+/* the 3 boxes at the bottom (laps, streak, pace)*/
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background-color: #1A1A2E;
+    border: 1px solid #2a2850;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+}
+
+.stat-card .stat-label {
+    font-size: 12px;
+    color: #A0A0C0;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card .stat-value {
+    font-size: 26px;
+    font-weight: bold;
+    color: #EAEAFF;
+}
+
+.stat-card .stat-sub {
+    font-size: 11px;
+    color: #A0A0C0;
+    margin-top: 4px;
+}
+
+/* green when the user improving */
+.positive {
+    color: #00D4AA !important;
+}
+
+/* red when getting worse */
+.negative {
+    color: #FF6B6B !important;
+}
+
+
+/* the table showing recent workouts */
+.recent-activity {
+    margin-top: 20px;
+}
+
+.activity-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.activity-table th {
+    background-color: #0F0F1A;
+    padding: 11px;
+    text-align: left;
+    font-size: 12px;
+    color: #A0A0C0;
+    border-bottom: 1px solid #2a2850;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.activity-table td {
+    padding: 11px;
+    border-bottom: 1px solid #0F0F1A;
+    color: #A0A0C0;
+}
+
+/* slight highlight when you hover over a row */
+.activity-table tr:hover {
+    background-color: #0F0F1A;
+}
+
+
+
+/* green box: it shows the current traininng plan */
+.info-box-green {
+    padding: 12px;
+    background: #0d2a2a;
+    border: 1px solid #00D4AA;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.info-box-green p {
+    font-size: 13px;
+}
+
+.info-box-green .label {
+    color: #00D4AA;
+    font-weight: 600;
+}
+
+.info-box-green .value {
+    color: #A0A0C0;
+}
+
+/* blue-purple:shows the current goal */
+.info-box-blue {
+    margin-top: 15px;
+    padding: 12px;
+    background: #1A1A2E;
+    border: 1px solid #6C63FF;
+    border-radius: 8px;
+}
+
+.info-box-blue p {
+    font-size: 13px;
+    color: #8B83FF;
+}
+
+
+/* footer */
+.footer {
+    max-width: 960px;
+    margin: 40px auto 0;
+    padding: 20px 20px;
+    border-top: 1px solid #1A1A2E;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer .footer-logo {
+    font-size: 16px;
+    font-weight: bold;
+    color: #8B83FF;
+}
+
+.footer .footer-links a {
+    color: #00D4AA;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 13px;
+}
+
+.footer .footer-links a:hover {
+    color: #00e6b8;
+}
+
+.footer-copy {
+    width: 100%;
+    text-align: center;
+    color: #A0A0C0;
+    font-size: 12px;
+    margin-top: 12px;
+}
+
+/* grey small text used under the forms */
+.text-muted {
+    font-size: 11px;
+    color: #A0A0C0;
+    margin-top: 8px;
+}
+
+/* shown when theres no data in a table yet */
+.empty-message {
+    color: #A0A0C0;
+    font-size: 14px;
+    text-align: center;
+    padding: 25px;
+}
