@@ -1,3 +1,9 @@
+"""
+Home page routes for the FitTrack application.
+Handles the main dashboard view with today's summary
+statistics (calories, distance), weekly workout count,
+quick actions, and recommended activities.
+"""
 from flask import Blueprint, render_template
 from fitness_app.extentions import db
 from fitness_app.models import User, Activity, ExerciseType
@@ -9,8 +15,8 @@ home_bp = Blueprint('home', __name__)
 @home_bp.route('/')
 def index():
     """Home page — dashboard with today's summary, quick actions, recommended activities."""
-    # For now, use the sample user "Alex"
-    current_user = User.query.filter_by(username='alex').first()
+    # For now, use the sample user "Ahmed" (persona)
+    current_user = User.query.filter_by(username='ahmed').first()
 
     # Today's summary
     today = date.today()

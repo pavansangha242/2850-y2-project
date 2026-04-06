@@ -1,3 +1,8 @@
+"""
+Admin dashboard routes for the FitTrack application.
+Handles user management (search, delete), personal trainer
+approval/rejection, and platform statistics display.
+"""
 from flask import Blueprint, render_template, redirect, url_for, request
 from fitness_app.extentions import db
 from fitness_app.models import User
@@ -7,7 +12,7 @@ admin_bp = Blueprint('admin', __name__)
 
 @admin_bp.route('/admin')
 def admin_dashboard():
-    """Admin dashboard — manage users."""
+    """Admin dashboard — manage users, approve trainers, view platform statistics."""
     search_query = request.args.get('q', '')
 
     # Get admin user
@@ -24,14 +29,28 @@ def admin_dashboard():
         )
     active_users = users_query.all()
 
-    # Pending PT users (role='pt' who could be awaiting approval — for now just list PTs)
-    pending_pts = User.query.filter_by(role='pt').all()
+    # Pending PT users (role='pt' and not yet approved)
+    pending_pts = User.query.filter_by(role='pt', approved=False).all()
+
+    # Approved PT users
+    approved_pts = User.query.filter_by(role='pt', approved=True).all()
+
+    # Platform statistics
+    total_users = User.query.count()
+    total_customers = User.query.filter_by(role='customer').count()
+    total_pts = User.query.filter_by(role='pt').count()
+    total_admins = User.query.filter_by(role='administrator').count()
 
     return render_template('admin.html',
                            admin_user=admin_user,
                            active_users=active_users,
                            pending_pts=pending_pts,
-                           search_query=search_query)
+                           approved_pts=approved_pts,
+                           search_query=search_query,
+                           total_users=total_users,
+                           total_customers=total_customers,
+                           total_pts=total_pts,
+                           total_admins=total_admins)
 
 
 @admin_bp.route('/admin/delete-user/<int:user_id>', methods=['POST'])
@@ -47,3 +66,28 @@ def delete_user(user_id):
     db.session.commit()
 
     return redirect(url_for('admin.admin_dashboard'))
+
+
+@admin_bp.route('/admin/approve-pt/<int:user_id>', methods=['POST'])
+def approve_pt(user_id):
+    """Approve a personal trainer application."""
+    user = User.query.get_or_404(user_id)
+
+    if user.role == 'pt':
+        user.approved = True
+        db.session.commit()
+
+    return redirect(url_for('admin.admin_dashboard'))
+
+
+@admin_bp.route('/admin/reject-pt/<int:user_id>', methods=['POST'])
+def reject_pt(user_id):
+    """Reject a personal trainer application (removes the user)."""
+    user = User.query.get_or_404(user_id)
+
+    if user.role == 'pt' and not user.approved:
+        db.session.delete(user)
+        db.session.commit()
+
+    return redirect(url_for('admin.admin_dashboard'))
+

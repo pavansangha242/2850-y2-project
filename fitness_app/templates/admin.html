@@ -7,6 +7,44 @@
     <h1><i class="fas fa-shield-alt" style="color: var(--primary);"></i> Admin Dashboard</h1>
 </div>
 
+<!-- Platform Statistics -->
+<section style="margin-bottom: 2.5rem;">
+    <h2 class="section-title">Platform Statistics</h2>
+    <div class="grid-4">
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--primary);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value" style="color: var(--primary-light);">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--accent);">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="stat-value" style="color: var(--accent-light);">{{ total_customers }}</div>
+            <div class="stat-label">Customers</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--amber);">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <div class="stat-value" style="color: var(--amber-light);">{{ total_pts }}</div>
+            <div class="stat-label">Personal Trainers</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--warm);">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="stat-value" style="color: var(--warm-light);">{{ total_admins }}</div>
+            <div class="stat-label">Administrators</div>
+        </div>
+    </div>
+</section>
+
 <div class="admin-layout">
     <!-- Sidebar — Admin Profile -->
     <aside class="admin-sidebar">
@@ -59,7 +97,7 @@
                     <form action="{{ url_for('admin.delete_user', user_id=user.user_id) }}" method="POST">
                         <button type="submit" class="btn btn-danger btn-sm"
                                 onclick="return confirm('Are you sure you want to delete {{ user.first_name }} {{ user.last_name }}?')">
-                            <i class="fas fa-trash-alt"></i> Delete User
+                            <i class="fas fa-trash-alt"></i> Delete
                         </button>
                     </form>
                 </div>
@@ -71,16 +109,50 @@
             {% endif %}
         </section>
 
-        <!-- Personal Trainers -->
+        <!-- Trainer Approvals -->
         <section style="margin-top: 2.5rem;">
-            <h2 class="section-title">Personal Trainers</h2>
-            <h3 class="section-subtitle">Registered PTs</h3>
+            <h2 class="section-title">Trainer Approvals</h2>
+            <h3 class="section-subtitle">Pending Requests</h3>
 
             {% if pending_pts %}
                 {% for pt in pending_pts %}
                 <div class="user-item">
-                    <div class="user-avatar" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
-                        <i class="fas fa-user-tie"></i>
+                    <div class="user-avatar" style="background: rgba(255, 179, 71, 0.15); color: var(--amber);">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ pt.first_name }} {{ pt.last_name }}</div>
+                        <div class="user-email">{{ pt.email }}</div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <form action="{{ url_for('admin.approve_pt', user_id=pt.user_id) }}" method="POST">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                        </form>
+                        <form action="{{ url_for('admin.reject_pt', user_id=pt.user_id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Reject {{ pt.first_name }} {{ pt.last_name }}? This will remove their account.')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 1.5rem;">
+                    <p style="color: var(--text-muted);">No pending trainer requests.</p>
+                </div>
+            {% endif %}
+
+            <!-- Approved Trainers -->
+            <h3 class="section-subtitle" style="margin-top: 1.5rem;">Approved Trainers</h3>
+
+            {% if approved_pts %}
+                {% for pt in approved_pts %}
+                <div class="user-item">
+                    <div class="user-avatar" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
+                        <i class="fas fa-user-check"></i>
                     </div>
                     <div class="user-info">
                         <div class="user-name">{{ pt.first_name }} {{ pt.last_name }}</div>
@@ -90,7 +162,7 @@
                 {% endfor %}
             {% else %}
                 <div class="card" style="text-align: center; padding: 1.5rem;">
-                    <p style="color: var(--text-muted);">No personal trainers registered.</p>
+                    <p style="color: var(--text-muted);">No approved trainers yet.</p>
                 </div>
             {% endif %}
         </section>

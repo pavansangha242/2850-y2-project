@@ -1,3 +1,9 @@
+"""
+Database models for the FitTrack fitness application.
+Defines all SQLAlchemy tables including User, TrainingPlan,
+PlannedWorkout, TrainingClient, ExerciseType, Activity,
+Competition, and CompetitionResult.
+"""
 from datetime import datetime, date
 from werkzeug.security import generate_password_hash, check_password_hash
 from fitness_app.extentions import db
@@ -13,7 +19,9 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     username = db.Column(db.String(25), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
+    phone_number = db.Column(db.String(20), default='')
     role = db.Column(db.String(20), nullable=False)  # customer / pt / administrator
+    approved = db.Column(db.Boolean, default=True)
     join_date = db.Column(db.Date, default=date.today)
 
     # Relationships

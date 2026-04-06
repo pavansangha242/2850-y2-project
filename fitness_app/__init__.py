@@ -1,3 +1,9 @@
+"""
+FitTrack application factory and database seeding.
+Creates the Flask app, registers blueprints, initialises
+the database, and populates it with sample data based on
+the project personas (Michael, Daniel, Noor, James, Ahmed).
+"""
 import os
 from flask import Flask
 from fitness_app.extentions import db
@@ -52,32 +58,48 @@ def seed_database():
     db.session.add_all([running, cycling, swimming, walking, strength])
     db.session.flush()
 
-    # ---- Users ----
+    # ---- Users (based on project personas) ----
+
+    # Persona: Michael — 35yo platform administrator
     admin = User(first_name='Michael', last_name='Adams', email='michael@fittrack.com',
                  username='michael_admin', role='administrator')
     admin.set_password('admin123')
 
-    trainer1 = User(first_name='Amanda', last_name='Clark', email='amanda@fittrack.com',
-                    username='amandaclark', role='pt')
+    # Persona: Daniel Carter — 35yo approved personal trainer
+    trainer1 = User(first_name='Daniel', last_name='Carter', email='daniel@fittrack.com',
+                    username='danielcarter', role='pt', approved=True)
     trainer1.set_password('password123')
 
-    trainer2 = User(first_name='Mark', last_name='Wilson', email='mark@fittrack.com',
-                    username='markwilson', role='pt')
+    # Additional approved PT
+    trainer2 = User(first_name='Amanda', last_name='Clark', email='amanda@fittrack.com',
+                    username='amandaclark', role='pt', approved=True)
     trainer2.set_password('password123')
 
-    user1 = User(first_name='John', last_name='Doe', email='johndoe@gmail.com',
-                 username='johndoe', role='customer')
+    # Pending PT users (awaiting admin approval)
+    trainer3 = User(first_name='Sarah', last_name='Johnson', email='sarah@fittrack.com',
+                    username='sarahjohnson', role='pt', approved=False)
+    trainer3.set_password('password123')
+
+    trainer4 = User(first_name='David', last_name='Lee', email='david@fittrack.com',
+                    username='davidlee', role='pt', approved=False)
+    trainer4.set_password('password123')
+
+    # Persona: Noor — 56yo mother, beginner customer
+    user1 = User(first_name='Noor', last_name='Hassan', email='noor@gmail.com',
+                 username='noorhassan', role='customer')
     user1.set_password('password123')
 
-    user2 = User(first_name='Maya', last_name='Ahmed', email='mayaahmad@gmail.com',
-                 username='mayaahmed', role='customer')
+    # Persona: James — 25yo experienced customer
+    user2 = User(first_name='James', last_name='Mitchell', email='james@gmail.com',
+                 username='jamesmitchell', role='customer')
     user2.set_password('password123')
 
-    current_user = User(first_name='Alex', last_name='Morgan', email='alex@fittrack.com',
-                        username='alex', role='customer')
+    # Persona: Ahmed — 21yo university student customer (current logged-in user)
+    current_user = User(first_name='Ahmed', last_name='Ali', email='ahmed@fittrack.com',
+                        username='ahmed', role='customer')
     current_user.set_password('password123')
 
-    db.session.add_all([admin, trainer1, trainer2, user1, user2, current_user])
+    db.session.add_all([admin, trainer1, trainer2, trainer3, trainer4, user1, user2, current_user])
     db.session.flush()
 
     # ---- Training Clients (PT ↔ Customer links) ----
