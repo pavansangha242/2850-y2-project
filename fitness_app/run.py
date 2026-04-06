@@ -1,3 +1,4 @@
+"""Entry point to start the FitTrack Flask development server."""
 from fitness_app import create_app
 
 app = create_app()
