@@ -73,7 +73,7 @@
         {% endif %}
 
         <div class="event-actions">
-            <a href="#" class="btn btn-outline">
+            <a href="{{ url_for('events.add_to_calendar', competition_id=next_event.competition_id) }}" class="btn btn-outline">
                 <i class="fas fa-calendar-plus"></i> Add to Calendar
             </a>
             <form action="{{ url_for('events.register_event', competition_id=next_event.competition_id) }}" method="POST" style="display: inline;">
@@ -81,7 +81,7 @@
                     <i class="fas fa-envelope"></i> Register
                 </button>
             </form>
-            <a href="#" class="btn btn-outline">
+            <a href="{{ url_for('events.event_details', competition_id=next_event.competition_id) }}" class="btn btn-outline">
                 <i class="fas fa-info-circle"></i> View Details
             </a>
         </div>
