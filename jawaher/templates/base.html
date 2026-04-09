@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FitTrack{% endblock %}</title>
+    
+    <!--main css file that used across the pages-->>
+    <link rel="stylesheet" href="{{ url_for('static', filename='fittrack.css') }}">
+    
+    <!-- extra css for pages that need it -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- extra scripts that need to go in the head-->>
+    {% block extra_js_head %}{% endblock %}
+</head>
+<body>
+
+    <!--top navbar -->>
+<nav class="navbar">
+    <div class="logo"><span>&#10010;</span> FitTrack</div>
+    <ul class="nav-links">
+        <li><a href="/">&#127968; Home</a></li>
+        <li><a href="/running">&#127939; Running</a></li>
+        <li><a href="/walking">&#128694; Walking</a></li>
+        <li><a href="/cycling">&#128690; Cycling</a></li>
+        <li><a href="/swimming">&#127946; Swimming</a></li>
+        <li><a href="/progress" {% if active_page == 'progress' %}class="active"{% endif %}>&#128200; Progress</a></li>
+        <li><a href="/history" {% if active_page == 'history' %}class="active"{% endif %}>&#128203; History</a></li>
+        <li><a href="/trainers" {% if active_page == 'trainers' %}class="active"{% endif %}>
+            &#127947; Trainers
+            {% if unread and unread > 0 %}
+            <span class="nav-badge">{{ unread }}</span>
+            {% endif %}
+        </a></li>
+    </ul>
+    <div class="profile-icon">&#9679;</div>
+</nav>
+
+<div class="main-content">
+
+    <!-- show the flash message like success or error alerts-->>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- this is where each page adds its own content-->>
+    {% block content %}{% endblock %}
+
+</div>
+
+<!--botttom footer-->>
+<div class="footer">
+    <div class="footer-logo">&#10010; FitTrack</div>
+    <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Us</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 FitTrack. All rights reserved.</div>
+</div>
+
+<!--extra JS for pages that need it -->>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>
