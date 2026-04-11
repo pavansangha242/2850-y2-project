@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
@@ -38,7 +40,76 @@
 </style>
 <body>
     <!-- Change this when we decide on a name -->
-    <header>Fitness Tracking App</header>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <!-- Logo -->
+            <a href="{{ url_for('auth.login') }}" class="nav-logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>FitTrack</span>
+            </a>
+
+            <!-- Links -->
+            <ul class="nav-links">
+                <li>
+                    <a href="/" class="{% if request.endpoint == 'index' %}active{% endif %}">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="{% if request.endpoint == 'workouts' %}active{% endif %}">
+                        <i class="fas fa-running"></i> Workouts
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="{% if request.endpoint == 'progress' %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i> Progress
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="{{ url_for('auth.user_settings') }}" 
+                    class="admin-pill {% if request.endpoint == 'auth.user_settings' %}active{% endif %}">
+                        <i class="fas fa-user-cog"></i> Account Settings
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Profile icon (optional) -->
+            {% if session.get('username') %}
+            <div class="nav-profile">
+                <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Mobile toggle -->
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+        </div>
+    </nav>
+
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('nav-open');
+            });
+        }
+    </script>
+
     {% block body %}
     <!-- Gets passed into here and inherited-->
     {% endblock %}

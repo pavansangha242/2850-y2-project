@@ -13,18 +13,8 @@ def create_app():
     db.init_app(app)
 
     # Register blueprints
-    # ---- Your auth routes ----
+    # ---- auth routes ----
     from routes.auth import auth
     app.register_blueprint(auth)
-
-    # ---- Add your teammates' blueprints here as they're ready ----
-    # from routes.admin import admin
-    # app.register_blueprint(admin)
-
-    # from routes.events import events
-    # app.register_blueprint(events)
-
-    # from routes.activity import activity
-    # app.register_blueprint(activity)
 
     return app

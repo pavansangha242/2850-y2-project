@@ -35,6 +35,11 @@ class UserGoal(db.Model):
     step_target = db.Column(db.Integer, default=10000)
     weekly_exercise_hours = db.Column(db.Integer, default=0)
     workouts_per_week = db.Column(db.Integer, default=0)
+    #new fields for Asma's calorie calculations
+    age = db.Column(db.Integer, nullable=True)
+    weight_kg = db.Column(db.Float, nullable=True)
+    height_cm = db.Column(db.Float, nullable=True)
+    sex = db.Column(db.String(20), nullable=True)
 
 
 class PrivacySettings(db.Model):

@@ -61,6 +61,10 @@ def register():
             step_target=request.form.get("step_target", 10000) or 10000,
             weekly_exercise_hours=request.form.get("weekly_hours", 0) or 0,
             workouts_per_week=request.form.get("workouts_per_week", 0) or 0,
+            age=request.form.get("age"),
+            weight_kg=request.form.get("weight"),
+            height_cm=request.form.get("height"),
+            sex=request.form.get("sex"),
         )
 
         new_privacy = PrivacySettings(
@@ -85,6 +89,9 @@ def user_settings():
     if "username" not in session:
         return redirect(url_for('auth.login'))
     user = User.query.filter_by(username=session["username"]).first()
+    if not user:
+        session.pop("username", None)
+        return redirect(url_for('auth.login'))
     return render_template("user_settings.html", user=user)
 
 
@@ -120,3 +127,21 @@ def delete_account():
         session.pop("username", None)
 
     return redirect(url_for('auth.register'))
+
+@auth.route("/update_stats", methods=["POST"])
+def update_stats():
+    if "username" not in session:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=session["username"]).first()
+    if not user:
+        session.pop("username", None)
+        return redirect(url_for('auth.login'))
+
+    user.goals.age = request.form.get("age")
+    user.goals.weight_kg = request.form.get("weight")
+    user.goals.height_cm = request.form.get("height")
+    user.goals.sex = request.form.get("sex")
+
+    db.session.commit()
+    return redirect(url_for('auth.user_settings'))

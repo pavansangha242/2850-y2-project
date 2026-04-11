@@ -67,6 +67,35 @@
     </div>
 
     <div class="settings-card mt-2">
+        <h2>Physical Stats</h2>
+        <form action="{{ url_for('auth.update_stats') }}" method="POST">
+            <div class="settings-row">
+                <span class="settings-label">Age</span>
+                <input type="number" name="age" value="{{ user.goals.age }}" class="input-field" min="0" style="width: 100px;">
+            </div>
+            <div class="settings-row">
+                <span class="settings-label">Weight (kg)</span>
+                <input type="number" name="weight" value="{{ user.goals.weight_kg }}" class="input-field" min="0" step="0.1" style="width: 100px;">
+            </div>
+            <div class="settings-row">
+                <span class="settings-label">Height (cm)</span>
+                <input type="number" name="height" value="{{ user.goals.height_cm }}" class="input-field" min="0" step="0.1" style="width: 100px;">
+            </div>
+            <div class="settings-row">
+                <span class="settings-label">Sex</span>
+                <select name="sex" class="input-field" style="width: 160px;">
+                    <option value="male" {% if user.goals.sex == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if user.goals.sex == 'female' %}selected{% endif %}>Female</option>
+                    <option value="prefer_not_to_say" {% if user.goals.sex == 'prefer_not_to_say' %}selected{% endif %}>Prefer not to say</option>
+                </select>
+            </div>
+            <div class="settings-row" style="justify-content: flex-end;">
+                <input type="submit" value="Save Changes" class="btn-login" style="width: auto; padding: 8px 20px;">
+            </div>
+        </form>
+    </div>
+
+    <div class="settings-card mt-2">
         <h2>Privacy & Data</h2>
         <form action="{{ url_for('auth.update_privacy') }}" method="POST">
             <div class="settings-row">

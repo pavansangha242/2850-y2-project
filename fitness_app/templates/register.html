@@ -40,6 +40,22 @@
                 <label>Workouts per Week</label>
                 <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
 
+                <label>Age</label>
+                <input type="number" name="age" placeholder="e.g. 18" class="input-field" required min="0" />
+
+                <label>Weight</label>
+                <input type="number" name="weight" placeholder="please enter in kg" class="input-field" required min="0" />
+
+                <label>Height</label>
+                <input type="number" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
+
+                <select name="sex" id="sex-select" class="input-field" required onchange="toggleFields()">
+                    <option value="" disabled selected>Select your sex, this is only used to calculate calories burnt</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
+
                 <hr class="mb-2">
 
                 <h3>Privacy & Permissions</h3>
