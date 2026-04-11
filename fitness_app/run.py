@@ -15,8 +15,10 @@ def create_app():
     return app
 
 app = create_app()
+print("App created successfully")  #testing
 
 if __name__ == "__main__":
+    print("Starting server...")      # and this
     with app.app_context():
         db.create_all()
     app.run(debug=True)
