@@ -86,7 +86,7 @@ class TestEventsPage:
     def test_events_page_shows_competitions(self, client):
         """Events page should display upcoming competitions."""
         response = client.get('/events')
-        assert b'City Marathon' in response.data
+        assert b'Spring Cycling Race' in response.data
 
     def test_event_details_page_loads(self, client):
         """Event details page should return status 200."""
@@ -229,3 +229,58 @@ class TestAdminPage:
         with app.app_context():
             david = User.query.filter_by(username='davidlee').first()
             assert david is None
+
+
+# ============================================================
+# SECURITY & EDGE CASE TESTS
+# ============================================================
+
+class TestSecurityAndEdgeCases:
+    """Tests for input validation, error handling, and security risks."""
+
+    def test_search_with_empty_input(self, client):
+        """Empty search input should not cause errors."""
+        response = client.get('/admin?q=')
+        assert response.status_code == 200
+
+    def test_search_with_special_characters(self, client):
+        """Special characters in search should be handled safely."""
+        response = client.get('/admin?q=%25%27%22%3C%3E')
+        assert response.status_code == 200
+
+    def test_search_with_script_tag(self, client):
+        """HTML/script tags in search should not be executed (XSS prevention)."""
+        response = client.get('/admin?q=<script>alert(1)</script>')
+        assert response.status_code == 200
+        # The script tag should not appear unescaped in the response
+        assert b'<script>alert(1)</script>' not in response.data
+
+    def test_delete_nonexistent_user(self, client):
+        """Trying to delete a user that does not exist should return 404."""
+        response = client.post('/admin/delete-user/9999')
+        assert response.status_code == 404
+
+    def test_register_nonexistent_event(self, client):
+        """Registering for a competition that does not exist should return 404."""
+        response = client.post('/events/register/9999')
+        assert response.status_code == 404
+
+    def test_view_nonexistent_event(self, client):
+        """Viewing a competition that does not exist should return 404."""
+        response = client.get('/events/9999')
+        assert response.status_code == 404
+
+    def test_approve_nonexistent_user(self, client):
+        """Approving a user that does not exist should return 404."""
+        response = client.post('/admin/approve-pt/9999')
+        assert response.status_code == 404
+
+    def test_reject_nonexistent_user(self, client):
+        """Rejecting a user that does not exist should return 404."""
+        response = client.post('/admin/reject-pt/9999')
+        assert response.status_code == 404
+
+    def test_calendar_nonexistent_event(self, client):
+        """Downloading calendar for nonexistent event should return 404."""
+        response = client.get('/events/9999/calendar')
+        assert response.status_code == 404
