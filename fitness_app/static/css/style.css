@@ -837,4 +837,274 @@ img {
     .grid-4 {
         grid-template-columns: 1fr;
     }
+
+    .podium {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .podium-item {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .podium-bar {
+        height: 12px !important;
+        width: 100%;
+    }
+
+    .leaderboard-table th:nth-child(4),
+    .leaderboard-table td:nth-child(4),
+    .leaderboard-table th:nth-child(5),
+    .leaderboard-table td:nth-child(5) {
+        display: none;
+    }
+}
+
+/* ---------- Leaderboard Tabs ---------- */
+.leaderboard-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+}
+
+.tab-active {
+    color: #fff !important;
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 2px 12px var(--primary-glow);
+}
+
+/* ---------- Podium ---------- */
+.podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.podium-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1.25rem 0;
+    width: 180px;
+    transition: var(--transition);
+}
+
+.podium-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.podium-medal {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.podium-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.podium-stat {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+}
+
+.podium-bar {
+    width: 100%;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.podium-bar-1 {
+    height: 100px;
+    background: linear-gradient(180deg, #FFD700, #FFA500);
+}
+
+.podium-bar-2 {
+    height: 70px;
+    background: linear-gradient(180deg, #C0C0C0, #A0A0A0);
+}
+
+.podium-bar-3 {
+    height: 50px;
+    background: linear-gradient(180deg, #CD7F32, #A0622E);
+}
+
+/* ---------- Leaderboard Table ---------- */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table thead {
+    background: var(--bg-surface);
+}
+
+.leaderboard-table th {
+    padding: 0.9rem 1.25rem;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.leaderboard-table td {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.92rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.leaderboard-table tbody tr {
+    transition: var(--transition);
+}
+
+.leaderboard-table tbody tr:hover {
+    background: var(--bg-card-hover);
+}
+
+.current-user-row {
+    background: rgba(108, 99, 255, 0.08) !important;
+    border-left: 3px solid var(--primary);
+}
+
+.current-user-row td {
+    color: var(--text-primary);
+}
+
+.rank-number {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.table-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.table-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.table-user-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+}
+
+.table-user-handle {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
+.you-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--radius-full);
+    margin-left: 0.4rem;
+    vertical-align: middle;
+}
+
+/* ---------- Flash Messages ---------- */
+.flash-message {
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    animation: slideDown 0.4s ease-out forwards, fadeOut 0.4s ease-in forwards 4s;
+    /* auto fade out after 4 seconds */
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; height: auto; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    to { opacity: 0; height: 0; padding: 0; margin-bottom: 0; display: none; }
+}
+
+.flash-success {
+    background: rgba(0, 212, 170, 0.15);
+    color: var(--accent);
+    border-left: 3px solid var(--accent);
+}
+
+.flash-info {
+    background: rgba(108, 99, 255, 0.15);
+    color: var(--primary-light);
+    border-left: 3px solid var(--primary);
+}
+
+.flash-danger {
+    background: rgba(255, 107, 107, 0.15);
+    color: var(--warm);
+    border-left: 3px solid var(--warm);
+}
+
+.flash-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.flash-close:hover {
+    opacity: 1;
 }

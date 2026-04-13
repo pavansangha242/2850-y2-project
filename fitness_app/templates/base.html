@@ -37,6 +37,9 @@
                 <li><a href="{{ url_for('events.events_page') }}" class="{% if request.endpoint and 'events' in request.endpoint %}active{% endif %}">
                     <i class="fas fa-calendar-alt"></i> Events
                 </a></li>
+                <li><a href="{{ url_for('leaderboard.leaderboard_page') }}" class="{% if request.endpoint and 'leaderboard' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-trophy"></i> Leaderboard
+                </a></li>
                 <li><a href="#" class="nav-link">
                     <i class="fas fa-chart-line"></i> Progress
                 </a></li>
@@ -62,6 +65,19 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}" id="flash-msg">
+            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'info' %}fa-info-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+            <button class="flash-close" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </main>
 

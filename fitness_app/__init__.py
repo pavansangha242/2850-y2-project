@@ -30,10 +30,12 @@ def create_app():
     from fitness_app.routes.home import home_bp
     from fitness_app.routes.events import events_bp
     from fitness_app.routes.admin import admin_bp
+    from fitness_app.routes.leaderboard import leaderboard_bp
 
     app.register_blueprint(home_bp)
     app.register_blueprint(events_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(leaderboard_bp)
 
     # Create database tables and seed data
     with app.app_context():
@@ -124,21 +126,58 @@ def seed_database():
     db.session.add_all([pw1, pw2, pw3])
 
     # ---- Activities (logged workouts) ----
+    # Ahmed's activities (current user)
     act1 = Activity(user_id=current_user.user_id, exercise_type_id=walking.exercise_type_id,
                     date=today, duration_minutes=60, distance_km=4.5, calories=220,
                     notes='Morning walk in the park')
     act2 = Activity(user_id=current_user.user_id, exercise_type_id=running.exercise_type_id,
                     date=today, duration_minutes=30, distance_km=5.0, calories=350,
                     notes='Interval training')
-    db.session.add_all([act1, act2])
+    act3 = Activity(user_id=current_user.user_id, exercise_type_id=cycling.exercise_type_id,
+                    date=today - timedelta(days=1), duration_minutes=45, distance_km=15.0,
+                    calories=400, notes='Evening cycle ride')
+    act4 = Activity(user_id=current_user.user_id, exercise_type_id=strength.exercise_type_id,
+                    date=today - timedelta(days=2), duration_minutes=50, distance_km=0.0,
+                    calories=280, notes='Upper body session')
+
+    # James's activities (experienced user — most active)
+    act5 = Activity(user_id=user2.user_id, exercise_type_id=running.exercise_type_id,
+                    date=today, duration_minutes=60, distance_km=10.0, calories=650,
+                    notes='Long distance run')
+    act6 = Activity(user_id=user2.user_id, exercise_type_id=strength.exercise_type_id,
+                    date=today, duration_minutes=75, distance_km=0.0, calories=420,
+                    notes='Full body workout')
+    act7 = Activity(user_id=user2.user_id, exercise_type_id=cycling.exercise_type_id,
+                    date=today - timedelta(days=1), duration_minutes=90, distance_km=30.0,
+                    calories=700, notes='Road cycling session')
+    act8 = Activity(user_id=user2.user_id, exercise_type_id=swimming.exercise_type_id,
+                    date=today - timedelta(days=2), duration_minutes=45, distance_km=2.0,
+                    calories=350, notes='Laps at the pool')
+    act9 = Activity(user_id=user2.user_id, exercise_type_id=running.exercise_type_id,
+                    date=today - timedelta(days=3), duration_minutes=35, distance_km=6.0,
+                    calories=420, notes='Tempo run')
+
+    # Noor's activities (beginner — fewer workouts)
+    act10 = Activity(user_id=user1.user_id, exercise_type_id=walking.exercise_type_id,
+                     date=today, duration_minutes=30, distance_km=2.0, calories=100,
+                     notes='Walk around the neighbourhood')
+    act11 = Activity(user_id=user1.user_id, exercise_type_id=walking.exercise_type_id,
+                     date=today - timedelta(days=2), duration_minutes=40, distance_km=3.0,
+                     calories=130, notes='Evening walk with family')
+    act12 = Activity(user_id=user1.user_id, exercise_type_id=swimming.exercise_type_id,
+                     date=today - timedelta(days=4), duration_minutes=25, distance_km=0.8,
+                     calories=180, notes='Gentle swim session')
+
+    db.session.add_all([act1, act2, act3, act4, act5, act6, act7, act8, act9,
+                        act10, act11, act12])
 
     # ---- Competitions ----
     comp1 = Competition(name='City Marathon', location='City Centre',
-                        date=date(2026, 4, 10), distance=42.195)
+                        date=date(2026, 5, 18), distance=42.195)
     comp2 = Competition(name='Spring Cycling Race', location='Countryside Road',
-                        date=date(2026, 5, 3), distance=80.0)
+                        date=date(2026, 6, 7), distance=80.0)
     comp3 = Competition(name='Open Water Swim', location='Lake Park',
-                        date=date(2026, 6, 12), distance=3.0)
+                        date=date(2026, 7, 5), distance=3.0)
     db.session.add_all([comp1, comp2, comp3])
     db.session.flush()
 
