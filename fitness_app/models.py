@@ -15,6 +15,11 @@ class User(db.Model):
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
     approved = db.Column(db.Boolean, default=True, nullable=False)
 
+    strava_access_token = db.Column(db.String(200), nullable=True)
+    strava_refresh_token = db.Column(db.String(200), nullable=True)
+    strava_token_expires_at = db.Column(db.Integer, nullable=True)  # Unix timestamp, expires often on Strava
+    strava_athlete_id = db.Column(db.Integer, nullable=True)
+
     goals = db.relationship('UserGoal', backref='user', uselist=False, cascade="all, delete-orphan")
     privacy = db.relationship('PrivacySettings', backref='user', uselist=False, cascade="all, delete-orphan")
 
