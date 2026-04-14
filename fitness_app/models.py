@@ -25,13 +25,13 @@ class User(db.Model):
     join_date = db.Column(db.Date, default=date.today)
 
     # Relationships
-    training_plan = db.relationship('TrainingPlan', backref='user', uselist=False, lazy=True)
-    activities = db.relationship('Activity', backref='user', lazy=True)
-    competition_results = db.relationship('CompetitionResult', backref='user', lazy=True)
+    training_plan = db.relationship('TrainingPlan', backref='user', uselist=False, lazy=True, cascade='all, delete-orphan')
+    activities = db.relationship('Activity', backref='user', lazy=True, cascade='all, delete-orphan')
+    competition_results = db.relationship('CompetitionResult', backref='user', lazy=True, cascade='all, delete-orphan')
 
     # Training Client relationships (as trainer and as client)
-    clients = db.relationship('TrainingClient', foreign_keys='TrainingClient.trainer_id', backref='trainer', lazy=True)
-    trainers = db.relationship('TrainingClient', foreign_keys='TrainingClient.client_id', backref='client', lazy=True)
+    clients = db.relationship('TrainingClient', foreign_keys='TrainingClient.trainer_id', backref='trainer', lazy=True, cascade='all, delete-orphan')
+    trainers = db.relationship('TrainingClient', foreign_keys='TrainingClient.client_id', backref='client', lazy=True, cascade='all, delete-orphan')
 
     def set_password(self, pw):
         self.password = generate_password_hash(pw)
