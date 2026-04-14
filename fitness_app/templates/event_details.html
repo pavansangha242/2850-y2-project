@@ -65,9 +65,16 @@
     <!-- Registration Status -->
     <div style="margin: 1.5rem 0;">
         {% if is_registered %}
-            <div class="card" style="padding: 1rem 1.25rem; border-left: 3px solid var(--accent); display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fas fa-check-circle" style="color: var(--accent); font-size: 1.3rem;"></i>
-                <span style="color: var(--accent); font-weight: 600;">You are registered for this event!</span>
+            <div class="card" style="padding: 1rem 1.25rem; border-left: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fas fa-check-circle" style="color: var(--accent); font-size: 1.3rem;"></i>
+                    <span style="color: var(--accent); font-weight: 600;">You are registered for this event!</span>
+                </div>
+                <form action="{{ url_for('events.unregister_event', competition_id=event.competition_id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-times"></i> Unregister
+                    </button>
+                </form>
             </div>
         {% else %}
             <div class="card" style="padding: 1rem 1.25rem; border-left: 3px solid var(--text-muted); display: flex; align-items: center; gap: 0.75rem;">

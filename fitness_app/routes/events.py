@@ -4,7 +4,7 @@ Handles competition listing, event detail views,
 calendar file downloads (.ics), and user registration
 for upcoming competitions.
 """
-from flask import Blueprint, render_template, redirect, url_for, make_response
+from flask import Blueprint, render_template, redirect, url_for, make_response, flash
 from fitness_app.extentions import db
 from fitness_app.models import Competition, CompetitionResult, User
 from datetime import date, timedelta
@@ -88,4 +88,21 @@ def register_event(competition_id):
         db.session.add(result)
         db.session.commit()
 
-    return redirect(url_for('events.events_page'))
+    return redirect(url_for('events.event_details', competition_id=competition_id))
+
+
+@events_bp.route('/events/unregister/<int:competition_id>', methods=['POST'])
+def unregister_event(competition_id):
+    """Unregister the current user from a competition."""
+    competition = Competition.query.get_or_404(competition_id)
+    current_user = User.query.filter_by(username='ahmed').first()
+
+    existing = CompetitionResult.query.filter_by(
+        user_id=current_user.user_id, competition_id=competition.competition_id
+    ).first()
+
+    if existing:
+        db.session.delete(existing)
+        db.session.commit()
+
+    return redirect(url_for('events.event_details', competition_id=competition_id))
