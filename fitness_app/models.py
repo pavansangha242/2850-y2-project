@@ -49,3 +49,5 @@ class PrivacySettings(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     share_with_pt = db.Column(db.Boolean, default=False)
     allow_meetings = db.Column(db.Boolean, default=False)
+
+# experimenting with syncing watch for fitness data
