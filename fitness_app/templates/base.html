@@ -41,6 +41,7 @@
 <body>
     <!-- Change this when we decide on a name -->
     <!-- Navigation -->
+    {% if show_nav != false %}
     <nav class="navbar">
         <div class="nav-container">
 
@@ -98,6 +99,7 @@
 
         </div>
     </nav>
+    {% endif %}
 
     <script>
         const navToggle = document.getElementById('navToggle');

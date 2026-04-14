@@ -21,9 +21,9 @@ def login():
             session['username'] = username
             return redirect(url_for('auth.user_settings'))
         else:
-            return render_template("login.html", error="Invalid username or password")
+            return render_template("login.html", error="Invalid username or password", show_nav=False)
 
-    return render_template("login.html")
+    return render_template("login.html", show_nav=False)
 
 
 @auth.route("/register", methods=["GET", "POST"])
@@ -38,13 +38,13 @@ def register():
         bio = request.form.get("bio") if role == "pt" else None
 
         if password != confirm_password:
-            return render_template("register.html", error="Passwords don't match, please re-enter")
+            return render_template("register.html", error="Passwords don't match, please re-enter", show_nav=False)
 
         if User.query.filter_by(username=username).first():
-            return render_template("register.html", error="Username is taken, please choose another one")
+            return render_template("register.html", error="Username is taken, please choose another one", show_nav=False)
 
         if User.query.filter_by(email=email).first():
-            return render_template("register.html", error="Email is already registered")
+            return render_template("register.html", error="Email is already registered", show_nav=False)
 
         new_user = User(
             username=username,
@@ -81,7 +81,7 @@ def register():
         session['username'] = new_user.username
         return redirect(url_for('auth.user_settings'))
 
-    return render_template("register.html")
+    return render_template("register.html", show_nav=False)
 
 
 @auth.route("/settings")
