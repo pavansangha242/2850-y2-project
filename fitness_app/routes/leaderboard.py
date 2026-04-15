@@ -38,8 +38,7 @@ def leaderboard_page():
             func.coalesce(func.sum(Activity.calories), 0).label('total_calories'),
             func.coalesce(func.sum(Activity.distance_km), 0).label('total_distance')
         )
-        .join(Activity, User.user_id == Activity.user_id)
-        .filter(Activity.date >= start_date)
+        .outerjoin(Activity, (User.user_id == Activity.user_id) & (Activity.date >= start_date))
         .filter(User.role == 'customer')
         .group_by(User.user_id)
         .order_by(
