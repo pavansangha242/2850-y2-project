@@ -56,3 +56,23 @@ class PrivacySettings(db.Model):
     allow_meetings = db.Column(db.Boolean, default=False)
 
 # experimenting with syncing watch for fitness data
+
+class StravaActivity(db.Model):
+    __tablename__ = 'strava_activities'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    strava_id = db.Column(db.BigInteger, unique=True, nullable=False)  # Strava's own ID
+    name = db.Column(db.String(200))
+    activity_type = db.Column(db.String(50))   # Run, Ride, Swim etc
+    start_date = db.Column(db.DateTime)
+    distance_m = db.Column(db.Float)           # metres
+    moving_time_s = db.Column(db.Integer)      # seconds
+    calories = db.Column(db.Float, nullable=True)
+    avg_heart_rate = db.Column(db.Float, nullable=True)
+    max_heart_rate = db.Column(db.Float, nullable=True)
+    elevation_gain = db.Column(db.Float, nullable=True)
+    avg_speed = db.Column(db.Float, nullable=True)   # metres per second, can change depending on what we need once implemented
+    polyline = db.Column(db.Text, nullable=True)     # encoded GPS route, see if can add route/map to dashboard
+
+    user = db.relationship('User', backref=db.backref('strava_activities', lazy=True))

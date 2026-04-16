@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<!-- Viewing maps -->
+
+
+<div class="container">
+    <h1>Your Activities</h1>
+
+    {% if activities %}
+        {% for activity in activities %}
+            <div class="settings-card mt-2">
+                <h3>{{ activity.name }}</h3>
+                <p>{{ activity.activity_type }} • {{ activity.distance_m / 1000 }} km</p>
+
+                <a href="{{ url_for('strava.activity_map', activity_id=activity.id) }}" class="btn-login">
+                    View Map
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No activities yet. Sync from Strava first.</p>
+    {% endif %}
+</div>
+{% endblock %}

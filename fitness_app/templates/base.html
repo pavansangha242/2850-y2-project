@@ -59,6 +59,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ url_for('strava.activities_list') }}">
+                        <i class="fas fa-running"></i> Activities
+                    </a>
+                </li>
+                <li>
                     <a href="#" class="{% if request.endpoint == 'workouts' %}active{% endif %}">
                         <i class="fas fa-running"></i> Workouts
                     </a>

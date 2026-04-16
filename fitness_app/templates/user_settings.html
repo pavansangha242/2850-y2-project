@@ -67,32 +67,35 @@
     </div>
 
     <div class="settings-card mt-2">
-        <h2>Connected Apps</h2>
-        <div class="settings-row">
-            <span class="settings-label">Strava</span>
-            <span class="settings-value">
-                {% if user.strava_athlete_id %}
-                    <span style="color: #28a745;">● Connected</span>
-                {% else %}
-                    <span style="color: #888;">Not connected</span>
-                {% endif %}
-            </span>
-        </div>
-        <div class="settings-row" style="justify-content: flex-end;">
+    <h2>Connected Apps</h2>
+    <div class="settings-row">
+        <span class="settings-label">Strava</span>
+        <span class="settings-value">
             {% if user.strava_athlete_id %}
-                <form action="{{ url_for('strava.disconnect_strava') }}" method="POST">
-                    <button type="submit" class="btn-danger" style="width:auto; padding: 8px 20px;">
-                        Disconnect Strava
-                    </button>
-                </form>
+                <span style="color: #28a745;">● Connected</span>
             {% else %}
-                <a href="{{ url_for('strava.connect_strava') }}" class="btn-login"
-                style="width: auto; padding: 8px 20px;">
-                    Connect Strava
-                </a>
+                <span style="color: #888;">Not connected</span>
             {% endif %}
-        </div>
+        </span>
     </div>
+    <div class="settings-row" style="justify-content: flex-end; gap: 10px;">
+        {% if user.strava_athlete_id %}
+            <a href="{{ url_for('strava.sync_strava') }}" class="btn-login">
+                Sync Activities
+            </a>
+
+            <form action="{{ url_for('strava.disconnect_strava') }}" method="POST">
+                <button type="submit" class="btn-danger">
+                    Disconnect
+                </button>
+            </form>
+        {% else %}
+            <a href="{{ url_for('strava.connect_strava') }}" class="btn-login">
+                Connect Strava
+            </a>
+        {% endif %}
+    </div>
+</div>
 
     <div class="settings-card mt-2">
         <h2>Physical Stats</h2>

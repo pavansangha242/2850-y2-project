@@ -1,9 +1,12 @@
 import time
 import requests
-from flask import Blueprint, redirect, request, session, url_for, jsonify
+from flask import Blueprint, redirect, request, session, url_for, jsonify, render_template
 from extensions import db
 from models import User
 import os
+# For Strava activities being added
+from models import User, StravaActivity
+from datetime import datetime
 
 CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
@@ -145,3 +148,84 @@ def get_activities():
     )
 
     return jsonify(response.json())
+
+@strava_bp.route("/sync-strava")
+def sync_strava():
+    if "username" not in session:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=session["username"]).first()
+
+    if not user.strava_access_token:
+        return jsonify({"error": "Strava not connected"}), 401
+
+    token = get_valid_token(user)
+    if not token:
+        return jsonify({"error": "Could not refresh token"}), 401
+
+    response = requests.get(
+        "https://www.strava.com/api/v3/athlete/activities",
+        headers={"Authorization": f"Bearer {token}"},
+        params={"per_page": 50}  # last 50 activities
+    )
+
+    activities = response.json()
+    new_count = 0
+
+    for a in activities:
+        # Skip if already have this activity stored
+        existing = StravaActivity.query.filter_by(strava_id=a["id"]).first()
+        if existing:
+            continue
+
+        activity = StravaActivity(
+            # Adding all the fields first and depending on testing can remove/alter
+            user_id=user.id,
+            strava_id=a["id"],
+            name=a.get("name"),
+            activity_type=a.get("type"),
+            start_date=datetime.strptime(a["start_date"], "%Y-%m-%dT%H:%M:%SZ"),
+            distance_m=a.get("distance"),
+            moving_time_s=a.get("moving_time"),
+            calories=a.get("calories"),
+            avg_heart_rate=a.get("average_heartrate"),
+            max_heart_rate=a.get("max_heartrate"),
+            elevation_gain=a.get("total_elevation_gain"),
+            avg_speed=a.get("average_speed"),
+            polyline=a.get("map", {}).get("summary_polyline")
+        )
+        db.session.add(activity)
+        new_count += 1
+
+    db.session.commit()
+    return redirect(url_for('strava.activities_list')) ##
+
+# Dashboard to check visualisation 
+@strava_bp.route("/activity/<int:activity_id>")
+def activity_map(activity_id):
+    if "username" not in session:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=session["username"]).first()
+
+    activity = StravaActivity.query.filter_by(
+        id=activity_id,
+        user_id=user.id
+    ).first()
+
+    if not activity:
+        return "Activity not found", 404
+
+    return render_template("activity.html", activity=activity)
+
+@strava_bp.route("/activities")
+def activities_list():
+    if "username" not in session:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=session["username"]).first()
+
+    activities = StravaActivity.query.filter_by(user_id=user.id)\
+        .order_by(StravaActivity.start_date.desc()).all()
+
+    return render_template("activities.html", activities=activities)
