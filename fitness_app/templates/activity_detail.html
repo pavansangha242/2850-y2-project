@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container">
+    <a href="{{ url_for('strava.activities') }}" style="color:#888;">← Back to activities</a>
+    
+    <h1 style="margin-top: 16px;">{{ activity.name }}</h1>
+    <p style="color:#888;">{{ activity.activity_type }} · {{ activity.start_date.strftime('%d %b %Y, %H:%M') }}</p>
+
+    <!-- GPS Map -->
+    {% if activity.polyline %}
+    <div id="map" style="height:350px; border-radius:8px; margin: 20px 0;"></div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@mapbox/polyline@1.1.1/src/polyline.js"></script>
+    <script>
+        const coords = polyline.decode("{{ activity.polyline }}");
+        const map = L.map('map').setView(coords[0], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        const route = L.polyline(coords, { color: '#fc4c02', weight: 4 }).addTo(map);
+        map.fitBounds(route.getBounds());
+    </script>
+    {% endif %}
+
+    <!-- Stats grid -->
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:20px;">
+        <div class="settings-card" style="text-align:center;">
+            <h2>{{ "%.1f"|format(activity.distance_m / 1000) }} km</h2>
+            <p>Distance</p>
+        </div>
+        <div class="settings-card" style="text-align:center;">
+            <h2>{{ activity.moving_time_s // 60 }} min</h2>
+            <p>Moving Time</p>
+        </div>
+        {% if activity.calories %}
+        <div class="settings-card" style="text-align:center;">
+            <h2>{{ activity.calories|int }}</h2>
+            <p>Calories</p>
+        </div>
+        {% endif %}
+        {% if activity.avg_heart_rate %}
+        <div class="settings-card" style="text-align:center;">
+            <h2>{{ activity.avg_heart_rate|int }} bpm</h2>
+            <p>Avg Heart Rate</p>
+        </div>
+        {% endif %}
+        {% if activity.elevation_gain %}
+        <div class="settings-card" style="text-align:center;">
+            <h2>{{ activity.elevation_gain|int }} m</h2>
+            <p>Elevation Gain</p>
+        </div>
+        {% endif %}
+        {% if activity.avg_speed %}
+        <div class="settings-card" style="text-align:center;">
+            <!-- Convert m/s to min/km pace -->
+            {% set pace_secs = (1000 / activity.avg_speed)|int %}
+            <h2>{{ pace_secs // 60 }}:{{ '%02d'|format(pace_secs % 60) }} /km</h2>
+            <p>Avg Pace</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

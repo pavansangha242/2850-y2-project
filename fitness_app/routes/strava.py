@@ -6,7 +6,7 @@ from models import User
 import os
 # For Strava activities being added
 from models import User, StravaActivity
-from datetime import datetime
+from datetime import datetime, timedelta
 
 CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
@@ -198,7 +198,7 @@ def sync_strava():
         new_count += 1
 
     db.session.commit()
-    return redirect(url_for('strava.activities_list')) ##
+    return redirect(url_for('strava.activities')) ##
 
 # Dashboard to check visualisation 
 @strava_bp.route("/activity/<int:activity_id>")
@@ -216,16 +216,66 @@ def activity_map(activity_id):
     if not activity:
         return "Activity not found", 404
 
-    return render_template("activity.html", activity=activity)
+    return render_template("activity_detail.html", activity=activity)
 
 @strava_bp.route("/activities")
-def activities_list():
+def activities():
     if "username" not in session:
         return redirect(url_for('auth.login'))
 
     user = User.query.filter_by(username=session["username"]).first()
+    
+    # Get filter from query string, default to 'week'
+    period = request.args.get("period", "week")
+    activity_type = request.args.get("type", "all")
 
-    activities = StravaActivity.query.filter_by(user_id=user.id)\
-        .order_by(StravaActivity.start_date.desc()).all()
+    query = StravaActivity.query.filter_by(user_id=user.id)
 
-    return render_template("activities.html", activities=activities)
+    # Date filter
+    if period == "week":
+        query = query.filter(
+            StravaActivity.start_date >= datetime.utcnow() - timedelta(days=7)
+        )
+    elif period == "month":
+        query = query.filter(
+            StravaActivity.start_date >= datetime.utcnow() - timedelta(days=30)
+        )
+    # all needs no date filter
+
+    # Type filter
+    if activity_type != "all":
+        query = query.filter_by(activity_type=activity_type)
+
+    activities = query.order_by(StravaActivity.start_date.desc()).all()
+
+    # Summary stats for whatever is currently filtered
+    stats = {
+        "total_km": round(sum(a.distance_m or 0 for a in activities) / 1000, 1),
+        "total_calories": round(sum(a.calories or 0 for a in activities)),
+        "total_activities": len(activities),
+        "total_time_mins": sum(a.moving_time_s or 0 for a in activities) // 60
+    }
+
+    return render_template(
+        "activities.html",
+        activities=activities,
+        stats=stats,
+        period=period,
+        activity_type=activity_type
+    )
+
+
+@strava_bp.route("/activities/<int:strava_id>")
+def activity_detail(strava_id):
+    if "username" not in session:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=session["username"]).first()
+    
+    # Make sure this activity belongs to the logged-in user
+    activity = StravaActivity.query.filter_by(
+        strava_id=strava_id,
+        user_id=user.id
+    ).first_or_404()
+
+    return render_template("activity_detail.html", activity=activity)

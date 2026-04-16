@@ -59,7 +59,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('strava.activities_list') }}">
+                    <a href="{{ url_for('strava.activities') }}">
                         <i class="fas fa-running"></i> Activities
                     </a>
                 </li>
@@ -69,8 +69,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="{% if request.endpoint == 'progress' %}active{% endif %}">
-                        <i class="fas fa-chart-line"></i> Progress
+                    <a href="{{ url_for('strava.activities') }}" ...>
+                        <i class="fas fa-running"></i> Workouts
                     </a>
                 </li>
                 

@@ -6,21 +6,83 @@
 
 
 <div class="container">
-    <h1>Your Activities</h1>
+    <h1>My Activities</h1>
 
-    {% if activities %}
-        {% for activity in activities %}
-            <div class="settings-card mt-2">
-                <h3>{{ activity.name }}</h3>
-                <p>{{ activity.activity_type }} • {{ activity.distance_m / 1000 }} km</p>
+     <!-- Summary stats -->
+    <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+        <div class="settings-card" style="flex:1; text-align:center;">
+            <h2>{{ stats.total_km }} km</h2>
+            <p>Distance</p>
+        </div>
+        <div class="settings-card" style="flex:1; text-align:center;">
+            <h2>{{ stats.total_calories }}</h2>
+            <p>Calories</p>
+        </div>
+        <div class="settings-card" style="flex:1; text-align:center;">
+            <h2>{{ stats.total_activities }}</h2>
+            <p>Activities</p>
+        </div>
+        <div class="settings-card" style="flex:1; text-align:center;">
+            <h2>{{ stats.total_time_mins }} min</h2>
+            <p>Time</p>
+        </div>
+    </div>
 
-                <a href="{{ url_for('strava.activity_map', activity_id=activity.id) }}" class="btn-login">
-                    View Map
-                </a>
+    <!-- Filters -->
+    <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+
+        <a href="?period=week&type={{ activity_type }}" 
+        class="btn-login {{ 'active-filter' if period == 'week' else 'inactive-filter' }}"
+        style="width:auto; padding: 8px 16px;">
+            This Week
+        </a>
+
+        <a href="?period=month&type={{ activity_type }}"
+        class="btn-login {{ 'active-filter' if period == 'month' else 'inactive-filter' }}"
+        style="width:auto; padding: 8px 16px;">
+            This Month
+        </a>
+
+        <a href="?period=all&type={{ activity_type }}"
+        class="btn-login {{ 'active-filter' if period == 'all' else 'inactive-filter' }}"
+        style="width:auto; padding: 8px 16px;">
+            All Time
+        </a>
+
+        <select onchange="window.location='?period={{ period }}&type='+this.value"
+                class="input-field" style="width:auto;">
+            <option value="all" {% if activity_type=='all' %}selected{% endif %}>All Types</option>
+            <option value="Run" {% if activity_type=='Run' %}selected{% endif %}>Runs</option>
+            <option value="Ride" {% if activity_type=='Ride' %}selected{% endif %}>Rides</option>
+            <option value="Swim" {% if activity_type=='Swim' %}selected{% endif %}>Swims</option>
+            <option value="Walk" {% if activity_type=='Walk' %}selected{% endif %}>Walks</option>
+        </select>
+
+    </div>
+    <!-- Activity list -->
+    {% for a in activities %}
+    <a href="{{ url_for('strava.activity_detail', strava_id=a.strava_id) }}"
+       style="text-decoration:none; color:inherit;">
+        <div class="settings-card mt-1" style="cursor:pointer;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3>{{ a.name }}</h3>
+                    <p style="color:#888; margin:4px 0;">
+                        {{ a.activity_type }} · {{ a.start_date.strftime('%d %b %Y') }}
+                    </p>
+                </div>
+                <div style="text-align:right;">
+                    <p><strong>{{ "%.1f"|format(a.distance_m / 1000) }} km</strong></p>
+                    <p style="color:#888;">{{ a.moving_time_s // 60 }} min</p>
+                    {% if a.calories %}
+                    <p style="color:#888;">{{ a.calories|int }} kcal</p>
+                    {% endif %}
+                </div>
             </div>
-        {% endfor %}
+        </div>
+    </a>
     {% else %}
-        <p>No activities yet. Sync from Strava first.</p>
-    {% endif %}
+    <p>No activities found. Try syncing or changing your filters.</p>
+    {% endfor %}
 </div>
 {% endblock %}
