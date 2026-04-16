@@ -15,7 +15,7 @@
             <p>Distance</p>
         </div>
         <div class="settings-card" style="flex:1; text-align:center;">
-            <h2>{{ stats.total_calories }}</h2>
+            <h2>Calories: {{ stats.total_calories }}</h2>
             <p>Calories</p>
         </div>
         <div class="settings-card" style="flex:1; text-align:center;">
@@ -74,9 +74,9 @@
                 <div style="text-align:right;">
                     <p><strong>{{ "%.1f"|format(a.distance_m / 1000) }} km</strong></p>
                     <p style="color:#888;">{{ a.moving_time_s // 60 }} min</p>
-                    {% if a.calories %}
-                    <p style="color:#888;">{{ a.calories|int }} kcal</p>
-                    {% endif %}
+                    <p style="color:#888;">
+                        {{ a.calories|int if a.calories is not none else 0 }} kcal
+                    </p>
                 </div>
             </div>
         </div>

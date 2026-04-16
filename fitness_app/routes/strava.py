@@ -173,29 +173,58 @@ def sync_strava():
     new_count = 0
 
     for a in activities:
-        # Skip if already have this activity stored
+        # To fix error of db getting locked
         existing = StravaActivity.query.filter_by(strava_id=a["id"]).first()
-        if existing:
-            continue
 
-        activity = StravaActivity(
-            # Adding all the fields first and depending on testing can remove/alter
-            user_id=user.id,
-            strava_id=a["id"],
-            name=a.get("name"),
-            activity_type=a.get("type"),
-            start_date=datetime.strptime(a["start_date"], "%Y-%m-%dT%H:%M:%SZ"),
-            distance_m=a.get("distance"),
-            moving_time_s=a.get("moving_time"),
-            calories=a.get("calories"),
-            avg_heart_rate=a.get("average_heartrate"),
-            max_heart_rate=a.get("max_heartrate"),
-            elevation_gain=a.get("total_elevation_gain"),
-            avg_speed=a.get("average_speed"),
-            polyline=a.get("map", {}).get("summary_polyline")
+        if existing:
+            activity = existing
+        else:
+            activity = StravaActivity(
+                strava_id=a["id"],
+                user_id=user.id
+            )
+            db.session.add(activity)
+
+        # Get detailed activity
+        detail_res = requests.get(
+            f"https://www.strava.com/api/v3/activities/{a['id']}",
+            headers={"Authorization": f"Bearer {token}"}
         )
-        db.session.add(activity)
+
+        calories = None
+
+        if detail_res.status_code == 200:
+            detail = detail_res.json()
+            calories = detail.get("calories")
+
+        if not calories:
+            calories = a.get("calories")
+
+        # 🔥 ALWAYS ensure calories exist
+        if not calories:
+            distance_km = (a.get("distance") or 0) / 1000
+            weight = getattr(user, "weight_kg", 70)
+            calories = round(1.036 * distance_km * weight)
+
+        #print("Saving:", a["id"], calories)
+
+        # Assign all fields
+        activity.name = a.get("name")
+        activity.activity_type = a.get("type")
+        activity.start_date = datetime.strptime(a["start_date"], "%Y-%m-%dT%H:%M:%SZ")
+        activity.distance_m = a.get("distance")
+        activity.moving_time_s = a.get("moving_time")
+        activity.calories = calories
+        activity.avg_heart_rate = a.get("average_heartrate")
+        activity.max_heart_rate = a.get("max_heartrate")
+        activity.elevation_gain = a.get("total_elevation_gain")
+        activity.avg_speed = a.get("average_speed")
+        activity.polyline = a.get("map", {}).get("summary_polyline")
+
         new_count += 1
+
+        #print("Activity:", a["id"], "Calories:", calories)
+    
 
     db.session.commit()
     return redirect(url_for('strava.activities')) ##
