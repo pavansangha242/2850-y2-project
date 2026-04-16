@@ -87,6 +87,7 @@ def register_event(competition_id):
                                    competition_id=competition.competition_id)
         db.session.add(result)
         db.session.commit()
+        flash('Registered successfully! A confirmation has been sent to your email.', 'success')
 
     return redirect(url_for('events.event_details', competition_id=competition_id))
 
@@ -104,5 +105,6 @@ def unregister_event(competition_id):
     if existing:
         db.session.delete(existing)
         db.session.commit()
+        flash('You have been unregistered from this event.', 'info')
 
     return redirect(url_for('events.event_details', competition_id=competition_id))
