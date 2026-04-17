@@ -3,7 +3,7 @@ Admin dashboard routes for the FitTrack application.
 Handles user management (search, delete), personal trainer
 approval/rejection, and platform statistics display.
 """
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from fitness_app.extentions import db
 from fitness_app.models import User
 
@@ -64,6 +64,7 @@ def delete_user(user_id):
 
     db.session.delete(user)
     db.session.commit()
+    flash(f'User {user.username} has been deleted.', 'success')
 
     return redirect(url_for('admin.admin_dashboard'))
 
@@ -76,6 +77,7 @@ def approve_pt(user_id):
     if user.role == 'pt':
         user.approved = True
         db.session.commit()
+        flash(f'Personal Trainer {user.first_name} has been approved.', 'success')
 
     return redirect(url_for('admin.admin_dashboard'))
 
@@ -86,8 +88,10 @@ def reject_pt(user_id):
     user = User.query.get_or_404(user_id)
 
     if user.role == 'pt' and not user.approved:
+        username = user.username
         db.session.delete(user)
         db.session.commit()
+        flash(f'PT application for {username} has been rejected.', 'info')
 
     return redirect(url_for('admin.admin_dashboard'))
 
