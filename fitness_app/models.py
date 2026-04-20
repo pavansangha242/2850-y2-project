@@ -157,3 +157,22 @@ class CompetitionResult(db.Model):
 
     def __repr__(self):
         return f'<CompetitionResult user={self.user_id} comp={self.competition_id}>'
+
+
+class ChatMessage(db.Model):
+    """Group chat messages linked to a specific competition/event."""
+    __tablename__ = 'chat_messages'
+
+    message_id = db.Column(db.Integer, primary_key=True)
+    competition_id = db.Column(db.Integer, db.ForeignKey('competitions.competition_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    author = db.relationship('User', backref='chat_messages', lazy=True)
+    event = db.relationship('Competition', backref='chat_messages', lazy=True)
+
+    def __repr__(self):
+        return f'<ChatMessage {self.message_id} by User {self.user_id}>'
+

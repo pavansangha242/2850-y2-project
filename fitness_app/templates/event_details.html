@@ -99,6 +99,10 @@
             </button>
         </form>
         {% endif %}
+
+        <a href="{{ url_for('events.event_chat', competition_id=event.competition_id) }}" class="btn btn-success">
+            <i class="fas fa-comments"></i> Group Chat
+        </a>
     </div>
 </div>
 
