@@ -170,8 +170,8 @@ class ChatMessage(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    author = db.relationship('User', backref='chat_messages', lazy=True)
-    event = db.relationship('Competition', backref='chat_messages', lazy=True)
+    author = db.relationship('User', backref=db.backref('chat_messages', cascade='all, delete-orphan'), lazy=True)
+    event = db.relationship('Competition', backref=db.backref('chat_messages', cascade='all, delete-orphan'), lazy=True)
 
     def __repr__(self):
         return f'<ChatMessage {self.message_id} by User {self.user_id}>'
