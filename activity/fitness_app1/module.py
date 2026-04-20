@@ -335,7 +335,7 @@ def seed_data():
     #add gym exers if none
     if GymExercise.query.count() == 0:
         gym_exercises = [
-            GymExercise(name='Bench Press', muscle_group='Chest', description='Flat barbell bench press', video_url='https://www.youtube.com/embed/rT7DgCr-3pg'),
+            GymExercise(name='Bench Press', muscle_group='Chest', description='Flat barbell bench press', video_url='https://www.youtube.com/watch?v=sYV-ki-1blM'),
             GymExercise(name='Incline Dumbbell Press', muscle_group='Chest', description='Incline bench with dumbbells', video_url='https://www.youtube.com/embed/8iPEnn-ltC8'),
             GymExercise(name='Cable Fly', muscle_group='Chest', description='Cable crossover fly', video_url='https://www.youtube.com/embed/WEM9FCIPlxQ'),
             GymExercise(name='Lat Pulldown', muscle_group='Back', description='Wide grip lat pulldown', video_url='https://www.youtube.com/embed/CAwf7n6Luuc'),

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FitTrack{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!--navbar-->
+    <nav class="navbar">
+        <div class="logo"><span>&#10010;</span> FitTrack</div>
+        <ul class="nav-links">
+            <li><a href="/">&#127968; Home</a></li>
+            <li>
+                <span class="dropdown-trigger {% if request.path in ['/swimming', '/cycling', '/running', '/walking', '/gym'] %}active{% endif %}">&#127941; Exercises &#9662;</span>
+                <ul class="dropdown-menu">
+                    <li><a href="/swimming" {% if request.path == '/swimming' %}class="active"{% endif %}>&#127946; Swimming</a></li>
+                    <li><a href="/cycling" {% if request.path == '/cycling' %}class="active"{% endif %}>&#128690; Cycling</a></li>
+                    <li><a href="/running" {% if request.path == '/running' %}class="active"{% endif %}>&#127939; Running</a></li>
+                    <li><a href="/walking" {% if request.path == '/walking' %}class="active"{% endif %}>&#128694; Walking</a></li>
+                    <li><a href="/gym" {% if request.path == '/gym' %}class="active"{% endif %}>&#127947; Gym</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="profile-icon">&#9679;</div>
+    </nav>
+
+    <!--flash messages-->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!--page content-->
+    {% block content %}
+    {% endblock %}
+
+    <!--footer-->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">&#10010; FitTrack</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-copy">&copy; 2026 FitTrack. All rights reserved.</div>
+    </footer>
+
+    <!--scripts-->
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+</html>
