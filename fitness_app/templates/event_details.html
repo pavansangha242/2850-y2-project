@@ -86,9 +86,11 @@
 
     <!-- Action Buttons -->
     <div class="event-actions">
-        <a href="{{ url_for('events.add_to_calendar', competition_id=event.competition_id) }}" class="btn btn-outline">
+        <button type="button" class="btn btn-outline" id="addToCalBtn"
+                data-event-date="{{ event.date.isoformat() }}"
+                data-event-name="{{ event.name }}">
             <i class="fas fa-calendar-plus"></i> Add to Calendar
-        </a>
+        </button>
 
         {% if not is_registered %}
         <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="display: inline;">
@@ -99,4 +101,90 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Toast Notification -->
+<div class="calendar-toast" id="calendarToast">
+    <i class="fas fa-calendar-check toast-icon"></i>
+    <div>
+        <div class="toast-text" id="toastText">Added to Calendar!</div>
+        <div class="toast-sub" id="toastSub">This date is now highlighted on your calendar.</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ---------- Saved Events (localStorage) ----------
+    function getSavedEvents() {
+        try { return JSON.parse(localStorage.getItem('fittrack_saved_events') || '[]'); }
+        catch(e) { return []; }
+    }
+
+    function saveEvent(dateStr, name) {
+        const saved = getSavedEvents();
+        if (!saved.some(e => e.date === dateStr)) {
+            saved.push({ date: dateStr, name: name });
+            localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+        }
+    }
+
+    function isEventSaved(dateStr) {
+        return getSavedEvents().some(e => e.date === dateStr);
+    }
+
+    function removeEvent(dateStr) {
+        const saved = getSavedEvents().filter(e => e.date !== dateStr);
+        localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+    }
+
+    // ---------- Toast Notification ----------
+    function showToast(name, mode) {
+        const toast = document.getElementById('calendarToast');
+        const text  = document.getElementById('toastText');
+        const sub   = document.getElementById('toastSub');
+
+        if (mode === 'removed') {
+            text.textContent = 'Removed from Calendar';
+            sub.textContent  = name + ' — date has been unmarked.';
+        } else {
+            text.textContent = 'Added to Calendar!';
+            sub.textContent  = name + ' — date is now marked on your calendar.';
+        }
+
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ---------- Add to Calendar Button (Toggle) ----------
+    const addBtn = document.getElementById('addToCalBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            const dateStr = this.dataset.eventDate;
+            const name    = this.dataset.eventName;
+
+            if (isEventSaved(dateStr)) {
+                // Remove from calendar
+                removeEvent(dateStr);
+                this.innerHTML = '<i class="fas fa-calendar-plus"></i> Add to Calendar';
+                this.classList.remove('btn-danger');
+                this.classList.add('btn-outline');
+                showToast(name, 'removed');
+            } else {
+                // Add to calendar
+                saveEvent(dateStr, name);
+                this.innerHTML = '<i class="fas fa-calendar-check"></i> Added!';
+                this.classList.remove('btn-outline');
+                this.classList.add('btn-danger');
+                showToast(name, 'added');
+            }
+        });
+
+        // If already saved, show it on load
+        if (isEventSaved(addBtn.dataset.eventDate)) {
+            addBtn.innerHTML = '<i class="fas fa-calendar-check"></i> Added!';
+            addBtn.classList.remove('btn-outline');
+            addBtn.classList.add('btn-danger');
+        }
+    }
+</script>
 {% endblock %}

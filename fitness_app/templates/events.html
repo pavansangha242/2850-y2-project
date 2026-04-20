@@ -73,9 +73,11 @@
         {% endif %}
 
         <div class="event-actions">
-            <a href="{{ url_for('events.add_to_calendar', competition_id=next_event.competition_id) }}" class="btn btn-outline">
+            <button type="button" class="btn btn-outline" id="addToCalBtn"
+                    data-event-date="{{ next_event.date.isoformat() }}"
+                    data-event-name="{{ next_event.name }}">
                 <i class="fas fa-calendar-plus"></i> Add to Calendar
-            </a>
+            </button>
             <form action="{{ url_for('events.register_event', competition_id=next_event.competition_id) }}" method="POST" style="display: inline;">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-envelope"></i> Register
@@ -88,11 +90,61 @@
     </div>
 </section>
 {% endif %}
+
+<!-- Toast Notification -->
+<div class="calendar-toast" id="calendarToast">
+    <i class="fas fa-calendar-check toast-icon"></i>
+    <div>
+        <div class="toast-text" id="toastText">Added to Calendar!</div>
+        <div class="toast-sub" id="toastSub">This date is now highlighted on your calendar.</div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Build a simple calendar for the current month, highlighting today and event dates
+    // ---------- Saved Events (localStorage) ----------
+    function getSavedEvents() {
+        try { return JSON.parse(localStorage.getItem('fittrack_saved_events') || '[]'); }
+        catch(e) { return []; }
+    }
+
+    function saveEvent(dateStr, name) {
+        const saved = getSavedEvents();
+        if (!saved.some(e => e.date === dateStr)) {
+            saved.push({ date: dateStr, name: name });
+            localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+        }
+    }
+
+    function isEventSaved(dateStr) {
+        return getSavedEvents().some(e => e.date === dateStr);
+    }
+
+    function removeEvent(dateStr) {
+        const saved = getSavedEvents().filter(e => e.date !== dateStr);
+        localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+    }
+
+    // ---------- Toast Notification ----------
+    function showToast(name, mode) {
+        const toast = document.getElementById('calendarToast');
+        const text  = document.getElementById('toastText');
+        const sub   = document.getElementById('toastSub');
+
+        if (mode === 'removed') {
+            text.textContent = 'Removed from Calendar';
+            sub.textContent  = name + ' — date has been unmarked.';
+        } else {
+            text.textContent = 'Added to Calendar!';
+            sub.textContent  = name + ' — date is now marked on your calendar.';
+        }
+
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ---------- Calendar Builder ----------
     (function() {
         const eventDates = [
             {% for event in events %}
@@ -100,15 +152,17 @@
             {% endfor %}
         ];
 
-        const now = new Date();
-        const year = now.getFullYear();
+        const savedEvents = getSavedEvents();
+        const savedDates = savedEvents.map(e => e.date);
+
+        const now   = new Date();
+        const year  = now.getFullYear();
         const month = now.getMonth();
         const today = now.getDate();
 
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
+        const firstDay  = new Date(year, month, 1);
+        const lastDay   = new Date(year, month + 1, 0);
 
-        // Monday = 0
         let startDay = firstDay.getDay() - 1;
         if (startDay < 0) startDay = 6;
 
@@ -116,7 +170,6 @@
         const tbody = document.getElementById('calendarBody');
         let html = '<tr>';
 
-        // Empty cells before the 1st
         for (let i = 0; i < startDay; i++) {
             html += '<td></td>';
         }
@@ -124,17 +177,22 @@
         for (let d = 1; d <= totalDays; d++) {
             const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
             let cls = '';
-            if (d === today) cls = 'today';
-            else if (eventDates.includes(dateStr)) cls = 'has-event';
 
-            html += `<td class="${cls}">${d}</td>`;
+            if (savedDates.includes(dateStr)) {
+                cls = 'saved-event';
+            } else if (d === today) {
+                cls = 'today';
+            } else if (eventDates.includes(dateStr)) {
+                cls = 'has-event';
+            }
+
+            html += `<td class="${cls}" data-date="${dateStr}">${d}</td>`;
 
             if ((startDay + d) % 7 === 0 && d < totalDays) {
                 html += '</tr><tr>';
             }
         }
 
-        // Fill remaining cells
         const remaining = (startDay + totalDays) % 7;
         if (remaining > 0) {
             for (let i = remaining; i < 7; i++) {
@@ -145,5 +203,45 @@
         html += '</tr>';
         tbody.innerHTML = html;
     })();
+
+    // ---------- Add to Calendar Button (Toggle) ----------
+    const addBtn = document.getElementById('addToCalBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            const dateStr = this.dataset.eventDate;
+            const name    = this.dataset.eventName;
+
+            if (isEventSaved(dateStr)) {
+                // Remove from calendar
+                removeEvent(dateStr);
+                const cell = document.querySelector(`td[data-date="${dateStr}"]`);
+                if (cell) {
+                    cell.className = '';
+                }
+                this.innerHTML = '<i class="fas fa-calendar-plus"></i> Add to Calendar';
+                this.classList.remove('btn-danger');
+                this.classList.add('btn-outline');
+                showToast(name, 'removed');
+            } else {
+                // Add to calendar
+                saveEvent(dateStr, name);
+                const cell = document.querySelector(`td[data-date="${dateStr}"]`);
+                if (cell) {
+                    cell.className = 'saved-event';
+                }
+                this.innerHTML = '<i class="fas fa-calendar-check"></i> Added!';
+                this.classList.remove('btn-outline');
+                this.classList.add('btn-danger');
+                showToast(name, 'added');
+            }
+        });
+
+        // If already saved, show it on load
+        if (isEventSaved(addBtn.dataset.eventDate)) {
+            addBtn.innerHTML = '<i class="fas fa-calendar-check"></i> Added!';
+            addBtn.classList.remove('btn-outline');
+            addBtn.classList.add('btn-danger');
+        }
+    }
 </script>
 {% endblock %}
