@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
 from datetime import date, timedelta
-from extensions import db
-from models import Activity, ExerciseType, User
+
+from flask import Blueprint, render_template, request
 from sqlalchemy import func
 
+from fitness.extentions import db
+from fitness.models import Activity, ExerciseType, User
 progress = Blueprint('progress', __name__)
 
 
@@ -27,18 +28,14 @@ def build_query(user_id, sport_type):
 
 @progress.route("/progress")
 def progress_page():
-    if "username" not in session:
-        return redirect(url_for('auth.login'))
-
-    user = User.query.filter_by(username=session["username"]).first()
+    user = User.query.first()
     if not user:
-        session.pop("username", None)
-        return redirect(url_for('auth.login'))
+        return "No users found in database."
 
-    user_id       = user.user_id
+    uid = user.user_id
     selected_sport = request.args.get('sport', 'all')
     sport_type     = get_sport_type(selected_sport)
-    query          = build_query(user_id, sport_type)
+    query          = build_query(uid, sport_type)
 
     total_sessions = query.count()
     has_data       = total_sessions > 0
@@ -49,23 +46,23 @@ def progress_page():
 
         total_distance = round(db.session.query(
             func.coalesce(func.sum(Activity.distance_km), 0)
-        ).filter(Activity.user_id == user_id, *sport_filter).scalar() or 0, 1)
+        ).filter(Activity.user_id == uid, *sport_filter).scalar() or 0, 1)
 
         best_pace = db.session.query(func.min(Activity.pace_per_km)).filter(
-            Activity.user_id == user_id,
+            Activity.user_id == uid,
             Activity.pace_per_km > 0,
             *sport_filter
         ).scalar()
 
         longest_run = db.session.query(func.max(Activity.distance_km)).filter(
-            Activity.user_id == user_id, *sport_filter
+            Activity.user_id == uid, *sport_filter
         ).scalar()
         if longest_run:
             longest_run = round(longest_run, 1)
 
         total_calories = db.session.query(
             func.coalesce(func.sum(Activity.calories), 0)
-        ).filter(Activity.user_id == user_id, *sport_filter).scalar() or 0
+        ).filter(Activity.user_id == uid, *sport_filter).scalar() or 0
 
         # different sports use different pace/speed metrics
         if selected_sport == 'Cycling':
@@ -96,7 +93,7 @@ def progress_page():
             sport_data = db.session.query(
                 ExerciseType.name, func.sum(Activity.distance_km)
             ).join(Activity, Activity.exercise_type_id == ExerciseType.exercise_type_id
-            ).filter(Activity.user_id == user_id, Activity.distance_km > 0
+            ).filter(Activity.user_id == uid, Activity.distance_km > 0
             ).group_by(ExerciseType.name).all()
             sport_labels    = [r[0] for r in sport_data]
             sport_distances = [round(r[1], 1) for r in sport_data]
@@ -118,7 +115,7 @@ def progress_page():
         for i in range(7):
             day = monday + timedelta(days=i)
             km  = db.session.query(func.coalesce(func.sum(Activity.distance_km), 0)).filter(
-                Activity.user_id == user_id, Activity.date == day, *sport_filter
+                Activity.user_id == uid, Activity.date == day, *sport_filter
             ).scalar() or 0
             daily_distances.append(round(float(km), 1))
         week_max_km = max(daily_distances) if any(daily_distances) else 1
@@ -126,7 +123,7 @@ def progress_page():
         # count streak
         streak = 0
         all_dates = db.session.query(Activity.date).filter(
-            Activity.user_id == user_id, *sport_filter
+            Activity.user_id == uid, *sport_filter
         ).distinct().order_by(Activity.date.desc()).all()
         if all_dates:
             check = date.today()
