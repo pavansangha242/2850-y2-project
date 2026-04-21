@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}FitTrack — Home{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h1>Welcome back, {{ user.first_name if user else 'Guest' }}!</h1>
+    <p>Here's your fitness overview for today</p>
+</div>
+
+<!-- Today's Summary -->
+<section>
+    <h2 class="section-title">Today's Summary</h2>
+    <div class="grid-3">
+        <!-- Distance Card -->
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--primary);">
+                <i class="fas fa-route"></i>
+            </div>
+            <div class="stat-value" style="color: var(--primary-light);">{{ '%.1f'|format(total_distance) }} km</div>
+            <div class="stat-label">Distance Today</div>
+        </div>
+
+        <!-- Calories Card -->
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--warm);">
+                <i class="fas fa-fire-flame-curved"></i>
+            </div>
+            <div class="stat-value" style="color: var(--warm-light);">{{ total_calories }}</div>
+            <div class="stat-label">Calories Burned</div>
+        </div>
+
+        <!-- Workouts Card -->
+        <div class="card stat-card">
+            <div class="stat-icon" style="color: var(--accent);">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="stat-value" style="color: var(--accent-light);">{{ workouts_this_week }}</div>
+            <div class="stat-label">Workouts This Week</div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section style="margin-top: 2.5rem;">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="grid-3">
+        <a href="#" class="card action-card">
+            <div class="action-icon" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
+                <i class="fas fa-plus"></i>
+            </div>
+            <span class="action-label">Log Workout</span>
+        </a>
+
+        <a href="#" class="card action-card">
+            <div class="action-icon" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <span class="action-label">View Progress</span>
+        </a>
+
+        <a href="{{ url_for('leaderboard.leaderboard_page') }}" class="card action-card">
+            <div class="action-icon" style="background: rgba(255, 179, 71, 0.15); color: var(--amber);">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <span class="action-label">Leaderboard</span>
+        </a>
+
+        <a href="{{ url_for('events.events_page') }}" class="card action-card">
+            <div class="action-icon" style="background: rgba(255, 179, 71, 0.15); color: var(--amber);">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <span class="action-label">Upcoming Events</span>
+        </a>
+    </div>
+</section>
+
+<!-- Recommended Activities -->
+<section style="margin-top: 2.5rem;">
+    <h2 class="section-title">Recommended Activities</h2>
+    <div class="grid-4">
+        <div class="card activity-card">
+            <div class="activity-icon">🏃</div>
+            <span class="activity-name">Running</span>
+        </div>
+
+        <div class="card activity-card">
+            <div class="activity-icon">🚴</div>
+            <span class="activity-name">Cycling</span>
+        </div>
+
+        <div class="card activity-card">
+            <div class="activity-icon">🏊</div>
+            <span class="activity-name">Swimming</span>
+        </div>
+
+        <div class="card activity-card">
+            <div class="activity-icon">🚶</div>
+            <span class="activity-name">Walking</span>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}FitTrack — {{ event.name }} Chat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm" style="margin-bottom: 1rem;">
+        <i class="fas fa-arrow-left"></i> Back to Event
+    </a>
+    <h1><i class="fas fa-comments" style="color: var(--primary);"></i> {{ event.name }} — Group Chat</h1>
+    <p style="color: var(--text-secondary); margin-top: 0.25rem;">
+        <i class="fas fa-calendar"></i> {{ event.date.strftime('%B %d, %Y') }} &middot;
+        <i class="fas fa-map-marker-alt"></i> {{ event.location if event.location else 'TBA' }}
+    </p>
+</div>
+
+<!-- Chat Container -->
+<div class="chat-container">
+    <!-- Chat Messages Area -->
+    <div class="chat-messages" id="chatMessages">
+        {% if messages %}
+            {% for msg in messages %}
+            <div class="chat-bubble {{ 'mine' if msg.user_id == current_user.user_id else 'theirs' }}" data-id="{{ msg.message_id }}">
+                {% if msg.user_id == current_user.user_id %}
+                <button class="chat-delete" onclick="deleteMessage({{ msg.message_id }}, this)" title="Delete message">&times;</button>
+                {% endif %}
+                {% if msg.user_id != current_user.user_id %}
+                <div class="chat-author">{{ msg.author.first_name }}</div>
+                {% endif %}
+                <div class="chat-text">{{ msg.content }}</div>
+                <div class="chat-time">{{ msg.timestamp.strftime('%H:%M') }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="chat-empty" id="chatEmpty">
+                <i class="fas fa-comments" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+                <p>No messages yet. Start the conversation!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Message Input -->
+    <form class="chat-input-bar" action="{{ url_for('events.send_message', competition_id=event.competition_id) }}" method="POST" id="chatForm">
+        <input type="text" name="message" class="chat-input" placeholder="Type a message..." autocomplete="off" required id="chatInput">
+        <button type="submit" class="btn btn-primary chat-send" id="chatSendBtn">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-scroll to the bottom of chat on load
+    const chatBox = document.getElementById('chatMessages');
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Poll for new messages every 3 seconds
+    let lastMessageId = {{ messages[-1].message_id if messages else 0 }};
+
+    function pollMessages() {
+        fetch('{{ url_for("events.get_messages", competition_id=event.competition_id) }}?after=' + lastMessageId)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    // Remove the empty state if present
+                    const empty = document.getElementById('chatEmpty');
+                    if (empty) empty.remove();
+
+                    data.forEach(msg => {
+                        const bubble = document.createElement('div');
+                        bubble.className = 'chat-bubble ' + (msg.is_mine ? 'mine' : 'theirs');
+                        bubble.dataset.id = msg.id;
+
+                        let html = '';
+                        if (msg.is_mine) {
+                            html += '<button class="chat-delete" onclick="deleteMessage(' + msg.id + ', this)" title="Delete message">&times;</button>';
+                        }
+                        if (!msg.is_mine) {
+                            html += '<div class="chat-author">' + msg.author + '</div>';
+                        }
+                        html += '<div class="chat-text">' + msg.content + '</div>';
+                        html += '<div class="chat-time">' + msg.time + '</div>';
+                        bubble.innerHTML = html;
+
+                        chatBox.appendChild(bubble);
+                        lastMessageId = msg.id;
+                    });
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            })
+            .catch(() => {});
+    }
+
+    setInterval(pollMessages, 3000);
+
+    // Send message via AJAX to avoid full page reload
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add the message to the UI immediately (optimistic)
+        const empty = document.getElementById('chatEmpty');
+        if (empty) empty.remove();
+
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble mine pending-msg';
+        bubble.innerHTML = '<div class="chat-text">' + message + '</div><div class="chat-time">sending...</div>';
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        chatInput.value = '';
+
+        // Send to server
+        fetch(this.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'message=' + encodeURIComponent(message)
+        }).then(() => {
+            // Remove the optimistic bubble, then poll for the real one
+            const pending = document.querySelector('.pending-msg');
+            if (pending) pending.remove();
+            setTimeout(pollMessages, 300);
+
+            // Trigger an auto-reply after a short delay (feels natural)
+            const delay = 2000 + Math.random() * 2000;
+            setTimeout(() => {
+                fetch('{{ url_for("events.auto_reply", competition_id=event.competition_id) }}', {
+                    method: 'POST'
+                }).then(() => {
+                    setTimeout(pollMessages, 500);
+                });
+            }, delay);
+        });
+    });
+
+    // Delete message
+    function deleteMessage(msgId, btn) {
+        fetch('/events/chat/delete/' + msgId, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'deleted') {
+                    const bubble = btn.closest('.chat-bubble');
+                    bubble.style.transition = 'opacity 0.3s, transform 0.3s';
+                    bubble.style.opacity = '0';
+                    bubble.style.transform = 'scale(0.8)';
+                    setTimeout(() => bubble.remove(), 300);
+                }
+            });
+    }
+</script>
+{% endblock %}
