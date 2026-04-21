@@ -337,3 +337,73 @@ def get_exercise_type_id(exercise_name):
         return exercise.exercise_type_id
     #not found
     return None
+
+#--------- start if jawaher's part ---------
+class TrainerProfile(db.Model):
+    __tablename__ = 'trainer_profiles'
+
+    trainer_profile_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), unique=True, nullable=False)
+    specialty = db.Column(db.String(100), nullable=False)
+    bio = db.Column(db.Text, default='')
+    average_rating = db.Column(db.Float, default=0)
+    total_reviews = db.Column(db.Integer, default=0)
+
+    def __repr__(self):
+        return f'<TrainerProfile user={self.user_id}>'
+          
+class TrainingClient(db.Model):
+    __tablename__ = 'training_clients'
+
+    trainer_client_id = db.Column(db.Integer, primary_key=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    start_date = db.Column(db.Date, default=date.today)
+    active = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f'<TrainingClient trainer={self.trainer_id} client={self.client_id}>'
+
+
+class TrainerReview(db.Model):
+    __tablename__ = 'trainer_reviews'
+
+    review_id = db.Column(db.Integer, primary_key=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text, default='')
+    date = db.Column(db.Date, default=date.today)
+
+    def __repr__(self):
+        return f'<TrainerReview trainer={self.trainer_id} rating={self.rating}>'
+
+
+class SessionBooking(db.Model):
+    __tablename__ = 'session_bookings'
+
+    booking_id = db.Column(db.Integer, primary_key=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.String(10), nullable=False)
+    status = db.Column(db.String(20), default='pending')
+    notes = db.Column(db.Text, default='')
+
+    def __repr__(self):
+        return f'<SessionBooking {self.booking_id} status={self.status}>'
+
+
+class TrainerMessage(db.Model):
+    __tablename__ = 'trainer_messages'
+    message_id  = db.Column(db.Integer, primary_key=True)
+    sender_id   = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    message     = db.Column(db.Text, nullable=False)
+    sent_at     = db.Column(db.DateTime, default=db.func.now())
+    is_read     = db.Column(db.Boolean, default=False)
+
+    sender   = db.relationship('User', foreign_keys=[sender_id])
+    receiver = db.relationship('User', foreign_keys=[receiver_id])
+
+#--------- end of jawaher part ---------
