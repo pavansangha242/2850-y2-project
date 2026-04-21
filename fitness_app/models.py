@@ -17,6 +17,20 @@ class User(db.Model):
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
     approved = db.Column(db.Boolean, default=True, nullable=False)
 
+    #relationship--Asma
+    training_plan = db.relationship('TrainingPlan', backref='user', uselist=False, lazy=True)
+    activities = db.relationship('Activity', backref='user', lazy=True)
+    goals = db.relationship('UserGoal', backref='user', lazy=True)
+    competition_results = db.relationship('CompetitionResult', backref='user', lazy=True)
+    competition_registrations = db.relationship('CompetitionRegistration', backref='user', lazy=True)
+    gym_workouts = db.relationship('GymWorkout', backref='user', lazy=True)
+    privacy_settings = db.relationship('PrivacySettings', backref='user', uselist=False, lazy=True)
+    trainer_profile = db.relationship('TrainerProfile', backref='user', uselist=False, lazy=True)
+
+    ##asma
+    clients = db.relationship('TrainingClient', foreign_keys='TrainingClient.trainer_id', backref='trainer', lazy=True)
+    trainers = db.relationship('TrainingClient', foreign_keys='TrainingClient.client_id', backref='client', lazy=True)
+
     strava_access_token = db.Column(db.String(200), nullable=True)
     strava_refresh_token = db.Column(db.String(200), nullable=True)
     strava_token_expires_at = db.Column(db.Integer, nullable=True)  # Unix timestamp, expires often on Strava
@@ -43,6 +57,10 @@ class UserGoal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     step_target = db.Column(db.Integer, default=10000)
+    #asma
+    time_exercised_target = db.Column(db.Integer, default=0)
+    goal_type = db.Column(db.String(50), default='')
+    target_date = db.Column(db.Date, nullable=True)
     weekly_exercise_hours = db.Column(db.Integer, default=0)
     workouts_per_week = db.Column(db.Integer, default=0)
     #new fields for Asma's calorie calculations
@@ -123,3 +141,199 @@ class HealthSurvey(db.Model):
 
 
 ###asma  part
+
+class TrainingPlan(db.Model):
+    __tablename__ = 'training_plans'
+
+    plan_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    swims_per_week = db.Column(db.Integer, default=0)
+    weekly_distance = db.Column(db.Float, default=0.0)
+    target_pace = db.Column(db.String(50), default='')
+
+    #relationships
+    planned_workouts = db.relationship('PlannedWorkout', backref='training_plan', lazy=True)
+
+    def __repr__(self):
+        return f'<TrainingPlan {self.name}>'
+
+#planed workouts inside a plan
+class PlannedWorkout(db.Model):
+    __tablename__ = 'planned_workouts'
+
+    planned_workout_id = db.Column(db.Integer, primary_key=True)
+    plan_id = db.Column(db.Integer, db.ForeignKey('training_plans.plan_id'), nullable=False)
+    exercise_type_id = db.Column(db.Integer, db.ForeignKey('exercise_types.exercise_type_id'), nullable=False)
+    planned_date = db.Column(db.Date, nullable=False)
+    target_duration = db.Column(db.Integer, default=0)       #mins
+    target_distance = db.Column(db.Float, default=0.0)       #km
+
+    def __repr__(self):
+        return f'<PlannedWorkout {self.planned_workout_id}>'
+
+#logged workouts
+class Activity(db.Model):
+    __tablename__ = 'activities'
+
+    activity_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    exercise_type_id = db.Column(db.Integer, db.ForeignKey('exercise_types.exercise_type_id'), nullable=False)
+    planned_workout_id = db.Column(db.Integer, db.ForeignKey('planned_workouts.planned_workout_id'), default=None)
+    date = db.Column(db.Date, default=date.today)
+    duration_minutes = db.Column(db.Integer, default=0)
+    distance_km = db.Column(db.Float, default=0.0)
+    steps = db.Column(db.Integer, default=0)
+    laps = db.Column(db.Integer, default=0)
+    stroke_type = db.Column(db.String(50), default='')
+    average_speed_kmh = db.Column(db.Float, default=0.0)
+    pace_per_km = db.Column(db.Float, default=0.0)
+    pace_per_100m = db.Column(db.Float, default=0.0)
+    calories = db.Column(db.Integer, default=0)
+    notes = db.Column(db.Text, default='')
+
+    def __repr__(self):
+        return f'<Activity {self.activity_id} by User {self.user_id}>'
+
+#gym exers w descriptions
+class GymExercise(db.Model):
+    __tablename__ = 'gym_exercises'
+
+    gym_exercise_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    muscle_group = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, default='')
+    video_url = db.Column(db.String(250), default='')
+
+    #relationships
+    assignments = db.relationship('GymAssignment', backref='exercise', lazy=True)
+    workouts = db.relationship('GymWorkout', backref='exercise', lazy=True)
+
+    def __repr__(self):
+        return f'<GymExercise {self.name}>'
+
+
+#exers the trainer has given to client
+class GymAssignment(db.Model):
+    __tablename__ = 'gym_assignments'
+
+    assignment_id = db.Column(db.Integer, primary_key=True)
+    trainer_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    gym_exercise_id = db.Column(db.Integer, db.ForeignKey('gym_exercises.gym_exercise_id'), nullable=False)
+    sets = db.Column(db.Integer, default=0)
+    reps = db.Column(db.Integer, default=0)
+    weight_kg = db.Column(db.Float, default=0.0)
+    notes = db.Column(db.Text, default='')
+    date_assigned = db.Column(db.Date, default=date.today)
+
+    def __repr__(self):
+        return f'<GymAssignment for client={self.client_id}>'
+
+
+#gym workouts the user has done
+class GymWorkout(db.Model):
+    __tablename__ = 'gym_workouts'
+
+    gym_workout_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    gym_exercise_id = db.Column(db.Integer, db.ForeignKey('gym_exercises.gym_exercise_id'), nullable=False)
+    assignment_id = db.Column(db.Integer, db.ForeignKey('gym_assignments.assignment_id'), default=None)
+    date = db.Column(db.Date, default=date.today)
+    sets_completed = db.Column(db.Integer, default=0)
+    reps_completed = db.Column(db.Integer, default=0)
+    weight_kg = db.Column(db.Float, default=0.0)
+    duration_minutes = db.Column(db.Integer, default=0)
+    notes = db.Column(db.Text, default='')
+
+    def __repr__(self):
+        return f'<GymWorkout {self.gym_workout_id} by User {self.user_id}>'
+
+
+#put some default stuff in the db if its empty
+def seed_data():
+
+    #add the exer types if none
+    if ExerciseType.query.count() == 0:
+        exercises = [
+            ExerciseType(name='Walking', description='Walking exercise'),
+            ExerciseType(name='Running', description='Running exercise'),
+            ExerciseType(name='Cycling', description='Cycling exercise'),
+            ExerciseType(name='Swimming', description='Swimming exercise'),
+        ]
+        db.session.add_all(exercises)
+
+    #add gym exers if none
+    if GymExercise.query.count() == 0:
+        gym_exercises = [
+            GymExercise(name='Bench Press', muscle_group='Chest', description='Flat barbell bench press', video_url='https://www.youtube.com/watch?v=sYV-ki-1blM'),
+            GymExercise(name='Incline Dumbbell Press', muscle_group='Chest', description='Incline bench with dumbbells', video_url='https://www.youtube.com/embed/8iPEnn-ltC8'),
+            GymExercise(name='Cable Fly', muscle_group='Chest', description='Cable crossover fly', video_url='https://www.youtube.com/embed/WEM9FCIPlxQ'),
+            GymExercise(name='Lat Pulldown', muscle_group='Back', description='Wide grip lat pulldown', video_url='https://www.youtube.com/embed/CAwf7n6Luuc'),
+            GymExercise(name='Seated Row', muscle_group='Back', description='Cable seated row', video_url='https://www.youtube.com/embed/GZbfZ033f74'),
+            GymExercise(name='Deadlift', muscle_group='Back', description='Conventional barbell deadlift', video_url='https://www.youtube.com/embed/op9kVnSso6Q'),
+            GymExercise(name='Squat', muscle_group='Legs', description='Barbell back squat', video_url='https://www.youtube.com/embed/ultWZbUMPL8'),
+            GymExercise(name='Leg Press', muscle_group='Legs', description='Machine leg press', video_url='https://www.youtube.com/embed/IZxyjW7MPJQ'),
+            GymExercise(name='Leg Curl', muscle_group='Legs', description='Lying leg curl machine', video_url='https://www.youtube.com/embed/1Tq3QdYUuHs'),
+            GymExercise(name='Calf Raise', muscle_group='Legs', description='Standing calf raises', video_url='https://www.youtube.com/embed/-M4-G8p8fmc'),
+            GymExercise(name='Shoulder Press', muscle_group='Shoulders', description='Dumbbell overhead press', video_url='https://www.youtube.com/embed/qEwKCR5JCog'),
+            GymExercise(name='Lateral Raise', muscle_group='Shoulders', description='Dumbbell lateral raises', video_url='https://www.youtube.com/embed/3VcKaXpzqRo'),
+            GymExercise(name='Bicep Curl', muscle_group='Arms', description='Dumbbell bicep curls', video_url='https://www.youtube.com/embed/ykJmrZ5v0Oo'),
+            GymExercise(name='Tricep Pushdown', muscle_group='Arms', description='Cable tricep pushdown', video_url='https://www.youtube.com/embed/2-LAMcpzODU'),
+            GymExercise(name='Plank', muscle_group='Core', description='Front plank hold', video_url='https://www.youtube.com/embed/ASdvN_XEl_c'),
+            GymExercise(name='Cable Crunch', muscle_group='Core', description='Kneeling cable crunch', video_url='https://www.youtube.com/embed/AV5PmSFYMhI'),
+        ]
+        db.session.add_all(gym_exercises)
+
+    #make a test user if no users yet
+    if User.query.count() == 0:
+        test_user = User(
+            username='asma123',
+            first_name='asma',
+            last_name='amshat',
+            email='asmaamshat123@gmail.com',
+            password='',
+            role='customer',
+            weight=70.0,
+            join_date=date.today(),
+        )
+        #hash the pw
+        test_user.set_password('password123')
+        db.session.add(test_user)
+
+    db.session.commit()
+
+
+#test user id
+def get_current_user_id():
+    return 1
+
+
+#get user weight from db
+def get_user_weight(user_id):
+    user = User.query.get(user_id)
+    if user and user.weight:
+        return user.weight
+    #no weight stored
+    return None
+
+
+#find user by id
+def get_user_by_id(user_id):
+    return User.query.get(user_id)
+
+
+#find user by username
+def get_user_by_username(username):
+    return User.query.filter_by(username=username).first()
+
+
+#get the id of an exer type by name
+def get_exercise_type_id(exercise_name):
+    exercise = ExerciseType.query.filter_by(name=exercise_name).first()
+    if exercise:
+        return exercise.exercise_type_id
+    #not found
+    return None
