@@ -407,3 +407,61 @@ class TrainerMessage(db.Model):
     receiver = db.relationship('User', foreign_keys=[receiver_id])
 
 #--------- end of jawaher part ---------
+
+# mohamed db model
+
+class Competition(db.Model):
+    """Competitions / events users can participate in."""
+    __tablename__ = 'competitions'
+
+    competition_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    location = db.Column(db.String(200), default='')
+    date = db.Column(db.Date, nullable=False)
+    distance = db.Column(db.Float, default=0.0)  # km
+
+    # Relationships
+    results = db.relationship('CompetitionResult', backref='competition', lazy=True)
+
+    @property
+    def days_remaining(self):
+        delta = self.date - date.today()
+        return max(delta.days, 0)
+
+    def __repr__(self):
+        return f'<Competition {self.name}>'
+
+
+class CompetitionResult(db.Model):
+    """Results for a user in a competition (1-to-many from Competition and User)."""
+    __tablename__ = 'competition_results'
+
+    result_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    competition_id = db.Column(db.Integer, db.ForeignKey('competitions.competition_id'), nullable=False)
+    finish_time = db.Column(db.String(50), default='')
+    position = db.Column(db.Integer, default=0)
+    personal_best = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f'<CompetitionResult user={self.user_id} comp={self.competition_id}>'
+
+
+class ChatMessage(db.Model):
+    """Group chat messages linked to a specific competition/event."""
+    __tablename__ = 'chat_messages'
+
+    message_id = db.Column(db.Integer, primary_key=True)
+    competition_id = db.Column(db.Integer, db.ForeignKey('competitions.competition_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    author = db.relationship('User', backref=db.backref('chat_messages', cascade='all, delete-orphan'), lazy=True)
+    event = db.relationship('Competition', backref=db.backref('chat_messages', cascade='all, delete-orphan'), lazy=True)
+
+    def __repr__(self):
+        return f'<ChatMessage {self.message_id} by User {self.user_id}>'
+
+# end of mohamed db model
