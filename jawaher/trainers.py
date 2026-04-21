@@ -1,266 +1,260 @@
-# trainers.py
-# personal trainers page logic
 
-from flask import render_template, request, redirect, url_for, flash
-from datetime import date
-from database import get_db, get_current_user_id
+from datetime import date, datetime
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+
+from fitness.extentions import db
+from fitness.models import User, TrainerProfile, SessionBooking, TrainerMessage
+
+trainers = Blueprint('trainers', __name__)
 
 
-# add demo trainers if the table is empty
-
-def seed_trainers(db):
-    """Insert demo trainer users + profiles if none exist yet."""
-    c = db.cursor()
-    c.execute("SELECT COUNT(*) as n FROM Trainer_Profile")
-    if c.fetchone()['n'] > 0:
-        return  
+# add 4 demo trainers if there are none yet
+def seed_trainers():
+    if TrainerProfile.query.count() > 0:
+        return
 
     demo = [
-        ('john_smith',  'John',  'Smith', 'john@fittrack.com',  'Strength training coach',
-         'Expert in powerlifting and muscle building. 8+ years coaching experience.',
-         ['Strength & conditioning', 'Powerlifting', 'Muscle building', 'Nutrition planning'], 4.8),
-        ('sarah_lee',   'Sarah', 'Lee',   'sarah@fittrack.com', 'Cardio specialist',
-         'Cardio and endurance specialist. 6+ years coaching experience. Weight loss and endurance plans. Flexible online booking.',
-         ['Cardio fitness', 'Weight loss', 'Endurance training', 'Online coaching'], 4.6),
-        ('ahmed_ali',   'Ahmed', 'Ali',   'ahmed@fittrack.com', 'Cycling coach',
-         'Professional cycling coach with race experience. Road, mountain and indoor cycling.',
-         ['Road cycling', 'Mountain biking', 'Indoor training', 'Race preparation'], 5.0),
-        ('emily_chen',  'Emily', 'Chen',  'emily@fittrack.com', 'Swimming trainer',
-         'Competitive swimmer turned coach. Technique-focused approach for all levels.',
-         ['Swim technique', 'Open water', 'Triathlon prep', 'All levels welcome'], 4.5),
+        ('john_smith', 'John', 'Smith', 'john@fittrack.com', 'Strength training coach',
+         '8+ years coaching experience.|||Strength & conditioning|||Powerlifting|||Muscle building|||Nutrition planning', 4.8),
+        ('sarah_lee', 'Sarah', 'Lee', 'sarah@fittrack.com', 'Cardio specialist',
+         '6+ years coaching experience.|||Cardio fitness|||Weight loss|||Endurance training|||Online coaching', 4.6),
+        ('ahmed_ali', 'Ahmed', 'Ali', 'ahmed@fittrack.com', 'Cycling coach',
+         'Professional cycling coach.|||Road cycling|||Mountain biking|||Indoor training|||Race preparation', 5.0),
+        ('emily_chen', 'Emily', 'Chen', 'emily@fittrack.com', 'Swimming trainer',
+         'Competitive swimmer turned coach.|||Swim technique|||Open water|||Triathlon prep|||All levels welcome', 4.5),
     ]
 
-    for username, first, last, email, specialty, bio, features, rating in demo:
-        # create user with trainer role
-        c.execute('''
-            INSERT OR IGNORE INTO User
-            (username, first_name, last_name, email, password, role, approved, join_date)
-            VALUES (?, ?, ?, ?, 'trainerpass', 'trainer', 1, ?)
-        ''', (username, first, last, email, date.today().isoformat()))
+    for username, first, last, email, specialty, bio, rating in demo:
+        existing = User.query.filter_by(username=username).first()
 
-        user_row = c.execute("SELECT id FROM User WHERE username = ?", (username,)).fetchone()
-        if not user_row:
-            continue
-        uid = user_row['id']
+        if not existing:
+            u = User(
+                username=username,
+                first_name=first,
+                last_name=last,
+                email=email,
+                role='pt',
+                approved=True,
+                join_date=date.today()
+            )
+            u.set_password('trainerpass')
+            db.session.add(u)
+            db.session.flush()
+            uid = u.user_id
+        else:
+            uid = existing.user_id
 
-        c.execute('''
-            INSERT OR IGNORE INTO Trainer_Profile
-            (user_id, specialty, bio, average_rating, total_reviews)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (uid, specialty, bio, rating, 0))
+        if not TrainerProfile.query.filter_by(user_id=uid).first():
+            tp = TrainerProfile(
+                user_id=uid,
+                specialty=specialty,
+                bio=bio,
+                average_rating=rating,
+                total_reviews=0
+            )
+            db.session.add(tp)
 
-        # store features in the bio field using a separator
-        full_bio = bio + '|||' + '|||'.join(features)
-        c.execute("UPDATE Trainer_Profile SET bio = ? WHERE user_id = ?", (full_bio, uid))
-
-    db.commit()
-
-
-# helpers 
-
-def parse_trainer(row):
-    """Convert a db row into a dict with bio and features separated."""
-    d = dict(row)
-    parts = (d.get('bio') or '').split('|||')
-    d['bio_text']  = parts[0] if parts else ''
-    d['features']  = parts[1:] if len(parts) > 1 else []
-    d['full_name'] = f"{d['first_name']} {d['last_name']}"
-    return d
+    db.session.commit()
 
 
-def ensure_message_table(db):
-    db.execute('''
-        CREATE TABLE IF NOT EXISTS Trainer_Message (
-            message_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-            sender_id    INTEGER NOT NULL,
-            receiver_id  INTEGER NOT NULL,
-            message      TEXT NOT NULL,
-            sent_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-            is_read      INTEGER NOT NULL DEFAULT 0,
-            FOREIGN KEY (sender_id)   REFERENCES User(id),
-            FOREIGN KEY (receiver_id) REFERENCES User(id)
-        )
-    ''')
-    db.commit()
+# turn trainer data into one dictionary for thr template
+def parse_trainer(user, profile):
+    parts = (profile.bio or '').split('|||')
+    return {
+        'id': user.user_id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'full_name': f'{user.first_name} {user.last_name}',
+        'specialty': profile.specialty,
+        'bio_text': parts[0] if parts else '',
+        'features': parts[1:] if len(parts) > 1 else [],
+        'average_rating': profile.average_rating,
+    }
 
 
-# main page 
+@trainers.route('/trainers')
+def trainers_page():
+    user = User.query.first()
+    if not user:
+        return "No users found in database."
 
-def show_trainers_page():
-    db      = get_db()
-    user_id = get_current_user_id()
-    ensure_message_table(db)
-    seed_trainers(db)
+    uid = user.user_id
+    seed_trainers()
 
-    # filter params
-    search   = request.args.get('q', '').strip().lower()
-    filter_  = request.args.get('filter', '')          
-    selected = request.args.get('trainer_id', type=int) 
+    search = request.args.get('q', '').strip().lower()
+    filter_ = request.args.get('filter', '')
+    selected = request.args.get('trainer_id', type=int)
 
-    # fetch all approved trainers with their profile
-    trainers_raw = db.execute('''
-        SELECT u.id, u.first_name, u.last_name,
-               tp.specialty, tp.bio, tp.average_rating, tp.trainer_profile_id
-        FROM User u
-        JOIN Trainer_Profile tp ON u.id = tp.user_id
-        WHERE u.role = 'trainer' AND u.approved = 1
-        ORDER BY tp.average_rating DESC
-    ''').fetchall()
+    # get all approved trainers and sort the, by rating
+    trainers_raw = db.session.query(
+        User, TrainerProfile
+    ).join(
+        TrainerProfile, User.user_id == TrainerProfile.user_id
+    ).filter(
+        User.role == 'pt',
+        User.approved == True
+    ).order_by(
+        TrainerProfile.average_rating.desc()
+    ).all()
 
-    trainers = [parse_trainer(r) for r in trainers_raw]
+    trainer_list = [parse_trainer(u, tp) for u, tp in trainers_raw]
 
-    # apply search filter
     if search:
-        trainers = [t for t in trainers if
-                    search in t['full_name'].lower() or
-                    search in t['specialty'].lower() or
-                    search in t['bio_text'].lower()]
+        trainer_list = [
+            t for t in trainer_list
+            if search in t['full_name'].lower() or search in t['specialty'].lower()
+        ]
 
-    # apply quick filter buttons
     if filter_ == 'top_rated':
-        trainers = [t for t in trainers if t['average_rating'] >= 4.7]
+        trainer_list = [t for t in trainer_list if t['average_rating'] >= 4.7]
     elif filter_ == 'strength':
-        trainers = [t for t in trainers if 'strength' in t['specialty'].lower() or
-                    any('strength' in f.lower() for f in t['features'])]
+        trainer_list = [
+            t for t in trainer_list
+            if 'strength' in t['specialty'].lower()
+            or any('strength' in f.lower() for f in t['features'])
+        ]
     elif filter_ == 'weight_loss':
-        trainers = [t for t in trainers if 'weight' in t['bio_text'].lower() or
-                    any('weight' in f.lower() for f in t['features'])]
+        trainer_list = [
+            t for t in trainer_list
+            if any('weight' in f.lower() for f in t['features'])
+        ]
 
-    # selected trainer profile for the right panel
+    # choose which trainer profile to show
     profile_trainer = None
     if selected:
-        p = db.execute('''
-            SELECT u.id, u.first_name, u.last_name,
-                   tp.specialty, tp.bio, tp.average_rating, tp.trainer_profile_id
-            FROM User u
-            JOIN Trainer_Profile tp ON u.id = tp.user_id
-            WHERE u.id = ?
-        ''', (selected,)).fetchone()
-        if p:
-            profile_trainer = parse_trainer(p)
-    elif trainers:
-        # default show first trainer's profile
-        profile_trainer = trainers[0]
+        row = db.session.query(
+            User, TrainerProfile
+        ).join(
+            TrainerProfile, User.user_id == TrainerProfile.user_id
+        ).filter(
+            User.user_id == selected
+        ).first()
 
-    # messages between current user and selected trainer
+        if row:
+            profile_trainer = parse_trainer(*row)
+
+    elif trainer_list:
+        profile_trainer = trainer_list[0]
+
     messages = []
+    booking = None
+
     if profile_trainer:
         tid = profile_trainer['id']
-        messages = db.execute('''
-            SELECT m.*, u.first_name, u.last_name
-            FROM Trainer_Message m
-            JOIN User u ON u.id = m.sender_id
-            WHERE (m.sender_id = ? AND m.receiver_id = ?)
-               OR (m.sender_id = ? AND m.receiver_id = ?)
-            ORDER BY m.sent_at ASC
-        ''', (user_id, tid, tid, user_id)).fetchall()
 
-    # unread message count for nav badge
-    unread = db.execute('''
-        SELECT COUNT(*) as n FROM Trainer_Message
-        WHERE receiver_id = ? AND is_read = 0
-    ''', (user_id,)).fetchone()['n']
+        # get chat between the user and PT
+        messages = TrainerMessage.query.filter(
+            db.or_(
+                db.and_(TrainerMessage.sender_id == uid, TrainerMessage.receiver_id == tid),
+                db.and_(TrainerMessage.sender_id == tid, TrainerMessage.receiver_id == uid)
+            )
+        ).order_by(TrainerMessage.sent_at.asc()).all()
 
-    # existing booking for this trainer
-    booking = None
-    if profile_trainer:
-        booking = db.execute('''
-            SELECT * FROM Session_Booking
-            WHERE client_id = ? AND trainer_id = ? AND status != 'cancelled'
-            ORDER BY date DESC LIMIT 1
-        ''', (user_id, profile_trainer['id'])).fetchone()
+        # get the lastest booking thats not cancelled
+        booking = SessionBooking.query.filter(
+            SessionBooking.client_id == uid,
+            SessionBooking.trainer_id == tid,
+            SessionBooking.status != 'cancelled'
+        ).order_by(SessionBooking.date.desc()).first()
 
-    db.close()
+    # count the unread messages for this user
+    unread = TrainerMessage.query.filter_by(receiver_id=uid, is_read=False).count()
 
     return render_template(
         'trainers.html',
-        trainers=trainers,
+        trainers=trainer_list,
         profile_trainer=profile_trainer,
         messages=messages,
         unread=unread,
         booking=booking,
         search=search,
         active_filter=filter_,
-        current_user_id=user_id,
+        current_user_id=uid,
     )
 
-# book session 
 
+@trainers.route('/trainers/book', methods=['POST'])
 def book_session():
-    db         = get_db()
-    user_id    = get_current_user_id()
+    user = User.query.first()
+    if not user:
+        return "No users found in database."
+
+    uid = user.user_id
     trainer_id = request.form.get('trainer_id', type=int)
-    book_date  = request.form.get('book_date')
-    book_time  = request.form.get('book_time')
-    notes      = request.form.get('notes', '')
+    book_date = request.form.get('book_date')
+    book_time = request.form.get('book_time')
+    notes = request.form.get('notes', '')
 
     if not trainer_id or not book_date or not book_time:
-        flash('Please fill in date and time to book a session.', 'error')
-        return redirect(url_for('trainers') + f'?trainer_id={trainer_id}')
+        flash('Please fill in date and time.', 'error')
+        return redirect(url_for('trainers.trainers_page') + f'?trainer_id={trainer_id}')
 
-    # check for existing pending/confirmed booking
-    existing = db.execute('''
-        SELECT * FROM Session_Booking
-        WHERE client_id = ? AND trainer_id = ? AND date = ? AND status != 'cancelled'
-    ''', (user_id, trainer_id, book_date)).fetchone()
+    parsed_date = datetime.strptime(book_date, '%Y-%m-%d').date()
+
+    # check for an existing booking on the same date
+    existing = SessionBooking.query.filter_by(
+        client_id=uid,
+        trainer_id=trainer_id,
+        date=parsed_date
+    ).filter(
+        SessionBooking.status != 'cancelled'
+    ).first()
 
     if existing:
-        flash('You already have a booking with this trainer on that date.', 'error')
+        flash('You already have a booking on that date.', 'error')
     else:
-        db.execute('''
-            INSERT INTO Session_Booking (trainer_id, client_id, date, time, status, notes)
-            VALUES (?, ?, ?, ?, 'pending', ?)
-        ''', (trainer_id, user_id, book_date, book_time, notes))
-        db.commit()
+        b = SessionBooking(
+            trainer_id=trainer_id,
+            client_id=uid,
+            date=parsed_date,
+            time=book_time,
+            status='pending',
+            notes=notes
+        )
+        db.session.add(b)
+        db.session.commit()
         flash('Session booked! Your trainer will confirm shortly.', 'success')
 
-    db.close()
-    return redirect(url_for('trainers') + f'?trainer_id={trainer_id}')
+    return redirect(url_for('trainers.trainers_page') + f'?trainer_id={trainer_id}')
 
 
-# send message
-
+@trainers.route('/trainers/message', methods=['POST'])
 def send_message():
-    db          = get_db()
-    ensure_message_table(db)
-    user_id     = get_current_user_id()
-    trainer_id  = request.form.get('trainer_id', type=int)
+    user = User.query.first()
+    if not user:
+        return "No users found in database."
+
+    uid = user.user_id
+    trainer_id = request.form.get('trainer_id', type=int)
     message_txt = request.form.get('message', '').strip()
 
     if not trainer_id or not message_txt:
         flash('Message cannot be empty.', 'error')
-        return redirect(url_for('trainers') + f'?trainer_id={trainer_id}')
+        return redirect(url_for('trainers.trainers_page') + f'?trainer_id={trainer_id}')
 
-    db.execute('''
-        INSERT INTO Trainer_Message (sender_id, receiver_id, message)
-        VALUES (?, ?, ?)
-    ''', (user_id, trainer_id, message_txt))
-    db.commit()
-    db.close()
+    # save the new message
+    msg = TrainerMessage(
+        sender_id=uid,
+        receiver_id=trainer_id,
+        message=message_txt
+    )
+    db.session.add(msg)
+    db.session.commit()
 
-    # stay on the same trainer profile after sending
-    return redirect(url_for('trainers') + f'?trainer_id={trainer_id}')
+    return redirect(url_for('trainers.trainers_page') + f'?trainer_id={trainer_id}')
 
 
-# cancel booking 
-
+@trainers.route('/trainers/cancel/<int:booking_id>', methods=['POST'])
 def cancel_booking(booking_id):
-    db = get_db()
-    booking = db.execute(
-        'SELECT * FROM Session_Booking WHERE booking_id = ?', (booking_id,)
-    ).fetchone()
+    b = SessionBooking.query.get(booking_id)
 
-    if booking:
-        trainer_id = booking['trainer_id']
-        db.execute(
-            "UPDATE Session_Booking SET status = 'cancelled' WHERE booking_id = ?",
-            (booking_id,)
-        )
-        db.commit()
+    if b:
+        trainer_id = b.trainer_id
+        b.status = 'cancelled'
+        db.session.commit()
         flash('Booking cancelled.', 'success')
-        db.close()
-        return redirect(url_for('trainers') + f'?trainer_id={trainer_id}')
+        return redirect(url_for('trainers.trainers_page') + f'?trainer_id={trainer_id}')
 
-    db.close()
     flash('Booking not found.', 'error')
-    return redirect(url_for('trainers'))
+    return redirect(url_for('trainers.trainers_page'))
