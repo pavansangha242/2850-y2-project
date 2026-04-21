@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Swimming - FitTrack{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Swimming</h1>
+        <p>Set your swimming goals, log your workouts, and track your progress</p>
+    </div>
+
+    <div class="main-content">
+        <div class="grid-2x2">
+
+            <!--log a swim-->
+            <div class="card">
+                <h2>Log a swim</h2>
+                <form action="{{ url_for('swimming.log_swim') }}" method="POST">
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distance">Distance (km):</label>
+                        <input type="number" id="distance" name="distance" step="0.01" placeholder="e.g. 1.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes):</label>
+                        <input type="number" id="duration" name="duration" placeholder="e.g. 30">
+                    </div>
+                    <div class="form-group">
+                        <label for="laps">Laps:</label>
+                        <input type="number" id="laps" name="laps" placeholder="e.g. 20">
+                    </div>
+                    <div class="form-group">
+                        <label for="stroke_type">Stroke type:</label>
+                        <select id="stroke_type" name="stroke_type">
+                            <option value="">-- Select --</option>
+                            <option value="Front Crawl">Front Crawl</option>
+                            <option value="Backstroke">Backstroke</option>
+                            <option value="Breaststroke">Breaststroke</option>
+                            <option value="Butterfly">Butterfly</option>
+                            <option value="Mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div class="calorie-note">
+                        &#128293; Calories are auto-calculated from your profile weight using the MET formula
+                    </div>
+                    <div class="form-group">
+                        <label for="calories">Calories (leave blank to auto-calculate):</label>
+                        <input type="number" id="calories" name="calories" placeholder="auto-calculated">
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes:</label>
+                        <textarea id="notes" name="notes" placeholder="How did it go?"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Log Workout</button>
+                </form>
+                <p class="text-muted">Pace per 100m will be calculated automatically.</p>
+            </div>
+
+            <!--goal progress-->
+            <div class="card">
+                <h2>Goal progress</h2>
+                <p class="progress-text">
+                    You have completed <strong>{{ swims_this_week }}</strong> out of
+                    <strong>{{ workouts_target }}</strong> swims this week.
+                </p>
+                {% set progress_pct = (swims_this_week / workouts_target * 100) if workouts_target > 0 else 0 %}
+                {% if progress_pct > 100 %}{% set progress_pct = 100 %}{% endif %}
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: {{ progress_pct }}%;"></div>
+                </div>
+                <div class="distance-breakdown">
+                    <h3>Swims per distance:</h3>
+                    <div class="distance-row"><span>500m</span><span>{{ swims_500m }}</span></div>
+                    <div class="distance-row"><span>1km</span><span>{{ swims_1km }}</span></div>
+                    <div class="distance-row"><span>2km</span><span>{{ swims_2km }}</span></div>
+                    <div class="distance-row"><span>5km+</span><span>{{ swims_5km }}</span></div>
+                </div>
+                {% if swimming_goal %}
+                <div class="info-box-blue">
+                    <p>
+                        <strong>Current goal:</strong> {{ swimming_goal.goal_type }}
+                        {% if swimming_goal.target_date %} by {{ swimming_goal.target_date }}{% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!--training plan-->
+            <div class="card">
+                <h2>Enter your training plan</h2>
+                {% if training_plan %}
+                <div class="info-box-green">
+                    <p class="label" style="margin-bottom:4px;">Current plan:</p>
+                    <p class="value">Swims per week: {{ training_plan.swims_per_week or 'Not set' }}</p>
+                    <p class="value">Weekly distance: {{ training_plan.weekly_distance or 'Not set' }} km</p>
+                    <p class="value">Target pace: {{ training_plan.target_pace or 'Not set' }}</p>
+                </div>
+                {% endif %}
+                <form action="{{ url_for('swimming.create_swimming_plan') }}" method="POST">
+                    <div class="form-group">
+                        <label for="swims_per_week">Amount of swims per week:</label>
+                        <input type="number" id="swims_per_week" name="swims_per_week" placeholder="e.g. 4">
+                    </div>
+                    <div class="form-group">
+                        <label for="weekly_distance">Distance to swim this week (km):</label>
+                        <input type="number" id="weekly_distance" name="weekly_distance" step="0.1" placeholder="e.g. 3.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="target_pace">Desired pace per 100m:</label>
+                        <input type="text" id="target_pace" name="target_pace" placeholder="e.g. 2:00 min/100m">
+                    </div>
+                    <button type="submit" class="btn">Save Plan</button>
+                </form>
+            </div>
+
+            <!--goals-->
+            <div class="card">
+                <h2>Enter your goals</h2>
+                <form action="{{ url_for('swimming.set_swimming_goal') }}" method="POST">
+                    <div class="form-group">
+                        <label>What are you training for:</label>
+                        <div class="goal-options">
+                            <input type="radio" name="goal_type" value="500m" id="goal_500m" class="goal-option">
+                            <label for="goal_500m" class="goal-label">500m</label>
+
+                            <input type="radio" name="goal_type" value="1km" id="goal_1km" class="goal-option">
+                            <label for="goal_1km" class="goal-label">1km</label>
+
+                            <input type="radio" name="goal_type" value="2km" id="goal_2km" class="goal-option">
+                            <label for="goal_2km" class="goal-label">2km</label>
+
+                            <input type="radio" name="goal_type" value="Open water" id="goal_open" class="goal-option">
+                            <label for="goal_open" class="goal-label">Open water</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="workouts_per_week">Swims per week:</label>
+                        <input type="number" id="workouts_per_week" name="workouts_per_week" placeholder="e.g. 4">
+                    </div>
+                    <div class="form-group">
+                        <label for="target_date">When do you want to achieve it?</label>
+                        <input type="date" id="target_date" name="target_date">
+                    </div>
+                    <button type="submit" class="btn">Set Goal</button>
+                </form>
+            </div>
+
+        </div>
+
+        <!--stats-->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Total laps this week</div>
+                <div class="stat-value">{{ total_laps_week }}</div>
+                <div class="stat-sub">laps</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Swimming streak</div>
+                <div class="stat-value">{{ streak }}</div>
+                <div class="stat-sub">days</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pace progress</div>
+                <div class="stat-value {% if pace_progress > 0 %}positive{% elif pace_progress < 0 %}negative{% endif %}">
+                    {% if pace_progress > 0 %}&#8593;{% elif pace_progress < 0 %}&#8595;{% endif %}
+                    {{ pace_progress }}%
+                </div>
+                <div class="stat-sub">from last week</div>
+            </div>
+        </div>
+
+        <!--swims table-->
+        <div class="recent-activity card">
+            <h2>Recent swims</h2>
+            {% if activities %}
+            <table class="activity-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Distance</th>
+                        <th>Duration</th>
+                        <th>Laps</th>
+                        <th>Stroke</th>
+                        <th>Pace/100m</th>
+                        <th>Calories</th>
+                        <th>Notes</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                    <tr>
+                        <td>{{ activity.date }}</td>
+                        <td>{{ activity.distance_km or '-' }} km</td>
+                        <td>{{ activity.duration_minutes or '-' }} min</td>
+                        <td>{{ activity.laps or '-' }}</td>
+                        <td>{{ activity.stroke_type or '-' }}</td>
+                        <td>{% if activity.pace_per_100m %}{{ "%.1f"|format(activity.pace_per_100m) }}s{% else %}-{% endif %}</td>
+                        <td>{{ activity.calories or '-' }}</td>
+                        <td>{{ activity.notes or '-' }}</td>
+                        <td>
+                            <form action="{{ url_for('swimming.delete_swim', activity_id=activity.activity_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">No swims logged yet. Log your first swim above!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!--set date to today-->
+    <script>
+        document.getElementById('date').valueAsDate = new Date();
+    </script>
+{% endblock %}
