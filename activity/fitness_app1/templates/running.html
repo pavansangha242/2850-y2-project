@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Running - FitTrack{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Running</h1>
+        <p>Set your running goals, log your runs, and track your pace</p>
+    </div>
+
+    <div class="main-content">
+        <div class="grid-2x2">
+
+            <!--log a run-->
+            <div class="card">
+                <h2>Log a run</h2>
+                <form action="{{ url_for('running.log_run') }}" method="POST">
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distance">Distance (km):</label>
+                        <input type="number" id="distance" name="distance" step="0.01" placeholder="e.g. 5.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes):</label>
+                        <input type="number" id="duration" name="duration" placeholder="e.g. 25">
+                    </div>
+                    <div class="calorie-note">
+                        &#128293; Calories are auto-calculated from your profile weight using the MET formula
+                    </div>
+                    <div class="form-group">
+                        <label for="calories">Calories (leave blank to auto-calculate):</label>
+                        <input type="number" id="calories" name="calories" placeholder="auto-calculated">
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes:</label>
+                        <textarea id="notes" name="notes" placeholder="How did it go?"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Log Workout</button>
+                </form>
+                <p class="text-muted">Pace per km will be calculated automatically.</p>
+            </div>
+
+            <!--goal progress-->
+            <div class="card">
+                <h2>Goal progress</h2>
+                <p class="progress-text">
+                    You have completed <strong>{{ runs_this_week }}</strong> out of
+                    <strong>{{ workouts_target }}</strong> runs this week.
+                </p>
+                {% set progress_pct = (runs_this_week / workouts_target * 100) if workouts_target > 0 else 0 %}
+                {% if progress_pct > 100 %}{% set progress_pct = 100 %}{% endif %}
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: {{ progress_pct }}%;"></div>
+                </div>
+                <div class="distance-breakdown">
+                    <h3>Runs per distance:</h3>
+                    <div class="distance-row"><span>5k</span><span>{{ runs_5k }}</span></div>
+                    <div class="distance-row"><span>10k</span><span>{{ runs_10k }}</span></div>
+                    <div class="distance-row"><span>Half marathon</span><span>{{ runs_half }}</span></div>
+                    <div class="distance-row"><span>Marathon+</span><span>{{ runs_marathon }}</span></div>
+                </div>
+                {% if running_goal %}
+                <div class="info-box-blue">
+                    <p>
+                        <strong>Current goal:</strong> {{ running_goal.goal_type }}
+                        {% if running_goal.target_date %} by {{ running_goal.target_date }}{% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!--training plan-->
+            <div class="card">
+                <h2>Enter your training plan</h2>
+                {% if training_plan %}
+                <div class="info-box-green">
+                    <p class="label" style="margin-bottom:4px;">Current plan:</p>
+                    <p class="value">Runs per week: {{ training_plan.swims_per_week or 'Not set' }}</p>
+                    <p class="value">Weekly distance: {{ training_plan.weekly_distance or 'Not set' }} km</p>
+                    <p class="value">Target pace: {{ training_plan.target_pace or 'Not set' }}</p>
+                </div>
+                {% endif %}
+                <form action="{{ url_for('running.create_running_plan') }}" method="POST">
+                    <div class="form-group">
+                        <label for="runs_per_week">Amount of runs per week:</label>
+                        <input type="number" id="runs_per_week" name="runs_per_week" placeholder="e.g. 4">
+                    </div>
+                    <div class="form-group">
+                        <label for="weekly_distance">Distance to run this week (km):</label>
+                        <input type="number" id="weekly_distance" name="weekly_distance" step="0.1" placeholder="e.g. 20.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="target_pace">Desired pace per km:</label>
+                        <input type="text" id="target_pace" name="target_pace" placeholder="e.g. 5:30 min/km">
+                    </div>
+                    <button type="submit" class="btn">Save Plan</button>
+                </form>
+            </div>
+
+            <!--goals-->
+            <div class="card">
+                <h2>Enter your goals</h2>
+                <form action="{{ url_for('running.set_running_goal') }}" method="POST">
+                    <div class="form-group">
+                        <label>What are you training for:</label>
+                        <div class="goal-options">
+                            <input type="radio" name="goal_type" value="5k" id="goal_5k" class="goal-option">
+                            <label for="goal_5k" class="goal-label">5k</label>
+
+                            <input type="radio" name="goal_type" value="10k" id="goal_10k" class="goal-option">
+                            <label for="goal_10k" class="goal-label">10k</label>
+
+                            <input type="radio" name="goal_type" value="Half marathon" id="goal_half" class="goal-option">
+                            <label for="goal_half" class="goal-label">Half marathon</label>
+
+                            <input type="radio" name="goal_type" value="Marathon" id="goal_marathon" class="goal-option">
+                            <label for="goal_marathon" class="goal-label">Marathon</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="workouts_per_week">Runs per week:</label>
+                        <input type="number" id="workouts_per_week" name="workouts_per_week" placeholder="e.g. 4">
+                    </div>
+                    <div class="form-group">
+                        <label for="target_date">When do you want to achieve it?</label>
+                        <input type="date" id="target_date" name="target_date">
+                    </div>
+                    <button type="submit" class="btn">Set Goal</button>
+                </form>
+            </div>
+
+        </div>
+
+        <!--stats-->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Total km this week</div>
+                <div class="stat-value">{{ total_km_week }}</div>
+                <div class="stat-sub">km</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Running streak</div>
+                <div class="stat-value">{{ streak }}</div>
+                <div class="stat-sub">days</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pace progress</div>
+                <div class="stat-value {% if pace_progress > 0 %}positive{% elif pace_progress < 0 %}negative{% endif %}">
+                    {% if pace_progress > 0 %}&#8593;{% elif pace_progress < 0 %}&#8595;{% endif %}
+                    {{ pace_progress }}%
+                </div>
+                <div class="stat-sub">from last week</div>
+            </div>
+        </div>
+
+        <!--recent runs table-->
+        <div class="recent-activity card">
+            <h2>Recent runs</h2>
+            {% if activities %}
+            <table class="activity-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Distance</th>
+                        <th>Duration</th>
+                        <th>Pace/km</th>
+                        <th>Calories</th>
+                        <th>Notes</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                    <tr>
+                        <td>{{ activity.date }}</td>
+                        <td>{{ activity.distance_km or '-' }} km</td>
+                        <td>{{ activity.duration_minutes or '-' }} min</td>
+                        <td>
+                            {% if activity.pace_per_km %}
+                                {% set mins = (activity.pace_per_km // 60)|int %}
+                                {% set secs = (activity.pace_per_km % 60)|int %}
+                                {{ mins }}:{{ "%02d"|format(secs) }} /km
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ activity.calories or '-' }}</td>
+                        <td>{{ activity.notes or '-' }}</td>
+                        <td>
+                            <form action="{{ url_for('running.delete_run', activity_id=activity.activity_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">No runs logged yet. Log your first run above!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!--set date to today-->
+    <script>
+        document.getElementById('date').valueAsDate = new Date();
+    </script>
+{% endblock %}
