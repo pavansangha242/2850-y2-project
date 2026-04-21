@@ -119,4 +119,7 @@ class HealthSurvey(db.Model):
     motivation_level = db.Column(db.Integer, nullable=True)           
     additional_notes = db.Column(db.Text, nullable=True) 
 
-# End of Pavan db model             
+# End of Pavan db model   
+
+
+###asma  part
