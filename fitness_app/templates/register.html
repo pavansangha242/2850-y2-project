@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="container">
+    <h1>Welcome to the register page</h1>
+    <!-- seemed too cramped between lines  -->
+    <h3 style="margin-top: 2px;">Please enter your details below to register</h3>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <!-- disables browser's built-in popups so JS errors show instead since they don't always show  -->
+    <form action="{{ url_for('auth.register') }}" method="POST" novalidate>
+
+        <div class="card mb-2">
+            <h3>Account details</h3>
+
+            <!-- ids added so JS can read and validate the value -->
+            <h3 style="margin-top: 8px;"> </h3>
+
+            <input type="text" name="first_name" id="first_name" placeholder="First Name" class="input-field" />
+            <p id="first-name-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter your first name.</p>
+ 
+            <input type="text" name="last_name" id="last_name" placeholder="Last Name" class="input-field" />
+            <p id="last-name-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter your last name.</p>
+            
+            <input type="email" name="email" id="email" placeholder="Email" class="input-field" />
+            <p id="email-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a valid email address (must contain @).</p>
+
+            <input type="text" name="username" id="username" placeholder="Username" class="input-field" />
+            <p id="username-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a username.</p>
+
+            <input type="password" name="password" id="password" placeholder="Password (min. 8 characters)" class="input-field" />
+            <p id="password-length-error" style="color:red; display:none; margin: 4px 0 8px;">Password must be at least 8 characters.</p>
+
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" class="input-field" />
+            <p id="password-match-error" style="color:red; display:none; margin: 4px 0 8px;">Passwords do not match.</p>
+
+            <input type="tel" name="phone" id="phone" placeholder="Phone Number" class="input-field" />
+            <p id="phone-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a phone number.</p>
+
+            <select name="role" id="role-select" class="input-field" onchange="toggleFields()">
+                <option value="" disabled selected>Select Account Type</option>
+                <option value="customer">Customer</option>
+                <option value="pt">PT (Personal Trainer)</option>
+                <option value="administrator">Administrator</option>
+            </select>
+            <p id="role-error" style="color:red; display:none; margin: 4px 0 8px;">Please select an account type.</p>
+        </div>
+
+        <div id="extra-fields">
+            <div class="card mb-2">
+                <h3>Activity Goals</h3>
+                <label>Daily Step Target</label>
+                <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
+                
+                <label>Weekly Exercise Hours</label>
+                <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
+                
+                <label>Workouts per Week</label>
+                <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
+
+                <label>Age</label>
+                <input type="number" name="age" placeholder="e.g. 18" class="input-field" required min="0" />
+
+                <label>Weight</label>
+                <input type="number" name="weight" placeholder="please enter in kg" class="input-field" required min="0" />
+
+                <label>Height</label>
+                <input type="number" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
+
+                <select name="sex" id="sex-select" class="input-field" required onchange="toggleFields()">
+                    <option value="" disabled selected>Select your sex, this is only used to calculate calories burnt</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
+
+                <hr class="mb-2">
+
+                <h3>Privacy & Permissions</h3>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
+                        <input type="checkbox" name="share_with_pt"> 
+                        Allow PT to see my health and profile data
+                    </label>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
+                        <input type="checkbox" name="allow_meetings"> 
+                        Allow PTs to request meetings with me
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="pt-fields" class="card mb-2" style="display: none;">
+            <h3>Professional Profile</h3>
+            <label>About You / Bio</label>
+            <textarea name="bio" placeholder="Tell us about your experience..." class="input-field" style="height: 120px; resize: vertical;"></textarea>
+        </div>
+            
+        <input type="submit" value="Register" class="btn-login" />
+        <div class="text-center mt-2">
+            <a href="/">Already have an account? Login</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// --- Roles select ---
+function toggleFields() {
+    const roleSelect = document.getElementById('role-select');
+    if (!roleSelect) return;
+
+    const role = roleSelect.value;
+    const extraFields = document.getElementById('extra-fields');
+    const ptFields = document.getElementById('pt-fields');
+    
+    if (role === 'pt') {
+        extraFields.style.display = 'none';
+        ptFields.style.display = 'block';
+    } else if (role === 'administrator') {
+        extraFields.style.display = 'none';
+        ptFields.style.display = 'none';
+    } else {
+        extraFields.style.display = 'block';
+        ptFields.style.display = 'none';
+    }
+
+    const customerInputs = extraFields.querySelectorAll('input');
+    customerInputs.forEach(input => {
+        input.disabled = (extraFields.style.display === 'none');
+    });
+
+    const ptInputs = ptFields.querySelectorAll('textarea, input');
+    ptInputs.forEach(input => {
+        input.disabled = (ptFields.style.display === 'none');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', toggleFields);
+
+// --- Form validation on submit ---
+// the browser won't show its own popups, red error messages below each field show instead. (novalidate)
+document.querySelector('form').addEventListener('submit', function(e) {
+    let valid = true;
+
+    // Helper: show or hide an error paragraph
+    function err(id, show) {
+        document.getElementById(id).style.display = show ? 'block' : 'none';
+        if (show) valid = false;
+    }
+
+    // Email: must contain @ and a dot after it
+    const email = document.getElementById('email').value.trim();
+    err('email-error', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+
+    // Username: must not be empty
+    err('username-error', document.getElementById('username').value.trim() === '');
+
+    // Password: must be 8+ characters
+    const pw = document.getElementById('password').value;
+    err('password-length-error', pw.length < 8);
+
+    // Confirm password: must match password
+    err('password-match-error', pw !== document.getElementById('confirm_password').value);
+
+    // Phone: must not be empty
+    err('phone-error', document.getElementById('phone').value.trim() === '');
+
+    // Role: must be selected
+    err('role-error', document.getElementById('role-select').value === '');
+
+    if (!valid) e.preventDefault(); // block form submission if any error
+});
+
+// Live: hide match error as soon as passwords match while typing
+document.getElementById('confirm_password').addEventListener('input', function() {
+    if (this.value === document.getElementById('password').value) {
+        document.getElementById('password-match-error').style.display = 'none';
+    }
+});
+
+// Live: hide length error once password reaches 8 characters
+document.getElementById('password').addEventListener('input', function() {
+    if (this.value.length >= 8) {
+        document.getElementById('password-length-error').style.display = 'none';
+    }
+});
+</script>
+
+{% endblock %}

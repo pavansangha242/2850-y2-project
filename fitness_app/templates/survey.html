@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container" style="max-width: 700px; margin: 40px auto;">
+
+    <h1>Health & Lifestyle Survey</h1>
+    <h3 style="margin-top: 16px;">Help your PT understand you better by filling in the details below.</h3>
+    <p style="color: #888; margin-bottom: 24px;">
+        Your answers are only visible to PTs if you have enabled data sharing in your 
+        <a href="{{ url_for('auth.user_settings') }}">account settings</a>.
+    </p>
+
+    {% if success %}
+        <p style="color: green; font-weight: bold;">Survey saved successfully!</p>
+    {% endif %}
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form action="{{ url_for('auth.survey') }}" method="POST">
+
+        <!-- ACTIVITY -->
+        <div class="card mb-2">
+            <h3>Activity</h3>
+
+            <label>How many hours can you workout per day?</label>
+            <input type="number" name="workout_hours_per_day" class="input-field"
+                   placeholder="e.g. 1.5" step="0.5" min="0" max="24"
+                   value="{{ survey.workout_hours_per_day if survey else '' }}" />
+
+            <label>How many days per week do you exercise?</label>
+            <input type="number" name="workout_days_per_week" class="input-field"
+                   placeholder="e.g. 3" min="0" max="7"
+                   value="{{ survey.workout_days_per_week if survey else '' }}" />
+
+            <label>Preferred workout type</label>
+            <select name="preferred_workout_type" class="input-field">
+                <option value="" disabled {% if not survey or not survey.preferred_workout_type %}selected{% endif %}>Select one</option>
+                {% for opt in ['Cardio', 'Weights', 'Yoga', 'Mixed', 'Sports', 'Other'] %}
+                    <option value="{{ opt }}" {% if survey and survey.preferred_workout_type == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Fitness level</label>
+            <select name="fitness_level" class="input-field">
+                <option value="" disabled {% if not survey or not survey.fitness_level %}selected{% endif %}>Select one</option>
+                {% for opt in ['Beginner', 'Intermediate', 'Advanced'] %}
+                    <option value="{{ opt }}" {% if survey and survey.fitness_level == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- HABITS -->
+        <div class="card mb-2">
+            <h3>Daily Habits</h3>
+
+            <label>Average hours of sleep per night</label>
+            <input type="number" name="sleep_hours" class="input-field"
+                   placeholder="e.g. 7.5" step="0.5" min="0" max="24"
+                   value="{{ survey.sleep_hours if survey else '' }}" />
+
+            <label>Litres of water per day</label>
+            <input type="number" name="water_litres" class="input-field"
+                   placeholder="e.g. 2.0" step="0.5" min="0"
+                   value="{{ survey.water_litres if survey else '' }}" />
+
+            <label>Do you smoke?</label>
+            <select name="smokes" class="input-field">
+                <option value="" disabled {% if survey and survey.smokes is none %}selected{% endif %}>Select one</option>
+                <option value="true"  {% if survey and survey.smokes == True  %}selected{% endif %}>Yes</option>
+                <option value="false" {% if survey and survey.smokes == False %}selected{% endif %}>No</option>
+            </select>
+
+            <label>How often do you drink alcohol?</label>
+            <select name="alcohol_frequency" class="input-field">
+                <option value="" disabled {% if not survey or not survey.alcohol_frequency %}selected{% endif %}>Select one</option>
+                {% for opt in ['Never', 'Occasionally', 'Weekly', 'Daily'] %}
+                    <option value="{{ opt }}" {% if survey and survey.alcohol_frequency == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- DIET -->
+        <div class="card mb-2">
+            <h3>Diet</h3>
+
+            <label>Diet type</label>
+            <select name="diet_type" class="input-field">
+                <option value="" disabled {% if not survey or not survey.diet_type %}selected{% endif %}>Select one</option>
+                {% for opt in ['Omnivore', 'Vegetarian', 'Vegan', 'Keto', 'Halal', 'Other'] %}
+                    <option value="{{ opt }}" {% if survey and survey.diet_type == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+
+            <label>How many meals do you eat per day?</label>
+            <input type="number" name="meals_per_day" class="input-field"
+                   placeholder="e.g. 3" min="1" max="10"
+                   value="{{ survey.meals_per_day if survey else '' }}" />
+        </div>
+
+        <!-- HEALTH -->
+        <div class="card mb-2">
+            <h3>Health</h3>
+
+            <label>Do you have any injuries?</label>
+            <select name="has_injuries" id="has_injuries" class="input-field" onchange="toggleInjuries()">
+                <option value="" disabled {% if survey and survey.has_injuries is none %}selected{% endif %}>Select one</option>
+                <option value="true"  {% if survey and survey.has_injuries == True  %}selected{% endif %}>Yes</option>
+                <option value="false" {% if survey and survey.has_injuries == False %}selected{% endif %}>No</option>
+            </select>
+
+            <div id="injury-details-box">
+                <label>Please describe your injuries</label>
+                <textarea name="injury_details" class="input-field" style="height: 80px; resize: vertical;"
+                          placeholder="e.g. knee injury from 2022...">{{ survey.injury_details if survey and survey.injury_details else '' }}</textarea>
+            </div>
+
+            <label>Any relevant medical conditions? (leave blank if none)</label>
+            <textarea name="medical_conditions" class="input-field" style="height: 80px; resize: vertical;"
+                      placeholder="e.g. asthma, diabetes...">{{ survey.medical_conditions if survey and survey.medical_conditions else '' }}</textarea>
+        </div>
+
+        <!-- GOALS -->
+        <div class="card mb-2 goals-card">
+            <h3>Goals & Motivation</h3>
+
+            <label>Primary fitness goal</label>
+            <select name="fitness_goal" class="input-field">
+                <option value="" disabled {% if not survey or not survey.fitness_goal %}selected{% endif %}>Select one</option>
+                {% for opt in ['Lose weight', 'Build muscle', 'Improve fitness', 'Maintain', 'Other'] %}
+                    <option value="{{ opt }}" {% if survey and survey.fitness_goal == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Motivation level (1 = low, 10 = very high)</label>
+            <input type="number" name="motivation_level" class="input-field"
+                   placeholder="e.g. 7" min="1" max="10"
+                   value="{{ survey.motivation_level if survey else '' }}" />
+
+            <label>Anything else you want your PT to know?</label>
+            <textarea name="additional_notes" class="input-field"; style="resize: vertical;"
+                      placeholder="Any other information that might help your PT...">{{ survey.additional_notes if survey and survey.additional_notes else '' }}</textarea>
+        </div>
+
+        <input type="submit" value="Save Survey" class="btn-login" />
+        <div class="text-center mt-2">
+            <a href="{{ url_for('auth.user_settings') }}">← Back to Account Settings</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Show/hide injury details box based on yes/no selection
+function toggleInjuries() {
+    const val = document.getElementById('has_injuries').value;
+    document.getElementById('injury-details-box').style.display = (val === 'true') ? 'block' : 'none';
+}
+
+</script>
+
+{% endblock %}
