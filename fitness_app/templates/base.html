@@ -19,6 +19,12 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Help Button on the pages -->
+    <a href="https://forms.gle/TDJYuLFeEpr5Eumb9" target="_blank" class="floating-help" title="Need Help?">
+        ?
+    </a>
+    <!-- Wrapped so login and register page don't have navigation bar -->
+    {% if show_nav is not defined or show_nav != false %}
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -49,19 +55,37 @@
                 <li><a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
                     <i class="fas fa-shield-alt"></i> Admin
                 </a></li>
+                {% if g.get('nav_role') == 'customer' %}
+                <li>
+                    <a href="{{ url_for('auth.survey') }}"
+                    class="{% if request.endpoint == 'auth.survey' %}active{% endif %}">
+                        <i class="fas fa-clipboard-list"></i> Survey
+                    </a>
+                </li>
+                {% elif g.get('nav_role') == 'pt' %}
+                <li>
+                    <a href="{{ url_for('auth.pt_clients') }}"
+                    class="{% if request.endpoint in ['auth.pt_clients', 'auth.pt_view_survey'] %}active{% endif %}">
+                        <i class="fas fa-users"></i> My Clients
+                    </a>
+                </li>
+                {% endif %}
             </ul>
-
+            
+            {% if session.get('username') %}
             <div class="nav-profile">
-                <a href="#" class="profile-icon">
+                <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
                     <i class="fas fa-user-circle"></i>
                 </a>
             </div>
+            {% endif %}
 
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
     </nav>
+    {% endif %}
 
     <!-- Main Content -->
     <main class="main-content">
