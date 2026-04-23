@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}History - FitTrack{% endblock %}
+
+{% block content %}
+
+    <div class="page-hero">
+        <h1>Workout History</h1>
+        <p>Review, filter and manage all your logged sessions</p>
+    </div>
+
+    <div class="history-layout">
+
+        <!-- sidebar -->
+        <aside>
+            <div class="history-sidebar">
+                <h3>Workout History</h3>
+                <button class="sidebar-btn {% if active_sport == 'all' %}active{% endif %}" onclick="location.href='/history'">Overview</button>
+                <button class="sidebar-btn {% if active_sport == 'Running' %}active{% endif %}" onclick="location.href='/history?sport=Running'">Running</button>
+                <button class="sidebar-btn {% if active_sport == 'Walking' %}active{% endif %}" onclick="location.href='/history?sport=Walking'">Walking</button>
+                <button class="sidebar-btn {% if active_sport == 'Cycling' %}active{% endif %}" onclick="location.href='/history?sport=Cycling'">Cycling</button>
+                <button class="sidebar-btn {% if active_sport == 'Swimming' %}active{% endif %}" onclick="location.href='/history?sport=Swimming'">Swimming</button>
+            </div>
+
+            <!-- summary stats -->
+            <div style="margin-top:16px;" class="summary-cards">
+                <div class="summary-stat">
+                    <div class="ss-value">
+                        {% if best_pace_shown %}
+                            {% set mins = (best_pace_shown // 60)|int %}
+                            {% set secs = (best_pace_shown % 60)|int %}
+                            {{ mins }}:{{ "%02d"|format(secs) }}/km
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                    <div class="ss-label">Best Pace</div>
+                </div>
+
+                <div class="summary-stat">
+                    <div class="ss-value">
+                        {{ longest_shown or '—' }}{% if longest_shown %} km{% endif %}
+                    </div>
+                    <div class="ss-label">Longest</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- sessions panel -->
+        <div class="sessions-panel">
+            <div class="sessions-header">
+                <h2>Recent Sessions</h2>
+            </div>
+
+            <!-- filter bar -->
+            <div class="filter-bar">
+                <div class="date-picker-wrap">
+                    <input
+                        class="filter-input"
+                        type="text"
+                        id="filterDate"
+                        placeholder="Filter by date"
+                        readonly
+                        onclick="toggleCalendar()"
+                    />
+                    <span class="cal-icon" onclick="toggleCalendar()">📅</span>
+
+                    <div class="mini-calendar" id="miniCalendar">
+                        <div class="cal-header">
+                            <button class="cal-nav" onclick="changeMonth(-1)">&#8249;</button>
+                            <span id="calMonthYear"></span>
+                            <button class="cal-nav" onclick="changeMonth(1)">&#8250;</button>
+                        </div>
+
+                        <div class="cal-weekdays">
+                            <span>Mo</span>
+                            <span>Tu</span>
+                            <span>We</span>
+                            <span>Th</span>
+                            <span>Fr</span>
+                            <span>Sa</span>
+                            <span>Su</span>
+                        </div>
+
+                        <div class="cal-days" id="calDays"></div>
+                        <button class="cal-clear" onclick="clearDate()">Clear</button>
+                    </div>
+                </div>
+
+                <div class="filter-bar-row">
+                    <input
+                        class="filter-input"
+                        type="text"
+                        id="filterDuration"
+                        placeholder="Filter by duration"
+                        onkeyup="filterSessions()"
+                    />
+                    <input
+                        class="filter-input"
+                        type="text"
+                        id="filterDistance"
+                        placeholder="Filter by distance"
+                        onkeyup="filterSessions()"
+                    />
+                    <button class="filter-btn" onclick="filterSessions()">Filter</button>
+                </div>
+            </div>
+
+            <!-- session list -->
+            <div id="sessionList">
+                {% if activities %}
+                    {% for act in activities %}
+                        {% set sport_name = act['sport_name'] | lower %}
+                        <div
+                            class="session-card"
+                            data-date="{{ act['date'] }}"
+                            data-duration="{{ act['duration_minutes'] or '' }}"
+                            data-distance="{{ act['distance_km'] or '' }}"
+                        >
+                            <div class="session-row">
+                                <div class="session-field">
+                                    <div class="sf-label">Date</div>
+                                    <div class="sf-value">{{ act['date'] }}</div>
+                                </div>
+
+                                <div class="session-field">
+                                    <div class="sf-label">Distance</div>
+                                    <div class="sf-value">
+                                        {{ act['distance_km'] or '—' }}{% if act['distance_km'] %} km{% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="session-field">
+                                    <div class="sf-label">Time</div>
+                                    <div class="sf-value">
+                                        {{ act['duration_minutes'] or '—' }}{% if act['duration_minutes'] %} min{% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="session-field">
+                                    <div class="sf-label">Avg Pace</div>
+                                    <div class="sf-value">
+                                        {% if act['pace_per_km'] %}
+                                            {% set mins = (act['pace_per_km'] // 60)|int %}
+                                            {% set secs = (act['pace_per_km'] % 60)|int %}
+                                            {{ mins }}:{{ "%02d"|format(secs) }} /km
+                                        {% elif act['average_speed_kmh'] %}
+                                            {{ act['average_speed_kmh'] }} km/h
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="session-meta">
+                                <span class="sport-badge {{ sport_name }}">{{ act['sport_name'] }}</span>
+
+                                {% if act['notes'] %}
+                                    <span class="session-notes">{{ act['notes'] }}</span>
+                                {% endif %}
+
+                                {% if act['calories'] %}
+                                    <span class="session-notes">🔥 {{ act['calories'] }} kcal</span>
+                                {% endif %}
+
+                                <a
+                                    class="delete-btn"
+                                    href="{{ url_for('history_delete', activity_id=act['activity_id']) }}"
+                                    onclick="return confirm('Delete this session?')"
+                                >
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state-card">
+                        <span>📋</span>
+                        No sessions logged yet. Head to a sport page to log your first workout!
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- pagination -->
+            {% if total_pages > 1 %}
+                <div class="pagination">
+                    {% for p in range(1, total_pages + 1) %}
+                        <button
+                            class="page-btn {% if p == current_page %}active{% endif %}"
+                            onclick="location.href='/history?sport={{ active_sport }}&page={{ p }}'"
+                        >
+                            {{ p }}
+                        </button>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // calendar logic
+    let calDate = new Date();
+    let selectedDate = null;
+
+    function renderCalendar() {
+        const year = calDate.getFullYear();
+        const month = calDate.getMonth();
+        const today = new Date();
+
+        document.getElementById('calMonthYear').textContent =
+            calDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const startOffset = (firstDay + 6) % 7;
+
+        const grid = document.getElementById('calDays');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < startOffset; i++) {
+            const blank = document.createElement('div');
+            blank.className = 'cal-day empty';
+            grid.appendChild(blank);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cell = document.createElement('div');
+            cell.className = 'cal-day';
+            cell.textContent = day;
+
+            const cellDate = new Date(year, month, day);
+
+            if (cellDate.toDateString() === today.toDateString()) {
+                cell.classList.add('today');
+            }
+
+            if (selectedDate && cellDate.toDateString() === selectedDate.toDateString()) {
+                cell.classList.add('selected');
+            }
+
+            cell.onclick = () => selectDay(year, month, day);
+            grid.appendChild(cell);
+        }
+    }
+
+    function selectDay(year, month, day) {
+        selectedDate = new Date(year, month, day);
+        document.getElementById('filterDate').value =
+            `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        renderCalendar();
+        toggleCalendar();
+        filterSessions();
+    }
+
+    function changeMonth(dir) {
+        calDate.setMonth(calDate.getMonth() + dir);
+        renderCalendar();
+    }
+
+    function clearDate() {
+        selectedDate = null;
+        document.getElementById('filterDate').value = '';
+        renderCalendar();
+        toggleCalendar();
+        filterSessions();
+    }
+
+    function toggleCalendar() {
+        const cal = document.getElementById('miniCalendar');
+        if (cal.classList.toggle('open')) {
+            renderCalendar();
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const wrap = document.querySelector('.date-picker-wrap');
+        if (wrap && !wrap.contains(e.target)) {
+            document.getElementById('miniCalendar').classList.remove('open');
+        }
+    });
+
+    // filter logic
+    function filterSessions() {
+        const date = document.getElementById('filterDate').value.toLowerCase();
+        const duration = document.getElementById('filterDuration').value.toLowerCase();
+        const distance = document.getElementById('filterDistance').value.toLowerCase();
+
+        document.querySelectorAll('.session-card').forEach(card => {
+            const match =
+                (!date || (card.dataset.date || '').toLowerCase().includes(date)) &&
+                (!duration || (card.dataset.duration || '').toLowerCase().includes(duration)) &&
+                (!distance || (card.dataset.distance || '').toLowerCase().includes(distance));
+
+            card.style.display = match ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}
