@@ -11,7 +11,7 @@ def create_app():
     #config stuff
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, '..', 'fitness.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, '..', 'fitness_app.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     #start extensions
@@ -25,12 +25,12 @@ def create_app():
     from fitness_app.routes.gym import gym_bp
 
     # register all the blueprints
-    from fitness.routes.auth import auth
-    from fitness.routes.progress import progress
-    from fitness.routes.history import history
-    from fitness.routes.sport_stats import sport_stats
-    from fitness.routes.trainers import trainers
-    from fitness.routes.messages import messages_bp
+    from fitness_app.routes.auth import auth
+    from fitness_app.routes.progress import progress
+    from fitness_app.routes.history import history
+    from fitness_app.routes.sport_stats import sport_stats
+    from fitness_app.routes.trainers import trainers
+    from fitness_app.routes.messages import messages_bp
 
     #register all
     app.register_blueprint(main_bp)

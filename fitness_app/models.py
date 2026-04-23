@@ -23,8 +23,6 @@ class User(db.Model):
     training_plan = db.relationship('TrainingPlan', backref='user', uselist=False, lazy=True)
     activities = db.relationship('Activity', backref='user', lazy=True)
     goals = db.relationship('UserGoal', backref='user', lazy=True)
-    competition_results = db.relationship('CompetitionResult', backref='user', lazy=True)
-    competition_registrations = db.relationship('CompetitionRegistration', backref='user', lazy=True)
     gym_workouts = db.relationship('GymWorkout', backref='user', lazy=True)
     trainer_profile = db.relationship('TrainerProfile', backref='user', uselist=False, lazy=True)
 
