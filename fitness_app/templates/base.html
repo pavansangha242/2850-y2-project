@@ -55,7 +55,6 @@
                 <li><a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
                     <i class="fas fa-shield-alt"></i> Admin
                 </a></li>
-<<<<<<< HEAD
                 {% if g.get('nav_role') == 'customer' %}
                 <li>
                     <a href="{{ url_for('auth.survey') }}"
@@ -74,31 +73,6 @@
             </ul>
             
             {% if session.get('username') %}
-=======
-                
-                <li>
-                <span class="dropdown-trigger {% if request.path in ['/swimming', '/cycling', '/running', '/walking', '/gym'] %}active{% endif %}">&#127941; Exercises &#9662;</span>
-                <ul class="dropdown-menu">
-                    <li><a href="/swimming" {% if request.path == '/swimming' %}class="active"{% endif %}>&#127946; Swimming</a></li>
-                    <li><a href="/cycling" {% if request.path == '/cycling' %}class="active"{% endif %}>&#128690; Cycling</a></li>
-                    <li><a href="/running" {% if request.path == '/running' %}class="active"{% endif %}>&#127939; Running</a></li>
-                    <li><a href="/walking" {% if request.path == '/walking' %}class="active"{% endif %}>&#128694; Walking</a></li>
-                    <li><a href="/gym" {% if request.path == '/gym' %}class="active"{% endif %}>&#127947; Gym</a></li>
-                </ul>
-
-            </ul>
-
-                <!--flash messages-->
-            <div class="flash-messages">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="flash-message">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-            </div>
->>>>>>> a1b5fdb (save local changes)
             <div class="nav-profile">
                 <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
                     <i class="fas fa-user-circle"></i>

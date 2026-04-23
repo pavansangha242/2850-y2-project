@@ -5,7 +5,7 @@ calendar file downloads (.ics), user registration,
 and group chat for upcoming competitions.
 """
 from flask import Blueprint, render_template, redirect, url_for, make_response, flash, request, jsonify, session
-from fitness_app.extentions import db
+from fitness_app.extensions import db
 from fitness_app.models import Competition, CompetitionResult, User, ChatMessage
 from datetime import date, datetime, timedelta
 import random

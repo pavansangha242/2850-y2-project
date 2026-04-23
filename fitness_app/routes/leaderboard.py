@@ -5,7 +5,7 @@ current week, along with total calories and distance.
 Supports filtering by time period (week, month, all time).
 """
 from flask import Blueprint, render_template, request, session, redirect, url_for
-from fitness_app.extentions import db
+from fitness_app.extensions import db
 from fitness_app.models import User, Activity
 from datetime import date, timedelta
 from sqlalchemy import func

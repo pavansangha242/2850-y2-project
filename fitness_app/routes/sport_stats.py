@@ -3,8 +3,8 @@ from datetime import date, timedelta
 from flask import Blueprint, render_template, abort
 from sqlalchemy import func
 
-from fitness.extensions import db
-from fitness.models import Activity, ExerciseType, User
+from fitness_app.extensions import db
+from fitness_app.models import Activity, ExerciseType, User
 
 sport_stats = Blueprint('sport_stats', __name__)
 

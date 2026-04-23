@@ -3,8 +3,8 @@ from datetime import date, datetime
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 
-from fitness.extensions import db
-from fitness.models import User, TrainerProfile, SessionBooking, TrainerMessage
+from fitness_app.extensions import db
+from fitness_app.models import User, TrainerProfile, SessionBooking, TrainerMessage
 
 trainers = Blueprint('trainers', __name__)
 

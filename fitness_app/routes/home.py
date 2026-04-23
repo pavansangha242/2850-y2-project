@@ -5,7 +5,7 @@ statistics (calories, distance), weekly workout count,
 quick actions, and recommended activities.
 """
 from flask import Blueprint, render_template, session, redirect, url_for
-from fitness_app.extentions import db
+from fitness_app.extensions import db
 from fitness_app.models import User, Activity, ExerciseType
 from datetime import date, timedelta
 

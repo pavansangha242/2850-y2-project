@@ -4,7 +4,7 @@ Handles user management (search, delete), personal trainer
 approval/rejection, and platform statistics display.
 """
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
-from fitness_app.extentions import db
+from fitness_app.extensions import db
 from fitness_app.models import User
 
 admin_bp = Blueprint('admin', __name__)
