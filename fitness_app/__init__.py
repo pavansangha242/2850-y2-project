@@ -1,7 +1,7 @@
 import os
 from flask import Flask
-from fitness_app.extentions import db
-from fitness_app.module import seed_data
+from fitness_app.extensions import db
+from fitness_app.modele import seed_data
 
 
 #set up the flask app
