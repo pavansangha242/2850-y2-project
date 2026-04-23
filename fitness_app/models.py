@@ -279,48 +279,6 @@ class GymWorkout(db.Model):
     def __repr__(self):
         return f'<GymWorkout {self.gym_workout_id} by User {self.user_id}>'
 
-
-<<<<<<< HEAD
-=======
-#put some default stuff in the db if its empty
-def seed_data():
-
-    #add the exer types if none
-    if ExerciseType.query.count() == 0:
-        exercises = [
-            ExerciseType(name='Walking', description='Walking exercise'),
-            ExerciseType(name='Running', description='Running exercise'),
-            ExerciseType(name='Cycling', description='Cycling exercise'),
-            ExerciseType(name='Swimming', description='Swimming exercise'),
-        ]
-        db.session.add_all(exercises)
-
-    #add gym exers if none
-    if GymExercise.query.count() == 0:
-        gym_exercises = [
-            GymExercise(name='Bench Press', muscle_group='Chest', description='Flat barbell bench press', video_url='https://www.youtube.com/watch?v=sYV-ki-1blM'),
-            GymExercise(name='Incline Dumbbell Press', muscle_group='Chest', description='Incline bench with dumbbells', video_url='https://www.youtube.com/embed/8iPEnn-ltC8'),
-            GymExercise(name='Cable Fly', muscle_group='Chest', description='Cable crossover fly', video_url='https://www.youtube.com/embed/WEM9FCIPlxQ'),
-            GymExercise(name='Lat Pulldown', muscle_group='Back', description='Wide grip lat pulldown', video_url='https://www.youtube.com/embed/CAwf7n6Luuc'),
-            GymExercise(name='Seated Row', muscle_group='Back', description='Cable seated row', video_url='https://www.youtube.com/embed/GZbfZ033f74'),
-            GymExercise(name='Deadlift', muscle_group='Back', description='Conventional barbell deadlift', video_url='https://www.youtube.com/embed/op9kVnSso6Q'),
-            GymExercise(name='Squat', muscle_group='Legs', description='Barbell back squat', video_url='https://www.youtube.com/embed/ultWZbUMPL8'),
-            GymExercise(name='Leg Press', muscle_group='Legs', description='Machine leg press', video_url='https://www.youtube.com/embed/IZxyjW7MPJQ'),
-            GymExercise(name='Leg Curl', muscle_group='Legs', description='Lying leg curl machine', video_url='https://www.youtube.com/embed/1Tq3QdYUuHs'),
-            GymExercise(name='Calf Raise', muscle_group='Legs', description='Standing calf raises', video_url='https://www.youtube.com/embed/-M4-G8p8fmc'),
-            GymExercise(name='Shoulder Press', muscle_group='Shoulders', description='Dumbbell overhead press', video_url='https://www.youtube.com/embed/qEwKCR5JCog'),
-            GymExercise(name='Lateral Raise', muscle_group='Shoulders', description='Dumbbell lateral raises', video_url='https://www.youtube.com/embed/3VcKaXpzqRo'),
-            GymExercise(name='Bicep Curl', muscle_group='Arms', description='Dumbbell bicep curls', video_url='https://www.youtube.com/embed/ykJmrZ5v0Oo'),
-            GymExercise(name='Tricep Pushdown', muscle_group='Arms', description='Cable tricep pushdown', video_url='https://www.youtube.com/embed/2-LAMcpzODU'),
-            GymExercise(name='Plank', muscle_group='Core', description='Front plank hold', video_url='https://www.youtube.com/embed/ASdvN_XEl_c'),
-            GymExercise(name='Cable Crunch', muscle_group='Core', description='Kneeling cable crunch', video_url='https://www.youtube.com/embed/AV5PmSFYMhI'),
-        ]
-        db.session.add_all(gym_exercises)
-
-    db.session.commit()
-
->>>>>>> a1b5fdb (save local changes)
-
 #test user id
 def get_current_user_id():
     return 1
