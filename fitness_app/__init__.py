@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from fitness_app.extensions import db
-from fitness_app.modele import seed_data
+
 
 
 #set up the flask app
@@ -18,7 +18,6 @@ def create_app():
     db.init_app(app)
 
     #bring in all the blueprints
-    from fitness_app.routes.main import main_bp
     from fitness_app.routes.swimming import swimming_bp
     from fitness_app.routes.cycling import cycling_bp
     from fitness_app.routes.running import running_bp

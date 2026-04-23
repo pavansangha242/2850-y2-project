@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import date
 from fitness_app.extensions import db
 
 # Start of Pavan db model
@@ -69,20 +70,6 @@ class UserGoal(db.Model):
     height_cm = db.Column(db.Float, nullable=True)
     sex = db.Column(db.String(20), nullable=True)
 
-#list of exer types
-class ExerciseType(db.Model):
-    __tablename__ = 'exercise_types'
-
-    exercise_type_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(250), default='')
-
-    #relationships
-    activities = db.relationship('Activity', backref='exercise_type', lazy=True)
-    planned_workouts = db.relationship('PlannedWorkout', backref='exercise_type', lazy=True)
-
-    def __repr__(self):
-        return f'<ExerciseType {self.name}>'
 
 class PrivacySettings(db.Model):
     __tablename__ = 'privacy_settings'

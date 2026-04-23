@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from sqlalchemy import func
 
 from fitness_app.extensions import db
-from fitness_app.modele import ( Activity, TrainingPlan, UserGoal, get_current_user_id,
+from fitness_app.models import ( Activity, TrainingPlan, UserGoal, get_current_user_id,
     get_exercise_type_id, get_user_weight )
 
 running_bp = Blueprint('running', __name__)
