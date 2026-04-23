@@ -4,7 +4,7 @@ Handles the main dashboard view with today's summary
 statistics (calories, distance), weekly workout count,
 quick actions, and recommended activities.
 """
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect, url_for
 from fitness_app.extentions import db
 from fitness_app.models import User, Activity, ExerciseType
 from datetime import date, timedelta
@@ -15,8 +15,11 @@ home_bp = Blueprint('home', __name__)
 @home_bp.route('/')
 def index():
     """Home page — dashboard with today's summary, quick actions, recommended activities."""
-    # For now, use the sample user "Ahmed" (persona)
-    current_user = User.query.filter_by(username='ahmed').first()
+    # Check if user is logged in
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('auth.login'))
+    current_user = User.query.filter_by(username=username).first()
 
     # Today's summary
     today = date.today()

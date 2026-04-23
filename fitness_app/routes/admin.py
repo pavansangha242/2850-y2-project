@@ -3,7 +3,7 @@ Admin dashboard routes for the FitTrack application.
 Handles user management (search, delete), personal trainer
 approval/rejection, and platform statistics display.
 """
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from fitness_app.extentions import db
 from fitness_app.models import User
 
@@ -16,7 +16,13 @@ def admin_dashboard():
     search_query = request.args.get('q', '')
 
     # Get admin user
-    admin_user = User.query.filter_by(role='administrator').first()
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('auth.login'))
+    admin_user = User.query.filter_by(username=username).first()
+    if not admin_user or admin_user.role != 'administrator':
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('home.index'))
 
     # Get active (non-admin) users, with optional search
     users_query = User.query.filter(User.role != 'administrator')
