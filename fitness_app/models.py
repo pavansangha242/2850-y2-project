@@ -24,7 +24,6 @@ class User(db.Model):
     competition_results = db.relationship('CompetitionResult', backref='user', lazy=True)
     competition_registrations = db.relationship('CompetitionRegistration', backref='user', lazy=True)
     gym_workouts = db.relationship('GymWorkout', backref='user', lazy=True)
-    privacy_settings = db.relationship('PrivacySettings', backref='user', uselist=False, lazy=True)
     trainer_profile = db.relationship('TrainerProfile', backref='user', uselist=False, lazy=True)
 
     ##asma
@@ -174,6 +173,20 @@ class PlannedWorkout(db.Model):
     def __repr__(self):
         return f'<PlannedWorkout {self.planned_workout_id}>'
 
+#list of exer types
+class ExerciseType(db.Model):
+    __tablename__ = 'exercise_types'
+
+    exercise_type_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(250), default='')
+
+    #relationships
+    activities = db.relationship('Activity', backref='exercise_type', lazy=True)
+    planned_workouts = db.relationship('PlannedWorkout', backref='exercise_type', lazy=True)
+
+    def __repr__(self):
+        return f'<ExerciseType {self.name}>'
 #logged workouts
 class Activity(db.Model):
     __tablename__ = 'activities'
