@@ -3,8 +3,8 @@ from datetime import date, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from sqlalchemy import func
 
-from fitness_app.extentions import db
-from fitness_app.module import User, GymExercise, GymAssignment, GymWorkout, get_current_user_id
+from fitness_app.extensions import db
+from fitness_app.modele import User, GymExercise, GymAssignment, GymWorkout, get_current_user_id
 
 gym_bp = Blueprint('gym', __name__)
 
