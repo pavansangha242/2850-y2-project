@@ -25,6 +25,14 @@ def create_app():
     from fitness_app.routes.walking import walking_bp
     from fitness_app.routes.gym import gym_bp
 
+    # register all the blueprints
+    from fitness.routes.auth import auth
+    from fitness.routes.progress import progress
+    from fitness.routes.history import history
+    from fitness.routes.sport_stats import sport_stats
+    from fitness.routes.trainers import trainers
+    from fitness.routes.messages import messages_bp
+
     #register all
     app.register_blueprint(main_bp)
     app.register_blueprint(swimming_bp)
@@ -32,5 +40,13 @@ def create_app():
     app.register_blueprint(running_bp)
     app.register_blueprint(walking_bp)
     app.register_blueprint(gym_bp)
+
+    app.register_blueprint(auth)
+    app.register_blueprint(progress)
+    app.register_blueprint(history)
+    app.register_blueprint(sport_stats)
+    app.register_blueprint(trainers)
+    app.register_blueprint(messages_bp)
+
 
     return app
