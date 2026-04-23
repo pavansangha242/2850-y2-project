@@ -26,12 +26,12 @@
     <!-- Wrapped so login and register page don't have navigation bar -->
     {% if show_nav is not defined or show_nav != false %}
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="{{ url_for('home.index') }}" class="nav-logo">
-                <i class="fas fa-dumbbell"></i>
-                <span>FitTrack</span>
-            </a>
+  <nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">
+            <i class="fas fa-dumbbell"></i>
+            <span>FitTrack</span>
+        </a>
 
             <ul class="nav-links">
                 <li><a href="{{ url_for('home.index') }}" class="{% if request.endpoint == 'home.index' %}active{% endif %}">
@@ -77,14 +77,27 @@
                 <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
                     <i class="fas fa-user-circle"></i>
                 </a>
-            </div>
+            </li>
+            {% elif g.get('nav_role') == 'pt' %}
+            <li>
+                <a href="{{ url_for('auth.pt_clients') }}" class="{% if request.endpoint in ['auth.pt_clients', 'auth.pt_view_survey'] %}active{% endif %}">
+                    <i class="fas fa-users"></i> My Clients
+                </a>
+            </li>
             {% endif %}
+        </ul>
 
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
+        <div class="nav-profile">
+            <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
+                <i class="fas fa-user-circle"></i>
+            </a>
         </div>
-    </nav>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
     {% endif %}
 
     <!-- Main Content -->
