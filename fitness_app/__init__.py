@@ -18,12 +18,12 @@ def create_app():
     db.init_app(app)
 
     #bring in all the blueprints
-    from fitness_app1.routes.main import main_bp
-    from fitness_app1.routes.swimming import swimming_bp
-    from fitness_app1.routes.cycling import cycling_bp
-    from fitness_app1.routes.running import running_bp
-    from fitness_app1.routes.walking import walking_bp
-    from fitness_app1.routes.gym import gym_bp
+    from fitness_app.routes.main import main_bp
+    from fitness_app.routes.swimming import swimming_bp
+    from fitness_app.routes.cycling import cycling_bp
+    from fitness_app.routes.running import running_bp
+    from fitness_app.routes.walking import walking_bp
+    from fitness_app.routes.gym import gym_bp
 
     #register all
     app.register_blueprint(main_bp)
