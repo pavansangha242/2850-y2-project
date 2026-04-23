@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from flask import Blueprint, render_template, request
 from sqlalchemy import func
 
-from fitness.extentions import db
+from fitness.extensions import db
 from fitness.models import Activity, ExerciseType, User
 progress = Blueprint('progress', __name__)
 

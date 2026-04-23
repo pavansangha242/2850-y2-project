@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from sqlalchemy import func
 
-from fitness.extentions import db
+from fitness.extensions import db
 from fitness.models import Activity, ExerciseType, User
 
 history = Blueprint('history', __name__)

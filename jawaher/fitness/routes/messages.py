@@ -5,7 +5,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from sqlalchemy import or_, and_
 
-from fitness.extentions import db
+from fitness.extensions import db
 from fitness.models import User, TrainerProfile, TrainerMessage
 
 messages_bp = Blueprint('messages', __name__)
