@@ -3,7 +3,6 @@ from flask import Flask
 from fitness_app.extensions import db
 
 
-
 #set up the flask app
 def create_app():
     app = Flask(__name__)
@@ -18,6 +17,10 @@ def create_app():
     db.init_app(app)
 
     #bring in all the blueprints
+    from fitness_app.routes.home import home_bp
+    from fitness_app.routes.events import events_bp
+    from fitness_app.routes.leaderboard import leaderboard_bp
+    from fitness_app.routes.admin import admin_bp
     from fitness_app.routes.swimming import swimming_bp
     from fitness_app.routes.cycling import cycling_bp
     from fitness_app.routes.running import running_bp
@@ -33,7 +36,10 @@ def create_app():
     from fitness_app.routes.messages import messages_bp
 
     #register all
-    app.register_blueprint(main_bp)
+    app.register_blueprint(home_bp)
+    app.register_blueprint(events_bp)
+    app.register_blueprint(leaderboard_bp)
+    app.register_blueprint(admin_bp)
     app.register_blueprint(swimming_bp)
     app.register_blueprint(cycling_bp)
     app.register_blueprint(running_bp)
