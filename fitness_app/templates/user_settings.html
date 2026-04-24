@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_p.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h1>Welcome, {{ user.first_name }}!</h1>
