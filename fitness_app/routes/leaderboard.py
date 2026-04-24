@@ -4,8 +4,8 @@ Ranks users by the number of workouts completed in the
 current week, along with total calories and distance.
 Supports filtering by time period (week, month, all time).
 """
-from flask import Blueprint, render_template, request
-from fitness_app.extentions import db
+from flask import Blueprint, render_template, request, session, redirect, url_for
+from fitness_app.extensions import db
 from fitness_app.models import User, Activity
 from datetime import date, timedelta
 from sqlalchemy import func
@@ -50,7 +50,10 @@ def leaderboard_page():
     )
 
     # Get the current user to highlight their row
-    current_user = User.query.filter_by(username='ahmed').first()
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('auth.login'))
+    current_user = User.query.filter_by(username=username).first()
 
     return render_template('leaderboard.html',
                            rankings=rankings,

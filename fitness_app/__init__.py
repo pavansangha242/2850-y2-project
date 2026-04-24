@@ -1,7 +1,6 @@
 import os
 from flask import Flask
-from fitness_app.extentions import db
-from fitness_app.module import seed_data
+from fitness_app.extensions import db
 
 
 #set up the flask app
@@ -11,14 +10,17 @@ def create_app():
     #config stuff
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, '..', 'fitness.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, '..', 'fitness_app.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     #start extensions
     db.init_app(app)
 
     #bring in all the blueprints
-    from fitness_app.routes.main import main_bp
+    from fitness_app.routes.home import home_bp
+    from fitness_app.routes.events import events_bp
+    from fitness_app.routes.leaderboard import leaderboard_bp
+    from fitness_app.routes.admin import admin_bp
     from fitness_app.routes.swimming import swimming_bp
     from fitness_app.routes.cycling import cycling_bp
     from fitness_app.routes.running import running_bp
@@ -26,15 +28,18 @@ def create_app():
     from fitness_app.routes.gym import gym_bp
 
     # register all the blueprints
-    from fitness.routes.auth import auth
-    from fitness.routes.progress import progress
-    from fitness.routes.history import history
-    from fitness.routes.sport_stats import sport_stats
-    from fitness.routes.trainers import trainers
-    from fitness.routes.messages import messages_bp
+    from fitness_app.routes.auth import auth
+    from fitness_app.routes.progress import progress
+    from fitness_app.routes.history import history
+    from fitness_app.routes.sport_stats import sport_stats
+    from fitness_app.routes.trainers import trainers
+    from fitness_app.routes.messages import messages_bp
 
     #register all
-    app.register_blueprint(main_bp)
+    app.register_blueprint(home_bp)
+    app.register_blueprint(events_bp)
+    app.register_blueprint(leaderboard_bp)
+    app.register_blueprint(admin_bp)
     app.register_blueprint(swimming_bp)
     app.register_blueprint(cycling_bp)
     app.register_blueprint(running_bp)
