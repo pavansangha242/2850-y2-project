@@ -30,7 +30,7 @@ def load_nav_user():
     else:
         g.nav_role = None
 
-@auth.route("/", methods=["GET", "POST"])
+@auth.route("/login", methods=["GET", "POST"])
 def login():
     if "username" in session:
         return redirect(url_for('auth.user_settings'))

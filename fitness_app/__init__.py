@@ -34,7 +34,8 @@ def create_app():
     from fitness_app.routes.sport_stats import sport_stats
     from fitness_app.routes.trainers import trainers
     from fitness_app.routes.messages import messages_bp
-
+    from fitness_app.routes.strava import strava_bp
+    
     #register all
     app.register_blueprint(home_bp)
     app.register_blueprint(events_bp)
@@ -52,6 +53,7 @@ def create_app():
     app.register_blueprint(sport_stats)
     app.register_blueprint(trainers)
     app.register_blueprint(messages_bp)
+    app.register_blueprint(strava_bp)
 
 
     return app
