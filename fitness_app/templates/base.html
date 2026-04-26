@@ -6,24 +6,17 @@
     <meta name="description" content="FitTrack — Your personal fitness tracking platform">
     <title>{% block title %}FitTrack{% endblock %}</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- App CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Help Button on the pages -->
-    <a href="https://forms.gle/TDJYuLFeEpr5Eumb9" target="_blank" class="floating-help" title="Need Help?">
-        ?
-    </a>
-    <!-- Wrapped so login and register page don't have navigation bar -->
+    <a href="https://forms.gle/TDJYuLFeEpr5Eumb9" target="_blank" class="floating-help" title="Need Help?">?</a>
+
     {% if show_nav is not defined or show_nav != false %}
     <!-- Navigation -->
   <nav class="navbar">
@@ -91,34 +84,107 @@
             <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
                 <i class="fas fa-user-circle"></i>
             </a>
-        </div>
 
-        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-            <i class="fas fa-bars"></i>
-        </button>
-    </div>
-</nav>
+            <ul class="nav-links">
+                <li>
+                    <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/history" class="{% if request.path.startswith('/history') %}active{% endif %}">
+                        <i class="fas fa-history"></i> History
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/progress" class="{% if request.path.startswith('/progress') %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i> Progress
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/events" class="{% if request.path.startswith('/events') %}active{% endif %}">
+                        <i class="fas fa-calendar-alt"></i> Events
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/leaderboard" class="{% if request.path.startswith('/leaderboard') %}active{% endif %}">
+                        <i class="fas fa-trophy"></i> Leaderboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
+                        <i class="fas fa-user-tie"></i> Trainers
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin" class="{% if request.path.startswith('/admin') %}active{% endif %}">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </a>
+                </li>
+
+                <li class="nav-dropdown">
+                    <span class="dropdown-trigger {% if request.path in ['/swimming', '/cycling', '/running', '/walking', '/gym'] %}active{% endif %}">
+                        🏅 Exercises ▾
+                    </span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/swimming" {% if request.path == '/swimming' %}class="active"{% endif %}>🏊 Swimming</a></li>
+                        <li><a href="/cycling" {% if request.path == '/cycling' %}class="active"{% endif %}>🚴 Cycling</a></li>
+                        <li><a href="/running" {% if request.path == '/running' %}class="active"{% endif %}>🏃 Running</a></li>
+                        <li><a href="/walking" {% if request.path == '/walking' %}class="active"{% endif %}>🚶 Walking</a></li>
+                        <li><a href="/gym" {% if request.path == '/gym' %}class="active"{% endif %}>🏋 Gym</a></li>
+                    </ul>
+                </li>
+
+                {% if g.get('nav_role') == 'customer' %}
+                <li>
+                    <a href="/survey" class="{% if request.path.startswith('/survey') %}active{% endif %}">
+                        <i class="fas fa-clipboard-list"></i> Survey
+                    </a>
+                </li>
+                {% elif g.get('nav_role') == 'pt' %}
+                <li>
+                    <a href="/pt-clients" class="{% if request.path.startswith('/pt-clients') %}active{% endif %}">
+                        <i class="fas fa-users"></i> My Clients
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="nav-profile">
+                <a href="/settings" class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            </div>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
     {% endif %}
 
-    <!-- Main Content -->
     <main class="main-content">
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="flash-message flash-{{ category }}" id="flash-msg">
-            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'info' %}fa-info-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-            <span>{{ message }}</span>
-            <button class="flash-close" onclick="this.parentElement.remove();">&times;</button>
-        </div>
-        {% endfor %}
-        {% endif %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}" id="flash-msg">
+                    <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'info' %}fa-info-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    <span>{{ message }}</span>
+                    <button class="flash-close" onclick="this.parentElement.remove();">&times;</button>
+                </div>
+                {% endfor %}
+            {% endif %}
         {% endwith %}
 
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-logo">
@@ -134,12 +200,11 @@
         </div>
     </footer>
 
-    <!-- Mobile Nav Toggle Script -->
     <script>
         const navToggle = document.getElementById('navToggle');
         const navLinks = document.querySelector('.nav-links');
 
-        if (navToggle) {
+        if (navToggle && navLinks) {
             navToggle.addEventListener('click', () => {
                 navLinks.classList.toggle('nav-open');
             });
@@ -147,5 +212,6 @@
     </script>
 
     {% block extra_js %}{% endblock %}
+    {% block scripts %}{% endblock %}
 </body>
 </html>
