@@ -72,10 +72,13 @@ def get_valid_token(user):
 def connect_strava():
     if "username" not in session:
         return redirect(url_for('auth.login'))
+    print("CLIENT_ID:", CLIENT_ID)
+    
 
     # Strava redirects back to /strava-callback after the user approves
-    callback_url = url_for('strava.strava_callback', _external=True)
+    callback_url = "https://ideal-winner-g475j7rq7v47cw9jq.github.dev/strava-callback"
 
+    print("CALLBACK URL:", callback_url)
     strava_auth_url = (
         f"https://www.strava.com/oauth/authorize"
         f"?client_id={CLIENT_ID}"
@@ -92,6 +95,7 @@ def strava_callback():
     if "username" not in session:
         return redirect(url_for('auth.login'))
 
+    print("CLIENT_SECRET:", CLIENT_SECRET)
     # If user clicked "Cancel" on Strava's page
     error = request.args.get("error")
     if error:
@@ -218,7 +222,7 @@ def sync_strava():
         else:
             activity = StravaActivity(
                 strava_id=a["id"],
-                user_id=user.id
+                user_id=user.user_id
             )
             db.session.add(activity)
 
@@ -297,7 +301,7 @@ def activity_map(activity_id):
 
     activity = StravaActivity.query.filter_by(
         id=activity_id,
-        user_id=user.id
+        user_id=user.user_id
     ).first()
 
     if not activity:
@@ -316,7 +320,7 @@ def activities():
     period = request.args.get("period", "week")
     activity_type = request.args.get("type", "all")
 
-    query = StravaActivity.query.filter_by(user_id=user.id)
+    query = StravaActivity.query.filter_by(user_id=user.user_id)
 
     # Date filter
     if period == "week":
@@ -362,7 +366,7 @@ def activity_detail(strava_id):
     # Make sure this activity belongs to the logged-in user
     activity = StravaActivity.query.filter_by(
         strava_id=strava_id,
-        user_id=user.id
+        user_id=user.user_id
     ).first_or_404()
 
     return render_template("activity_detail.html", activity=activity)

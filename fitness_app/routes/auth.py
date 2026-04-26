@@ -152,10 +152,10 @@ def delete_account():
         return redirect(url_for('auth.login'))
 
     # Delete child tables first
-    StravaActivity.query.filter_by(user_id=user.id).delete()
-    UserGoal.query.filter_by(user_id=user.id).delete()
-    PrivacySettings.query.filter_by(user_id=user.id).delete()
-    HealthSurvey.query.filter_by(user_id=user.id).delete()
+    StravaActivity.query.filter_by(user_id=user.user_id).delete()
+    UserGoal.query.filter_by(user_id=user.user_id).delete()
+    PrivacySettings.query.filter_by(user_id=user.user_id).delete()
+    HealthSurvey.query.filter_by(user_id=user.user_id).delete()
 
     # Flush deletes before removing user
     db.session.flush()
@@ -246,7 +246,7 @@ def pt_clients():
     # Show all customers who have share_with_pt enabled, for privacy 
     clients = (
         User.query
-        .join(PrivacySettings, PrivacySettings.user_id == User.id)
+        .join(PrivacySettings, PrivacySettings.user_id == User.user_id)
         .filter(User.role == "customer", PrivacySettings.share_with_pt == True)
         .all()
     )

@@ -62,6 +62,7 @@
                         <i class="fas fa-clipboard-list"></i> Survey
                     </a>
                 </li>
+
                 {% elif g.get('nav_role') == 'pt' %}
                 <li>
                     <a href="{{ url_for('auth.pt_clients') }}"
@@ -70,22 +71,14 @@
                     </a>
                 </li>
                 {% endif %}
+
+                <li>
+                    <a href="{{ url_for('auth.user_settings') }}"
+                    class="{% if request.endpoint == 'auth.user_settings' %}active{% endif %}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
             </ul>
-            
-            {% if session.get('username') %}
-            <div class="nav-profile">
-                <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
-                    <i class="fas fa-user-circle"></i>
-                </a>
-            </li>
-            {% elif g.get('nav_role') == 'pt' %}
-            <li>
-                <a href="{{ url_for('auth.pt_clients') }}" class="{% if request.endpoint in ['auth.pt_clients', 'auth.pt_view_survey'] %}active{% endif %}">
-                    <i class="fas fa-users"></i> My Clients
-                </a>
-            </li>
-            {% endif %}
-        </ul>
 
         <div class="nav-profile">
             <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">

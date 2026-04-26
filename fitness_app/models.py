@@ -6,7 +6,6 @@ from fitness_app.extensions import db
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True, nullable=False)
     first_name = db.Column(db.String(50), nullable=True)
@@ -54,7 +53,7 @@ class UserGoal(db.Model):
     __tablename__ = 'user_goals'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     step_target = db.Column(db.Integer, default=10000)
     #asma
     time_exercised_target = db.Column(db.Integer, default=0)
@@ -73,7 +72,7 @@ class PrivacySettings(db.Model):
     __tablename__ = 'privacy_settings'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     share_with_pt = db.Column(db.Boolean, default=False)
     allow_meetings = db.Column(db.Boolean, default=False)
 
@@ -83,7 +82,7 @@ class StravaActivity(db.Model):
     __tablename__ = 'strava_activities'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer,db.ForeignKey('users.id', ondelete="CASCADE"),nullable=False)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.user_id', ondelete="CASCADE"),nullable=False)
     strava_id = db.Column(db.BigInteger, unique=True, nullable=False)  # Strava's own ID
     name = db.Column(db.String(200))
     activity_type = db.Column(db.String(50))   # Run, Ride, Swim etc
@@ -107,7 +106,7 @@ class HealthSurvey(db.Model):
     __tablename__ = 'health_surveys'
  
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
  
     # --- Activity ---
@@ -395,7 +394,7 @@ class CompetitionResult(db.Model):
     __tablename__ = 'competition_results'
 
     result_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     competition_id = db.Column(db.Integer, db.ForeignKey('competitions.competition_id'), nullable=False)
     finish_time = db.Column(db.String(50), default='')
     position = db.Column(db.Integer, default=0)
@@ -411,7 +410,7 @@ class ChatMessage(db.Model):
 
     message_id = db.Column(db.Integer, primary_key=True)
     competition_id = db.Column(db.Integer, db.ForeignKey('competitions.competition_id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
