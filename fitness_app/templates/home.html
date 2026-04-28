@@ -46,14 +46,14 @@
 <section style="margin-top: 2.5rem;">
     <h2 class="section-title">Quick Actions</h2>
     <div class="grid-3">
-        <a href="#" class="card action-card">
+        <a href="{{ url_for('history.history_page') }}" class="card action-card">
             <div class="action-icon" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
                 <i class="fas fa-plus"></i>
             </div>
             <span class="action-label">Log Workout</span>
         </a>
 
-        <a href="#" class="card action-card">
+        <a href="{{ url_for('progress.progress_page') }}" class="card action-card">
             <div class="action-icon" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
                 <i class="fas fa-chart-bar"></i>
             </div>
@@ -80,25 +80,25 @@
 <section style="margin-top: 2.5rem;">
     <h2 class="section-title">Recommended Activities</h2>
     <div class="grid-4">
-        <div class="card activity-card">
+        <a href="/running" class="card activity-card">
             <div class="activity-icon">🏃</div>
             <span class="activity-name">Running</span>
-        </div>
+        </a>
 
-        <div class="card activity-card">
+        <a href="/cycling" class="card activity-card">
             <div class="activity-icon">🚴</div>
             <span class="activity-name">Cycling</span>
-        </div>
+        </a>
 
-        <div class="card activity-card">
+        <a href="/swimming" class="card activity-card">
             <div class="activity-icon">🏊</div>
             <span class="activity-name">Swimming</span>
-        </div>
+        </a>
 
-        <div class="card activity-card">
+        <a href="/walking" class="card activity-card">
             <div class="activity-icon">🚶</div>
             <span class="activity-name">Walking</span>
-        </div>
+        </a>
     </div>
 </section>
 {% endblock %}
