@@ -15,12 +15,7 @@ def admin_dashboard():
     """Admin dashboard — manage users, approve trainers, view platform statistics."""
     search_query = request.args.get('q', '')
 
-    # Get current logged-in user
-    username = session.get('username')
-    if not username:
-        return redirect(url_for('auth.login'))
-        
-    # Get admin user to populate the dashboard stats (bypassing strict auth for demo purposes)
+    # Get admin user to populate the dashboard stats
     admin_user = User.query.filter_by(role='administrator').first()
 
     # Get active (non-admin) users, with optional search
