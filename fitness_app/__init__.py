@@ -185,11 +185,11 @@ def seed_database():
 
     # ---- Competitions ----
     comp1 = Competition(name='City Marathon', location='City Centre',
-                        date=date(2026, 5, 18), distance=42.195)
+                        date=today + timedelta(days=20), distance=42.195)
     comp2 = Competition(name='Spring Cycling Race', location='Countryside Road',
-                        date=date(2026, 6, 7), distance=80.0)
+                        date=today + timedelta(days=40), distance=80.0)
     comp3 = Competition(name='Open Water Swim', location='Lake Park',
-                        date=date(2026, 7, 5), distance=3.0)
+                        date=today + timedelta(days=60), distance=3.0)
     db.session.add_all([comp1, comp2, comp3])
     db.session.flush()
 

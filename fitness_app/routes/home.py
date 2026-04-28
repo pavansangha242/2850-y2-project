@@ -15,10 +15,8 @@ home_bp = Blueprint('home', __name__)
 @home_bp.route('/home')
 def index():
     """Home page — dashboard with today's summary, quick actions, recommended activities."""
-    # Check if user is logged in
-    username = session.get('username')
-    if not username:
-        return redirect(url_for('auth.login'))
+    # Use 'ahmed' as the persona user for demo purposes
+    username = session.get('username', 'ahmed')
     current_user = User.query.filter_by(username=username).first()
 
     # Today's summary
