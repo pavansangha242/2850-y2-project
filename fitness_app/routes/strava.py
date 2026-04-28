@@ -311,10 +311,9 @@ def activity_map(activity_id):
 
 @strava_bp.route("/activities")
 def activities():
-    if "username" not in session:
-        return redirect(url_for('auth.login'))
-
-    user = User.query.filter_by(username=session["username"]).first()
+    # Use 'ahmed' as default for demo purposes
+    username = session.get('username', 'ahmed')
+    user = User.query.filter_by(username=username).first()
     
     # Get filter from query string, default to 'week'
     period = request.args.get("period", "week")
