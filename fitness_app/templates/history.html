@@ -166,7 +166,7 @@
 
                                 <a
                                     class="delete-btn"
-                                    href="{{ url_for('history_delete', activity_id=act['activity_id']) }}"
+                                    href="{{ url_for('history.delete_activity', activity_id=act['activity_id']) }}"
                                     onclick="return confirm('Delete this session?')"
                                 >
                                     Delete
