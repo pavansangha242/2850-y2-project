@@ -76,7 +76,7 @@ def connect_strava():
     
 
     # Strava redirects back to /strava-callback after the user approves
-    callback_url = "https://ideal-winner-g475j7rq7v47cw9jq.github.dev/strava-callback"
+    callback_url = "https://ideal-winner-g475j7rq7v47cw9jq-5000.app.github.dev/strava-callback"
 
     print("CALLBACK URL:", callback_url)
     strava_auth_url = (
