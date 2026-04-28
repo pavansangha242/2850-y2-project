@@ -12,6 +12,7 @@ from datetime import date, timedelta
 home_bp = Blueprint('home', __name__)
 
 
+@home_bp.route('/')
 @home_bp.route('/home')
 def index():
     """Home page — dashboard with today's summary, quick actions, recommended activities."""

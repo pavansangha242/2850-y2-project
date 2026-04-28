@@ -45,7 +45,7 @@
 <!-- Quick Actions -->
 <section style="margin-top: 2.5rem;">
     <h2 class="section-title">Quick Actions</h2>
-    <div class="grid-3">
+    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
         <a href="{{ url_for('history.history_page') }}" class="card action-card">
             <div class="action-icon" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
                 <i class="fas fa-plus"></i>
@@ -72,6 +72,21 @@
                 <i class="fas fa-calendar-check"></i>
             </div>
             <span class="action-label">Upcoming Events</span>
+        </a>
+
+        <!-- Added Strava and Chat Box links -->
+        <a href="{{ url_for('strava.activities') }}" class="card action-card">
+            <div class="action-icon" style="background: rgba(252, 76, 2, 0.15); color: #FC4C02;">
+                <i class="fab fa-strava"></i>
+            </div>
+            <span class="action-label">Strava</span>
+        </a>
+
+        <a href="{{ url_for('messages.messages') }}" class="card action-card">
+            <div class="action-icon" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
+                <i class="fas fa-comments"></i>
+            </div>
+            <span class="action-label">Chat Box</span>
         </a>
     </div>
 </section>
