@@ -30,10 +30,7 @@ def event_details(competition_id):
     competition = Competition.query.get_or_404(competition_id)
 
     # Check if current user is already registered
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
     is_registered = False
     if current_user:
         existing = CompetitionResult.query.filter_by(
@@ -79,10 +76,7 @@ def add_to_calendar(competition_id):
 def register_event(competition_id):
     """Register the current user for a competition (create a placeholder result)."""
     competition = Competition.query.get_or_404(competition_id)
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
 
     # Check if already registered
     existing = CompetitionResult.query.filter_by(
@@ -103,10 +97,7 @@ def register_event(competition_id):
 def unregister_event(competition_id):
     """Unregister the current user from a competition."""
     competition = Competition.query.get_or_404(competition_id)
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
 
     existing = CompetitionResult.query.filter_by(
         user_id=current_user.user_id, competition_id=competition.competition_id
@@ -124,10 +115,7 @@ def unregister_event(competition_id):
 def event_chat(competition_id):
     """Group chat page for a specific competition/event."""
     competition = Competition.query.get_or_404(competition_id)
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
 
     messages = ChatMessage.query.filter_by(competition_id=competition_id) \
         .order_by(ChatMessage.timestamp.asc()).all()
@@ -142,10 +130,7 @@ def event_chat(competition_id):
 def send_message(competition_id):
     """Send a new chat message to the event group chat."""
     competition = Competition.query.get_or_404(competition_id)
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
 
     content = request.form.get('message', '').strip()
     if content:
@@ -165,10 +150,7 @@ def send_message(competition_id):
 def get_messages(competition_id):
     """JSON endpoint for polling new chat messages."""
     Competition.query.get_or_404(competition_id)
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
 
     after_id = request.args.get('after', 0, type=int)
 
@@ -191,10 +173,7 @@ def get_messages(competition_id):
 @events_bp.route('/events/chat/delete/<int:message_id>', methods=['POST'])
 def delete_message(message_id):
     """Delete a chat message (only the author can delete their own)."""
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
     msg = ChatMessage.query.get_or_404(message_id)
 
     if msg.user_id == current_user.user_id:
@@ -208,14 +187,11 @@ def delete_message(message_id):
 def auto_reply(competition_id):
     """Generate a keyword-based reply from another user so responses feel natural."""
     competition = Competition.query.get_or_404(competition_id)
-    username = session.get('username')
-    if not username:
-        return jsonify({'error': 'Unauthorized'}), 401 if request.is_json else redirect(url_for('auth.login'))
-    current_user = User.query.filter_by(username=username).first()
+    current_user = User.query.filter_by(username='ahmed').first()
 
     # Pick a random other user to reply
     other_users = User.query.filter(
-        User.username != username,
+        User.username != 'ahmed',
         User.role == 'customer'
     ).all()
 
