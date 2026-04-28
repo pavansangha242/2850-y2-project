@@ -142,7 +142,7 @@ def running_page():
     goal = UserGoal.query.filter(
         UserGoal.user_id == uid,
         UserGoal.goal_type.like('%run%')
-    ).order_by(UserGoal.goal_id.desc()).first()
+    ).order_by(UserGoal.id.desc()).first()
 
     #streak
     s = 0
@@ -342,7 +342,7 @@ def set_running_goal():
     goal = UserGoal.query.filter(
         UserGoal.user_id == uid,
         UserGoal.goal_type.like('%run%')
-    ).order_by(UserGoal.goal_id.desc()).first()
+    ).order_by(UserGoal.id.desc()).first()
 
     full_type = f'{g_type} run' if g_type else 'general run'
     full_date = date.fromisoformat(t_date) if t_date else None

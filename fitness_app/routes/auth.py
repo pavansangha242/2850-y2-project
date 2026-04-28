@@ -33,7 +33,7 @@ def load_nav_user():
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if "username" in session:
-        return redirect(url_for('auth.user_settings'))
+        return redirect(url_for('home.index'))
 
     if request.method == "POST":
         username = request.form["username"]

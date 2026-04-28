@@ -1,13 +1,20 @@
 from datetime import date, timedelta
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from sqlalchemy import func
 
 from fitness_app.extensions import db
-from fitness_app.models import User, GymExercise, GymAssignment, GymWorkout, get_current_user_id
+from fitness_app.models import User, GymExercise, GymAssignment, GymWorkout
 
 gym_bp = Blueprint('gym', __name__)
 
+def get_logged_in_user():
+    username = session.get("username")
+
+    if not username:
+        return None
+
+    return User.query.filter_by(username=username).first()
 
 def ensure_default_gym_exercises():
     if GymExercise.query.first():
@@ -47,7 +54,10 @@ def gym_page():
 
     ensure_default_gym_exercises()
     # get the user who is logged in
-    user = User.query.get_or_404(get_current_user_id())
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
     monday = get_week_start()
 
     # all the exer sorted by muscle group then name
@@ -114,10 +124,16 @@ def gym_page():
 
     #none if nthing
     best_muscle_name = best_muscle[0] if best_muscle else 'None yet'
+    clients = []
+
+    if user.role == "pt":
+        clients = User.query.filter_by(role="customer").order_by(User.username.asc()).all()
 
     # send everything to the html page
     return render_template(
         'gym.html',
+        user=user,
+        clients=clients,
         exercises=all_exercises,
         muscle_groups=m_groups,
         assignments=my_assignments,
@@ -131,7 +147,10 @@ def gym_page():
 @gym_bp.route('/gym/log', methods=['POST'])
 def log_gym_workout():
     #loged in user
-    user = User.query.get_or_404(get_current_user_id())
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
 
     # form
     w_date = request.form.get('date')
@@ -171,11 +190,24 @@ def log_gym_workout():
 @gym_bp.route('/gym/assign', methods=['POST'])
 def assign_exercise():
     # the trainer 
-    trainer = User.query.get_or_404(get_current_user_id())
+    trainer = get_logged_in_user()
+
+    if not trainer:
+        return redirect(url_for('auth.login'))
+
+    if trainer.role != "pt":
+        flash("Only trainers can assign exercises.", "error")
+        return redirect(url_for('gym.gym_page'))
 
     # get the form data
     c_id = request.form.get('client_id', type=int)
     ex_id = request.form.get('gym_exercise_id', type=int)
+    client = User.query.filter_by(user_id=c_id, role="customer").first()
+
+    if not client:
+        flash("Client was not found.", "error")
+        return redirect(url_for('gym.gym_page'))
+
     num_sets = request.form.get('sets', type=int)
     num_reps = request.form.get('reps', type=int)
     kg = request.form.get('weight_kg', type=float)
@@ -208,7 +240,10 @@ def assign_exercise():
 @gym_bp.route('/gym/delete/<int:gym_workout_id>', methods=['POST'])
 def delete_gym_workout(gym_workout_id):
     # find the user
-    user = User.query.get_or_404(get_current_user_id())
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
 
     # find workout only if itss to user
     w = GymWorkout.query.filter_by(

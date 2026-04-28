@@ -30,13 +30,15 @@ def seed_trainers():
 
         if not existing:
             u = User(
-                username=username,
-                first_name=first,
-                last_name=last,
-                email=email,
-                role='pt',
-                approved=True,
-                join_date=date.today()
+            username=username,
+            first_name=first,
+            last_name=last,
+            email=email,
+            phone_number='00000000000',
+            role='pt',
+            approved=True,
+            date_joined=datetime.utcnow()
+ 
             )
             u.set_password('trainerpass')
             db.session.add(u)

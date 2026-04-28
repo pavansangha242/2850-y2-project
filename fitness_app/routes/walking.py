@@ -151,7 +151,7 @@ def walking_page():
     goal = UserGoal.query.filter(
         UserGoal.user_id == uid,
         UserGoal.goal_type.like('%walk%')
-    ).order_by(UserGoal.goal_id.desc()).first()
+    ).order_by(UserGoal.id.desc()).first()
 
     #streak
     s = 0
@@ -356,7 +356,7 @@ def set_walking_goal():
     goal = UserGoal.query.filter(
         UserGoal.user_id == uid,
         UserGoal.goal_type.like('%walk%')
-    ).order_by(UserGoal.goal_id.desc()).first()
+    ).order_by(UserGoal.id.desc()).first()
 
     full_type = f'{g_type} walk' if g_type else 'general walk'
     full_date = date.fromisoformat(t_date) if t_date else None
