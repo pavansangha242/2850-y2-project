@@ -12,7 +12,7 @@ class User(db.Model):
     last_name = db.Column(db.String(50), nullable=True)
     password_hash = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    phone_number = db.Column(db.String(25), nullable=False)
+    phone_number = db.Column(db.String(25), nullable=True)
     role = db.Column(db.String(20), nullable=False)
     bio = db.Column(db.Text, nullable=True)
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
