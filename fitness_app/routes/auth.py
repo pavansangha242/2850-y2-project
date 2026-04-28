@@ -61,6 +61,11 @@ def register():
         email = request.form["email"]
         phone_number = request.form["phone"]
         role = request.form.get("role")
+
+        # Security: Prevent anyone from registering as an administrator publicly
+        if role == "administrator":
+            return render_template("register.html", error="Administrator registration is disabled.", show_nav=False)
+
         bio = request.form.get("bio") if role == "pt" else None
         first_name = request.form.get("first_name", "").strip()
         last_name = request.form.get("last_name", "").strip()
