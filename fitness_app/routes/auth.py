@@ -20,6 +20,9 @@ from fitness_app.models import User, UserGoal, PrivacySettings, HealthSurvey, St
 
 auth = Blueprint('auth', __name__)
 
+@auth.route("/")
+def root():
+    return redirect(url_for("auth.login"))
 
 @auth.before_app_request
 def load_nav_user():
