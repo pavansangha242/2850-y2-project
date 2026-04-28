@@ -27,58 +27,6 @@
         </a>
 
             <ul class="nav-links">
-                <li><a href="{{ url_for('home.index') }}" class="{% if request.endpoint == 'home.index' %}active{% endif %}">
-                    <i class="fas fa-home"></i> Home
-                </a></li>
-                <li><a href="#" class="nav-link">
-                    <i class="fas fa-running"></i> Workouts
-                </a></li>
-                <li><a href="{{ url_for('events.events_page') }}" class="{% if request.endpoint and 'events' in request.endpoint %}active{% endif %}">
-                    <i class="fas fa-calendar-alt"></i> Events
-                </a></li>
-                <li><a href="{{ url_for('leaderboard.leaderboard_page') }}" class="{% if request.endpoint and 'leaderboard' in request.endpoint %}active{% endif %}">
-                    <i class="fas fa-trophy"></i> Leaderboard
-                </a></li>
-                <li><a href="#" class="nav-link">
-                    <i class="fas fa-chart-line"></i> Progress
-                </a></li>
-                <li><a href="#" class="nav-link">
-                    <i class="fas fa-user-tie"></i> Trainers
-                </a></li>
-                <li><a href="{{ url_for('admin.admin_dashboard') }}" class="{% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
-                    <i class="fas fa-shield-alt"></i> Admin
-                </a></li>
-                {% if g.get('nav_role') == 'customer' %}
-                <li>
-                    <a href="{{ url_for('auth.survey') }}"
-                    class="{% if request.endpoint == 'auth.survey' %}active{% endif %}">
-                        <i class="fas fa-clipboard-list"></i> Survey
-                    </a>
-                </li>
-
-                {% elif g.get('nav_role') == 'pt' %}
-                <li>
-                    <a href="{{ url_for('auth.pt_clients') }}"
-                    class="{% if request.endpoint in ['auth.pt_clients', 'auth.pt_view_survey'] %}active{% endif %}">
-                        <i class="fas fa-users"></i> My Clients
-                    </a>
-                </li>
-                {% endif %}
-
-                <li>
-                    <a href="{{ url_for('auth.user_settings') }}"
-                    class="{% if request.endpoint == 'auth.user_settings' %}active{% endif %}">
-                        <i class="fas fa-cog"></i> Settings
-                    </a>
-                </li>
-            </ul>
-
-        <div class="nav-profile">
-            <a href="{{ url_for('auth.user_settings') }}" class="profile-icon">
-                <i class="fas fa-user-circle"></i>
-            </a>
-
-            <ul class="nav-links">
                 <li>
                     <a href="/" class="{% if request.path == '/' %}active{% endif %}">
                         <i class="fas fa-home"></i> Home
