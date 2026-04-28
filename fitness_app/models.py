@@ -186,6 +186,29 @@ class ExerciseType(db.Model):
 
     def __repr__(self):
         return f'<ExerciseType {self.name}>'
+
+def ensure_default_exercise_types():
+    default_types = [
+        ("Swimming", "Swimming workouts"),
+        ("Cycling", "Cycling workouts"),
+        ("Running", "Running workouts"),
+        ("Walking", "Walking workouts"),
+        ("Gym", "Gym workouts"),
+    ]
+
+    for name, description in default_types:
+        existing = ExerciseType.query.filter_by(name=name).first()
+
+        if not existing:
+            exercise = ExerciseType(
+                name=name,
+                description=description
+            )
+            db.session.add(exercise)
+
+    db.session.commit()
+
+
 #logged workouts
 class Activity(db.Model):
     __tablename__ = 'activities'
@@ -268,12 +291,12 @@ def get_current_user_id():
     return 1
 
 
-#get user weight from db
 def get_user_weight(user_id):
     user = User.query.get(user_id)
-    if user and user.weight:
-        return user.weight
-    #no weight stored
+
+    if user and user.goals and user.goals.weight_kg:
+        return user.goals.weight_kg
+
     return None
 
 
@@ -287,13 +310,18 @@ def get_user_by_username(username):
     return User.query.filter_by(username=username).first()
 
 
-#get the id of an exer type by name
 def get_exercise_type_id(exercise_name):
     exercise = ExerciseType.query.filter_by(name=exercise_name).first()
-    if exercise:
-        return exercise.exercise_type_id
-    #not found
-    return None
+
+    if not exercise:
+        exercise = ExerciseType(
+            name=exercise_name,
+            description=f'{exercise_name} workout'
+        )
+        db.session.add(exercise)
+        db.session.commit()
+
+    return exercise.exercise_type_id
 
 #--------- start if jawaher's part ---------
 class TrainerProfile(db.Model):

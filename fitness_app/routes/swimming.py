@@ -144,7 +144,7 @@ def swimming_page():
     goal = UserGoal.query.filter(
         UserGoal.user_id == uid,
         UserGoal.goal_type.like('%swim%')
-    ).order_by(UserGoal.goal_id.desc()).first()
+    ).order_by(UserGoal.id.desc()).first()
 
     #streak
     s = 0
@@ -350,7 +350,7 @@ def set_swimming_goal():
     goal = UserGoal.query.filter(
         UserGoal.user_id == uid,
         UserGoal.goal_type.like('%swim%')
-    ).order_by(UserGoal.goal_id.desc()).first()
+    ).order_by(UserGoal.id.desc()).first()
 
     #goal string
     full_type = f'{g_type} swim' if g_type else 'general swim'
