@@ -12,11 +12,13 @@ from datetime import date, timedelta
 home_bp = Blueprint('home', __name__)
 
 
-@home_bp.route('/home')
+@home_bp.route('/')
 def index():
     """Home page — dashboard with today's summary, quick actions, recommended activities."""
-    # Use 'ahmed' as the persona user for demo purposes
-    username = session.get('username', 'ahmed')
+    # Check if user is logged in
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('auth.login'))
     current_user = User.query.filter_by(username=username).first()
 
     # Today's summary

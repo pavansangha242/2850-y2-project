@@ -16,7 +16,7 @@ role available globally for template rendering.
 
 from flask import Blueprint, render_template, request, redirect, session, url_for, g
 from fitness_app.extensions import db
-from fitness_app.models import User, UserGoal, PrivacySettings, HealthSurvey, StravaActivity
+from fitness_app.models import User, UserGoal, PrivacySettings, HealthSurvey, StravaActivity, TrainingClient
 
 auth = Blueprint('auth', __name__)
 
@@ -24,6 +24,7 @@ auth = Blueprint('auth', __name__)
 def root():
     return redirect(url_for("auth.login"))
 
+# make the user's role available in every template without passing it manually each time
 @auth.before_app_request
 def load_nav_user():
     """Make the current user's role available in all templates as g.nav_role."""
@@ -64,7 +65,10 @@ def register():
 
         # Security: Prevent anyone from registering as an administrator publicly
         if role == "administrator":
-            return render_template("register.html", error="Administrator registration is disabled.", show_nav=False)
+            # allow first admin, block any others
+            existing_admin = User.query.filter_by(role="administrator").first()
+            if existing_admin:
+                return render_template("register.html", error="An administrator account already exists. Administrator registration is disabled.", show_nav=False)
 
         bio = request.form.get("bio") if role == "pt" else None
         first_name = request.form.get("first_name", "").strip()
@@ -86,11 +90,12 @@ def register():
             email=email,
             phone_number=phone_number,
             role=role,
-            approved=(False if role == "pt" else True),
+            approved=(False if role == "pt" else True), # pt accounts need manual approval, everyone else is good to go immediately
             bio=bio
         )
         new_user.set_password(password)
 
+        # goals only apply to customers, pts just have a bio
         new_goals = UserGoal(
             user=new_user,
             step_target=request.form.get("step_target", 10000) or 10000,
@@ -159,13 +164,13 @@ def delete_account():
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Delete child tables first
+    # Delete child tables before deleting user, otherwise db error occurs
     StravaActivity.query.filter_by(user_id=user.user_id).delete()
     UserGoal.query.filter_by(user_id=user.user_id).delete()
     PrivacySettings.query.filter_by(user_id=user.user_id).delete()
     HealthSurvey.query.filter_by(user_id=user.user_id).delete()
 
-    # Flush deletes before removing user
+    # Flush so child deletes are written before removing user
     db.session.flush()
 
     # Delete User
@@ -251,11 +256,17 @@ def pt_clients():
     if not user or user.role != "pt":
         return redirect(url_for('auth.user_settings'))
  
-    # Show all customers who have share_with_pt enabled, for privacy 
-    clients = (
+    # Show all customers who have share_with_pt enabled, and are matched with that PT
+        clients = (
         User.query
+        .join(TrainingClient, TrainingClient.client_id == User.user_id)
         .join(PrivacySettings, PrivacySettings.user_id == User.user_id)
-        .filter(User.role == "customer", PrivacySettings.share_with_pt == True)
+        .filter(
+            TrainingClient.trainer_id == user.user_id,  # must be matched to this PT
+            TrainingClient.active == True,               # only active relationships
+            User.role == "customer",
+            PrivacySettings.share_with_pt == True        # must have sharing on
+        )
         .all()
     )
  

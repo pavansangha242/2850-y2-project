@@ -37,7 +37,7 @@ strava_bp = Blueprint('strava', __name__)
 def get_valid_token(user):
     now = int(time.time())  # current time as Unix timestamp
 
-    # Check if token is expired (or will expire in next 60 seconds)
+    # Check if token is expired (or will expire in next 60 seconds) - if so then treat it as though it has already expired
     if user.strava_token_expires_at and user.strava_token_expires_at > now + 60:
         # Token is still valid, just return it
         return user.strava_access_token
@@ -75,7 +75,7 @@ def connect_strava():
     print("CLIENT_ID:", CLIENT_ID)
     
 
-    # Strava redirects back to /strava-callback after the user approves
+    #  the callback URL has to exactly match what's registered on the Strava app dashboard, must be specific to codespace name or local server if running off vs code app
     callback_url = "https://ideal-winner-g475j7rq7v47cw9jq-5000.app.github.dev/strava-callback"
 
     print("CALLBACK URL:", callback_url)
@@ -96,10 +96,10 @@ def strava_callback():
         return redirect(url_for('auth.login'))
 
     print("CLIENT_SECRET:", CLIENT_SECRET)
-    # If user clicked "Cancel" on Strava's page
+    # If user clicked "Cancel" on Strava's page, then redireect to activities page
     error = request.args.get("error")
     if error:
-        return redirect(url_for('auth.user_settings'))
+        return redirect(url_for('strava.activities'))
 
     # Exchange the temporary code for real tokens
     code = request.args.get("code")
@@ -180,6 +180,7 @@ def sync_strava():
 
 
     # Rate limit protection
+    # If they synced less than 15 minutes ago, don't sync as Strava API has limit to amount of requests 
     now = datetime.utcnow()
     if getattr(user, "last_strava_sync", None):
         if now - user.last_strava_sync < timedelta(minutes=15):
@@ -193,6 +194,7 @@ def sync_strava():
 
     params = {"per_page": 30}
 
+    # Only fetch activities newer than the last sync as we already have that information
     if getattr(user, "last_strava_activity_time", None):
         params["after"] = int(user.last_strava_activity_time.timestamp())
 
@@ -204,6 +206,7 @@ def sync_strava():
 
     activities = response.json()
 
+    # Strava sometimes returns error dict instead of a list if something went wrong
     if not isinstance(activities, list):
         return jsonify({
             "error": "Failed to fetch activities",
@@ -214,7 +217,7 @@ def sync_strava():
 
     for a in activities:
 
-        # Checking no duplicates
+        # Checking for no duplicates, skip if it's already been saved
         existing = StravaActivity.query.filter_by(strava_id=a["id"]).first()
 
         if existing:
@@ -241,7 +244,8 @@ def sync_strava():
         if a.get("calories") is not None:
             calories = a["calories"]
 
-        # 2. Better fallback for manual or missing data
+        # 2. Better fallback for manual or missing data instead of 0 returned by Strava
+        # rough MET-based estimates when Strava doesn't give us calories
         else:
             if activity_type == "Run":
                 calories = round(1.036 * distance_km * weight)
@@ -275,9 +279,10 @@ def sync_strava():
         activity.avg_speed = a.get("average_speed")
         activity.polyline = a.get("map", {}).get("summary_polyline")
 
-    # Save sync metadata
+    # Record when it was last synced for the rate limit check
     user.last_strava_sync = now
 
+    # Keeps a track of the newest activity so incremental sync knows where to start next time
     if newest_activity_time:
         if not user.last_strava_activity_time:
             user.last_strava_activity_time = newest_activity_time
@@ -369,3 +374,4 @@ def activity_detail(strava_id):
     ).first_or_404()
 
     return render_template("activity_detail.html", activity=activity)
+

@@ -14,7 +14,8 @@
     {% if not survey %}
         <p>This customer has not completed their health survey yet.</p>
     {% else %}
-
+    
+    <!-- Showing survey data to PT -->
     <div class="settings-card">
         <h2>Activity</h2>
         <div class="settings-row"><span class="settings-label">Workout hours/day</span><span class="settings-value">{{ survey.workout_hours_per_day }}</span></div>

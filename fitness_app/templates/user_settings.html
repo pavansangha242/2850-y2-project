@@ -8,6 +8,7 @@
     <h1>Welcome, {{ user.first_name }}!</h1>
     <p class="mb-2">Manage your account details below.</p>
 
+    <!-- Display basic settings at the top, other fields are specialised depending on role -->
     <div class="settings-card">
         <h2>Account Profile</h2>
 
@@ -54,6 +55,7 @@
         </div>
     </div>
 
+    <!-- PT specific fields for bio -->
     {% if user.role == 'pt' %}
     <div class="settings-card mt-2">
         <h2>Professional Bio</h2>
@@ -63,6 +65,7 @@
     </div>
     {% endif %}
 
+    <!-- Link to survey to give PTs extra information -->
     {% if user.role == 'customer' %}
         <a href="{{ url_for('auth.survey') }}" class="btn-login">
             Fill in Health Survey
@@ -90,6 +93,7 @@
         </div>
     </div>
 
+    <!-- Allow users to connect strava app which contains fitness tracker data -->
     <div class="settings-card mt-2">
     <h2>Connected Apps</h2>
     <div class="settings-row">
@@ -109,7 +113,7 @@
             </a>
 
             <form action="{{ url_for('strava.disconnect_strava') }}" method="POST">
-                <button type="submit" class="btn-danger">
+                <button type="submit" class="btn-login btn-danger-override" style="width: auto; padding: 8px 16px; margin: 0;">
                     Disconnect
                 </button>
             </form>
@@ -120,7 +124,7 @@
         {% endif %}
     </div>
 </div>
-
+    <!-- Partly used to calculate calories if required -->
     <div class="settings-card mt-2">
         <h2>Physical Stats</h2>
         <form action="{{ url_for('auth.update_stats') }}" method="POST">
@@ -170,15 +174,14 @@
     </div>
 </div>
 
-    <div class="text-center mt-3" style="padding-top: 20px;">
-        <form action="{{ url_for('auth.delete_account') }}" method="POST" onsubmit="return confirmDelete()">
-            <button type="submit" class="btn-danger">
+    <!-- button alignment using shared css -->
+    <div class="delete-account-section" style="text-align: center;">
+        <form action="{{ url_for('auth.delete_account') }}" method="POST" onsubmit="return confirmDelete()" style="display: flex; justify-content: center;">
+            <button type="submit" class="btn-login btn-danger-override" style="width: auto; padding: 8px 16px; margin: 0;">
                 Delete My Account
             </button>
         </form>
-        <p style="font-size: 0.8rem; color: #888; margin-top: 10px;">
-            Warning: This action is permanent and cannot be undone.
-        </p>
+        <p>Warning: This action is permanent and cannot be undone.</p>
     </div>
 
 <script>

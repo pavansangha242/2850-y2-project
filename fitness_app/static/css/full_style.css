@@ -272,6 +272,7 @@ img {
     border-radius: var(--radius-md);
     padding: 1.5rem;
     transition: var(--transition);
+    margin-bottom: 16px; /* added gap between stacked cards for register page */
 }
 
 .card:hover {
@@ -1717,7 +1718,47 @@ margin-bottom: 4px;
 padding: 16px 20px;
 }
 
+/* ADDED: delete account section centres text and button */
+.delete-account-section {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 8px;
+    text-align: center;
+}
+ 
+.delete-account-section .btn-danger {
+    display: inline-block;
+    padding: 10px 28px;
+}
+ 
+.delete-account-section p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 10px;
+}
 
+/* allows btn-danger to share btn-login's sizing when combined */
+.btn-login.btn-danger-override,
+.btn-danger-override {
+    background: var(--warm);
+}
+.btn-login.btn-danger-override:hover,
+.btn-danger-override:hover {
+    background: var(--warm-dark);
+}
+
+/*  auth pages (login/register) - centre the heading and subheading */
+.auth-heading {
+    text-align: center;
+    margin-bottom: 8px;
+}
+ 
+.auth-subheading {
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
 
 /*exercise pages*/
 

@@ -162,7 +162,14 @@
                 <div class="stat-sub">from last week</div>
             </div>
         </div>
- 
+        <!--strava link-->
+        <a href="{{ url_for('strava.activities') }}" class="card action-card">
+            <div class="action-icon" style="background: rgba(252, 76, 2, 0.15); color: #FC4C02;">
+                <i class="fab fa-strava"></i>
+            </div>
+            <span class="action-label">Strava</span>
+        </a>
+
         <!--rides table-->
         <div class="recent-activity card">
             <h2>Recent rides</h2>
