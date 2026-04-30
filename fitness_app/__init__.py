@@ -4,7 +4,7 @@ from fitness_app.extensions import db
 from fitness_app.models import (
     User, TrainingPlan, PlannedWorkout, TrainingClient,
     ExerciseType, Activity, Competition, CompetitionResult,
-    ChatMessage
+    ChatMessage,TrainerProfile
 )
 from datetime import date, datetime, timedelta
 
@@ -65,6 +65,23 @@ def create_app():
     with app.app_context():
         db.create_all()
         seed_database()
+
+        approved_trainers = User.query.filter_by(role="pt", approved=True).all()
+
+        for trainer in approved_trainers:
+            profile = TrainerProfile.query.filter_by(user_id=trainer.user_id).first()
+
+            if not profile:
+                profile = TrainerProfile(
+                    user_id=trainer.user_id,
+                    specialty="Personal Trainer",
+                    bio="Certified personal trainer.|||Gym training|||Fitness coaching|||Workout plans",
+                    average_rating=0,
+                    total_reviews=0
+                )
+                db.session.add(profile)
+
+        db.session.commit()
 
     return app
 

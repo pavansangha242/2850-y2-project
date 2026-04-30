@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from fitness_app.extensions import db
-from fitness_app.models import User, TrainerProfile, SessionBooking, TrainerMessage
+from fitness_app.models import User, TrainerProfile, SessionBooking, TrainerMessage, TrainingClient
 
 trainers = Blueprint('trainers', __name__)
 
@@ -254,3 +254,26 @@ def cancel_booking(booking_id):
 
     flash('Booking not found.', 'error')
     return redirect(url_for('trainers.trainers_page'))
+
+@trainers.route('/pt-clients')
+def pt_clients():
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    if user.role != 'pt':
+        flash('Access denied. Personal trainer privileges required.', 'error')
+        return redirect(url_for('home.index'))
+
+    clients = (
+        User.query
+        .join(TrainingClient, TrainingClient.client_id == User.user_id)
+        .filter(
+            TrainingClient.trainer_id == user.user_id,
+            TrainingClient.active == True
+        )
+        .all()
+    )
+
+    return render_template('pt_clients.html', clients=clients)

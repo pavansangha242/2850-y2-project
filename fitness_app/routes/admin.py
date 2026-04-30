@@ -5,7 +5,7 @@ approval/rejection, and platform statistics display.
 """
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from fitness_app.extensions import db
-from fitness_app.models import User
+from fitness_app.models import User, TrainerProfile
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -83,7 +83,19 @@ def approve_pt(user_id):
 
     if user.role == 'pt':
         user.approved = True
+        
+        profile = TrainerProfile.query.filter_by(user_id=user.userid).first()
+
+        if not profile:
+            profile = TrainerProfile( user_id = user.user_id,
+                specialty="Personal Trainer",
+                bio="Certified personal trainer.|||Gym training|||Fitness coaching|||Workout plans",
+                average_rating=0,
+                total_reviews=0
+            )
+            db.session.add(profile)
         db.session.commit()
+
         flash(f'Personal Trainer {user.first_name} has been approved.', 'success')
 
     return redirect(url_for('admin.admin_dashboard'))

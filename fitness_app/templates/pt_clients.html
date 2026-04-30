@@ -18,9 +18,10 @@
                 <strong>{{ client.username }}</strong>
                 <p style="color: #888; font-size: 0.85rem; margin: 4px 0 0;">{{ client.email }}</p>
             </div>
-            <a href="{{ url_for('auth.pt_view_survey', customer_id=client.id) }}" class="btn-login" style="width: auto; padding: 8px 16px; margin: 0;">
+            <a href="{{ url_for('auth.pt_view_survey', customer_id=client.user_id) }}" class="btn-login" style="width: auto; padding: 8px 16px; margin: 0;">
                 View Survey
             </a>
+            <a href="{{ url_for('trainers.pt_clients') }}">My Clients</a>
         </div>
         {% endfor %}
     {% else %}
