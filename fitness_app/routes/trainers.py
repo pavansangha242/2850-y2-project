@@ -1,64 +1,39 @@
 
-from datetime import date, datetime
+from datetime import datetime
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from fitness_app.extensions import db
 from fitness_app.models import User, TrainerProfile, SessionBooking, TrainerMessage
 
 trainers = Blueprint('trainers', __name__)
 
+def get_logged_in_user():
+    username= session.get("username")
 
-# add 4 demo trainers if there are none yet
-def seed_trainers():
-    if TrainerProfile.query.count() > 0:
-        return
+    if not username:
+        return None 
+    return User.query.filter_by(username=username).first()
 
-    demo = [
-        ('john_smith', 'John', 'Smith', 'john@fittrack.com', 'Strength training coach',
-         '8+ years coaching experience.|||Strength & conditioning|||Powerlifting|||Muscle building|||Nutrition planning', 4.8),
-        ('sarah_lee', 'Sarah', 'Lee', 'sarah@fittrack.com', 'Cardio specialist',
-         '6+ years coaching experience.|||Cardio fitness|||Weight loss|||Endurance training|||Online coaching', 4.6),
-        ('ahmed_ali', 'Ahmed', 'Ali', 'ahmed@fittrack.com', 'Cycling coach',
-         'Professional cycling coach.|||Road cycling|||Mountain biking|||Indoor training|||Race preparation', 5.0),
-        ('emily_chen', 'Emily', 'Chen', 'emily@fittrack.com', 'Swimming trainer',
-         'Competitive swimmer turned coach.|||Swim technique|||Open water|||Triathlon prep|||All levels welcome', 4.5),
-    ]
+def ensure_trainer_profile(user): 
+    if not user or user.role != "pt":
+        return None 
 
-    for username, first, last, email, specialty, bio, rating in demo:
-        existing = User.query.filter_by(username=username).first()
+    profile = TrainerProfile.query.filter_by(user_id=user.user_id).first()
+    if profile: 
+        return profile 
 
-        if not existing:
-            u = User(
-            username=username,
-            first_name=first,
-            last_name=last,
-            email=email,
-            phone_number='00000000000',
-            role='pt',
-            approved=True,
-            date_joined=datetime.utcnow()
- 
-            )
-            u.set_password('trainerpass')
-            db.session.add(u)
-            db.session.flush()
-            uid = u.user_id
-        else:
-            uid = existing.user_id
+    profile = TrainerProfile(
+        user_id=user.user_id,
+        specialty="Personal Trainer",
+        bio=user.bio or "Certified personal trainer.|||Gym training|||Fitness coaching|||Workout plans",
+        average_rating=0,
+        total_reviews=0
+    )
 
-        if not TrainerProfile.query.filter_by(user_id=uid).first():
-            tp = TrainerProfile(
-                user_id=uid,
-                specialty=specialty,
-                bio=bio,
-                average_rating=rating,
-                total_reviews=0
-            )
-            db.session.add(tp)
-
+    db.session.add(profile)
     db.session.commit()
-
+    return profile 
 
 # turn trainer data into one dictionary for thr template
 def parse_trainer(user, profile):
@@ -77,12 +52,15 @@ def parse_trainer(user, profile):
 
 @trainers.route('/trainers')
 def trainers_page():
-    user = User.query.first()
+    user = get_logged_in_user()
+    
     if not user:
-        return "No users found in database."
+        return redirect(url_for('auth.login'))
 
     uid = user.user_id
-    seed_trainers()
+
+    if user.role =="pt":
+        ensure_trainer_profile(user)
 
     search = request.args.get('q', '').strip().lower()
     filter_ = request.args.get('filter', '')
@@ -178,11 +156,12 @@ def trainers_page():
 
 @trainers.route('/trainers/book', methods=['POST'])
 def book_session():
-    user = User.query.first()
+    user = get_logged_in_user()
     if not user:
-        return "No users found in database."
+        return redirect(url_for('auth.login'))
 
     uid = user.user_id
+    
     trainer_id = request.form.get('trainer_id', type=int)
     book_date = request.form.get('book_date')
     book_time = request.form.get('book_time')
@@ -191,6 +170,12 @@ def book_session():
     if not trainer_id or not book_date or not book_time:
         flash('Please fill in date and time.', 'error')
         return redirect(url_for('trainers.trainers_page') + f'?trainer_id={trainer_id}')
+
+    trainer_user = User.query.filter_by(user_id=trainer_id, role='pt').first()
+
+    if not trainer_user:
+        flash('Trainer not found.', 'error')
+        return redirect(url_for('trainers.trainers_page'))
 
     parsed_date = datetime.strptime(book_date, '%Y-%m-%d').date()
 
@@ -223,9 +208,10 @@ def book_session():
 
 @trainers.route('/trainers/message', methods=['POST'])
 def send_message():
-    user = User.query.first()
+    user = get_logged_in_user()
+    
     if not user:
-        return "No users found in database."
+        return redirect(url_for('auth.login'))
 
     uid = user.user_id
     trainer_id = request.form.get('trainer_id', type=int)
@@ -249,7 +235,15 @@ def send_message():
 
 @trainers.route('/trainers/cancel/<int:booking_id>', methods=['POST'])
 def cancel_booking(booking_id):
-    b = SessionBooking.query.get(booking_id)
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
+        
+    b = SessionBooking.query.filter_by(
+        booking_id=booking_id,
+        client_id=user.user_id
+    ).first()
 
     if b:
         trainer_id = b.trainer_id
