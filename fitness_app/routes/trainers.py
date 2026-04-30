@@ -277,3 +277,35 @@ def pt_clients():
     )
 
     return render_template('pt_clients.html', clients=clients)
+
+@trainers.route('/trainer-dashboard')
+def trainer_dashboard():
+    user = get_logged_in_user()
+    
+    if not user:
+    return redirect(url_for('auth.login'))
+    
+    if user.role != 'pt':
+    flash('Access denied. Trainer account required.', 'error')
+    return redirect(url_for('home.index'))
+    
+    bookings = (
+    SessionBooking.query
+    .filter_by(trainer_id=user.user_id)
+    .filter(SessionBooking.status != 'cancelled')
+    .order_by(SessionBooking.date.desc())
+    .all()
+    )
+    
+    messages = (
+    TrainerMessage.query
+    .filter_by(receiver_id=user.user_id)
+    .order_by(TrainerMessage.sent_at.desc())
+    .all()
+    )
+    
+    return render_template(
+    'trainer_dashboard.html',
+    bookings=bookings,
+    messages=messages
+    )
