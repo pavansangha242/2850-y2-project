@@ -19,29 +19,30 @@
 
     {% if show_nav is not defined or show_nav != false %}
     <!-- Navigation -->
-  <nav class="navbar">
-    <div class="nav-container">
-        <a href="/" class="nav-logo">
-            <i class="fas fa-dumbbell"></i>
-            <span>FitTrack</span>
-        </a>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>FitTrack</span>
+            </a>
 
             <ul class="nav-links">
+                {% if g.get('nav_role') == 'admin' %}
+                <!-- admin view -->
                 <li>
-                    <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+                    <a href="/home" class="{% if request.path.startswith('/home') %}active{% endif %}">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
-
                 <li>
-                    <a href="/history" class="{% if request.path.startswith('/history') %}active{% endif %}">
-                        <i class="fas fa-history"></i> History
+                    <a href="/admin" class="{% if request.path.startswith('/admin') %}active{% endif %}">
+                        <i class="fas fa-shield-alt"></i> Admin
                     </a>
                 </li>
 
                 <li>
-                    <a href="/progress" class="{% if request.path.startswith('/progress') %}active{% endif %}">
-                        <i class="fas fa-chart-line"></i> Progress
+                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i> Trainers
                     </a>
                 </li>
 
@@ -57,18 +58,33 @@
                     </a>
                 </li>
 
+                {% elif g.get('nav_role') == 'pt' %}
+     
+                <!--trainer view-->
                 <li>
-                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
-                        <i class="fas fa-user-tie"></i> Trainers
+                    <a href="/trainer-dashboard" class="{% if request.path.startswith('/trainer-dashboard') %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
                 </li>
-
                 <li>
-                    <a href="/admin" class="{% if request.path.startswith('/admin') %}active{% endif %}">
-                        <i class="fas fa-shield-alt"></i> Admin
+                    <a href="/pt-clients" class="{% if request.path.startswith('/pt-clients') %}active{% endif %}">
+                        <i class="fas fa-users"></i> My Clients
                     </a>
                 </li>
-
+                <li>
+                    <a href="/trainer/inbox" class="{% if request.path.startswith('/trainer/inbox') %}active{% endif %}">
+                        <i class="fas fa-envelope"></i> Messages
+                        {% set unread = unread_count if unread_count is defined else 0 %}
+                        {% if unread > 0 %}
+                        <span class="nav-badge">{{ unread }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="/events" class="{% if request.path.startswith('/events') %}active{% endif %}">
+                        <i class="fas fa-calendar-alt"></i> Events
+                    </a>
+                </li>
                 <li class="nav-dropdown">
                     <span class="dropdown-trigger {% if request.path in ['/swimming', '/cycling', '/running', '/walking', '/gym'] %}active{% endif %}">
                         🏅 Exercises ▾
@@ -82,21 +98,63 @@
                     </ul>
                 </li>
 
-                {% if g.get('nav_role') == 'customer' %}
+                {% else %}
+                <!--customer view -->
                 <li>
-                    <a href="/survey" class="{% if request.path.startswith('/survey') %}active{% endif %}">
-                        <i class="fas fa-clipboard-list"></i> Survey
+                    <a href="/home" class="{% if request.path.startswith('/home') %}active{% endif %}">
+                        <i class="fas fa-home"></i> Home
                     </a>
                 </li>
-                {% elif g.get('nav_role') == 'pt' %}
                 <li>
-                    <a href="/pt-clients" class="{% if request.path.startswith('/pt-clients') %}active{% endif %}">
-                        <i class="fas fa-users"></i> My Clients
+                    <a href="/history" class="{% if request.path.startswith('/history') %}active{% endif %}">
+                        <i class="fas fa-history"></i> History
                     </a>
                 </li>
-                {% endif %}
-            </ul>
+                <li>
+                    <a href="/progress" class="{% if request.path.startswith('/progress') %}active{% endif %}">
+                        <i class="fas fa-chart-line"></i> Progress
+                    </a>
+                </li>
+                <li>
+                    <a href="/events" class="{% if request.path.startswith('/events') %}active{% endif %}">
+                        <i class="fas fa-calendar-alt"></i> Events
+                    </a>
+                </li>
+                <li>
+                    <a href="/leaderboard" class="{% if request.path.startswith('/leaderboard') %}active{% endif %}">
+                        <i class="fas fa-trophy"></i> Leaderboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
+                        <i class="fas fa-user-tie"></i> Trainers
+                    </a>
+                </li>
+                <li>
+                    <a href="/messages" class="{% if request.path.startswith('/messages') %}active{% endif %}">
+                        <i class="fas fa-envelope"></i> Messages
+                        {% set unread = unread_count if unread_count is defined else 0 %}
+                        {% if unread > 0 %}
+                        <span class="nav-badge">{{ unread }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="nav-dropdown">
+                    <span class="dropdown-trigger {% if request.path in ['/swimming', '/cycling', '/running', '/walking', '/gym'] %}active{% endif %}">
+                        🏅 Exercises ▾
+                    </span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/swimming" {% if request.path == '/swimming' %}class="active"{% endif %}>🏊 Swimming</a></li>
+                        <li><a href="/cycling" {% if request.path == '/cycling' %}class="active"{% endif %}>🚴 Cycling</a></li>
+                        <li><a href="/running" {% if request.path == '/running' %}class="active"{% endif %}>🏃 Running</a></li>
+                        <li><a href="/walking" {% if request.path == '/walking' %}class="active"{% endif %}>🚶 Walking</a></li>
+                        <li><a href="/gym" {% if request.path == '/gym' %}class="active"{% endif %}>🏋 Gym</a></li>
+                    </ul>
+                </li>
 
+                {% endif %}
+
+            </ul>
             <div class="nav-profile">
                 <a href="/settings" class="profile-icon">
                     <i class="fas fa-user-circle"></i>

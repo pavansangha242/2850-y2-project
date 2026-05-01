@@ -84,7 +84,7 @@ def approve_pt(user_id):
     if user.role == 'pt':
         user.approved = True
         
-        profile = TrainerProfile.query.filter_by(user_id=user.userid).first()
+        profile = TrainerProfile.query.filter_by(user_id=user.user_id).first()
 
         if not profile:
             profile = TrainerProfile( user_id = user.user_id,
