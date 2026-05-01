@@ -2,11 +2,12 @@
 # messages: customer views their trainer conversations
 # trainer inbox: trainer views all client messages
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from sqlalchemy import or_, and_
 
 from fitness_app.extensions import db
-from fitness_app.models import User, TrainerProfile, TrainerMessage
+from fitness_app.models import User, TrainerProfile, TrainerMessage, ChatMessage, Competition
+from datetime import datetime
 
 messages_bp = Blueprint('messages', __name__)
 
@@ -15,13 +16,14 @@ messages_bp = Blueprint('messages', __name__)
 
 @messages_bp.route('/messages')
 def messages():
-    user = User.query.first()
+    user = User.query.filter_by(username=session.get('username')).first()
     if not user:
-        return "No users found in database."
-
-    selected_id = request.args.get('trainer_id', type=int)
-
-    # find all trainers this user has talked to
+        return redirect(url_for('auth.login'))
+ 
+    selected_id = request.args.get('user_id', type=int)
+    selected_group_id = request.args.get('group_id', type=int)
+ 
+    # find all users this user has talked to
     subq = db.session.query(
         db.case(
             (TrainerMessage.sender_id == user.user_id, TrainerMessage.receiver_id),
@@ -33,99 +35,145 @@ def messages():
             TrainerMessage.receiver_id == user.user_id
         )
     ).distinct().all()
-
-    trainer_ids = [r[0] for r in subq]
-
+ 
+    user_ids = [r[0] for r in subq]
+ 
     conversations = []
-    for tid in trainer_ids:
-        trainer = User.query.get(tid)
-        if not trainer:
+    for uid in user_ids:
+        contact = User.query.get(uid)
+        if not contact:
             continue
-
-        profile = TrainerProfile.query.filter_by(user_id=tid).first()
-
+ 
+        profile = TrainerProfile.query.filter_by(user_id=uid).first()
+ 
         latest = TrainerMessage.query.filter(
             or_(
-                and_(TrainerMessage.sender_id == user.user_id, TrainerMessage.receiver_id == tid),
-                and_(TrainerMessage.sender_id == tid, TrainerMessage.receiver_id == user.user_id)
+                and_(TrainerMessage.sender_id == user.user_id, TrainerMessage.receiver_id == uid),
+                and_(TrainerMessage.sender_id == uid, TrainerMessage.receiver_id == user.user_id)
             )
         ).order_by(TrainerMessage.sent_at.desc()).first()
-
+ 
         unread = TrainerMessage.query.filter_by(
-            sender_id=tid,
+            sender_id=uid,
             receiver_id=user.user_id,
             is_read=False
         ).count()
-
+ 
         conversations.append({
-            'trainer': trainer,
+            'type': 'dm',
+            'contact': contact,
             'profile': profile,
-            'latest': latest,
+            'latest_msg': latest.message if latest else '',
+            'latest_time': latest.sent_at if latest else datetime.min,
             'unread': unread,
         })
-
-    conversations.sort(
-        key=lambda x: x['latest'].sent_at if x['latest'] else 0,
-        reverse=True
-    )
-
-    selected_trainer = None
+ 
+    # find all groups this user has chatted in
+    group_subq = db.session.query(ChatMessage.competition_id).filter_by(user_id=user.user_id).distinct().all()
+    for (gid,) in group_subq:
+        comp = Competition.query.get(gid)
+        if not comp: continue
+        
+        latest = ChatMessage.query.filter_by(competition_id=gid).order_by(ChatMessage.timestamp.desc()).first()
+        
+        conversations.append({
+            'type': 'group',
+            'group': comp,
+            'latest_msg': latest.content if latest else '',
+            'latest_time': latest.timestamp if latest else datetime.min,
+            'unread': 0
+        })
+ 
+    conversations.sort(key=lambda x: x['latest_time'], reverse=True)
+ 
+    selected_contact = None
+    selected_group = None
     msgs = []
-
-    if selected_id:
-        selected_trainer = User.query.get(selected_id)
+ 
+    if selected_group_id:
+        selected_group = Competition.query.get(selected_group_id)
+        if selected_group:
+            msgs = ChatMessage.query.filter_by(competition_id=selected_group_id).order_by(ChatMessage.timestamp.asc()).all()
+    elif selected_id:
+        selected_contact = User.query.get(selected_id)
     elif conversations:
-        selected_trainer = conversations[0]['trainer']
-        selected_id = selected_trainer.user_id
-
-    if selected_trainer:
+        # Auto-select the first conversation
+        first = conversations[0]
+        if first['type'] == 'dm':
+            selected_contact = first['contact']
+            selected_id = selected_contact.user_id
+        else:
+            selected_group = first['group']
+            selected_group_id = selected_group.competition_id
+            msgs = ChatMessage.query.filter_by(competition_id=selected_group_id).order_by(ChatMessage.timestamp.asc()).all()
+ 
+    if selected_contact:
         # mark messages as read when conversation is opened
         TrainerMessage.query.filter_by(
-            sender_id=selected_trainer.user_id,
+            sender_id=selected_contact.user_id,
             receiver_id=user.user_id,
             is_read=False
         ).update({'is_read': True})
         db.session.commit()
-
+ 
         msgs = TrainerMessage.query.filter(
             or_(
-                and_(TrainerMessage.sender_id == user.user_id, TrainerMessage.receiver_id == selected_trainer.user_id),
-                and_(TrainerMessage.sender_id == selected_trainer.user_id, TrainerMessage.receiver_id == user.user_id)
+                and_(TrainerMessage.sender_id == user.user_id, TrainerMessage.receiver_id == selected_contact.user_id),
+                and_(TrainerMessage.sender_id == selected_contact.user_id, TrainerMessage.receiver_id == user.user_id)
             )
         ).order_by(TrainerMessage.sent_at.asc()).all()
-
+ 
     selected_profile = TrainerProfile.query.filter_by(user_id=selected_id).first() if selected_id else None
+ 
+    normalized_messages = []
+    for m in msgs:
+        if hasattr(m, 'message'): # TrainerMessage
+            normalized_messages.append({
+                'is_mine': m.sender_id == user.user_id,
+                'text': m.message,
+                'time': m.sent_at,
+                'author_name': user.first_name if m.sender_id == user.user_id else (selected_contact.first_name if selected_contact else 'Unknown')
+            })
+        else: # ChatMessage
+            normalized_messages.append({
+                'is_mine': m.user_id == user.user_id,
+                'text': m.content,
+                'time': m.timestamp,
+                'author_name': m.author.first_name
+            })
 
     return render_template(
         'messages.html',
         current_user=user,
         conversations=conversations,
-        selected_trainer=selected_trainer,
+        selected_contact=selected_contact,
+        selected_group=selected_group,
         selected_profile=selected_profile,
-        messages=msgs,
+        messages=normalized_messages,
         selected_id=selected_id,
+        selected_group_id=selected_group_id
     )
-
-
+ 
+ 
 @messages_bp.route('/messages/send', methods=['POST'])
 def send_user_message():
-    user = User.query.first()
+    user = User.query.filter_by(username=session.get('username')).first()
     if not user:
-        return "No users found in database."
-
-    trainer_id = request.form.get('trainer_id', type=int)
+        return redirect(url_for('auth.login'))
+ 
+    contact_id = request.form.get('contact_id', type=int)
     message_txt = request.form.get('message', '').strip()
-
-    if trainer_id and message_txt:
+ 
+    if contact_id and message_txt:
         msg = TrainerMessage(
             sender_id=user.user_id,
-            receiver_id=trainer_id,
+            receiver_id=contact_id,
             message=message_txt
         )
         db.session.add(msg)
         db.session.commit()
-
-    return redirect(url_for('messages.messages') + f'?trainer_id={trainer_id}')
+ 
+    return redirect(url_for('messages.messages') + f'?user_id={contact_id}')
 
 
 # trainer inbox page

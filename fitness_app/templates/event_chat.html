@@ -4,7 +4,8 @@
 
 {% block content %}
 <div class="page-header">
-    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm" style="margin-bottom: 1rem;">
+    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm"
+        style="margin-bottom: 1rem;">
         <i class="fas fa-arrow-left"></i> Back to Event
     </a>
     <h1><i class="fas fa-comments" style="color: var(--primary);"></i> {{ event.name }} — Group Chat</h1>
@@ -19,29 +20,35 @@
     <!-- Chat Messages Area -->
     <div class="chat-messages" id="chatMessages">
         {% if messages %}
-            {% for msg in messages %}
-            <div class="chat-bubble {{ 'mine' if msg.user_id == current_user.user_id else 'theirs' }}" data-id="{{ msg.message_id }}">
-                {% if msg.user_id == current_user.user_id %}
-                <button class="chat-delete" onclick="deleteMessage({{ msg.message_id }}, this)" title="Delete message">&times;</button>
-                {% endif %}
-                {% if msg.user_id != current_user.user_id %}
-                <div class="chat-author">{{ msg.author.first_name }}</div>
-                {% endif %}
-                <div class="chat-text">{{ msg.content }}</div>
-                <div class="chat-time">{{ msg.timestamp.strftime('%H:%M') }}</div>
-            </div>
-            {% endfor %}
+        {% for msg in messages %}
+        <div class="chat-bubble {{ 'mine' if msg.user_id == current_user.user_id else 'theirs' }}"
+            data-id="{{ msg.message_id }}">
+            {% if msg.user_id == current_user.user_id %}
+            <button class="chat-delete" onclick="deleteMessage({{ msg.message_id }}, this)"
+                title="Delete message">&times;</button>
+            {% endif %}
+            {% if msg.user_id != current_user.user_id %}
+            <a href="{{ url_for('messages.messages') }}?user_id={{ msg.user_id }}" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">
+                {{ msg.author.first_name }}
+            </a>
+            {% endif %}
+            <div class="chat-text">{{ msg.content }}</div>
+            <div class="chat-time">{{ msg.timestamp.strftime('%H:%M') }}</div>
+        </div>
+        {% endfor %}
         {% else %}
-            <div class="chat-empty" id="chatEmpty">
-                <i class="fas fa-comments" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
-                <p>No messages yet. Start the conversation!</p>
-            </div>
+        <div class="chat-empty" id="chatEmpty">
+            <i class="fas fa-comments" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+            <p>No messages yet. Start the conversation!</p>
+        </div>
         {% endif %}
     </div>
 
     <!-- Message Input -->
-    <form class="chat-input-bar" action="{{ url_for('events.send_message', competition_id=event.competition_id) }}" method="POST" id="chatForm">
-        <input type="text" name="message" class="chat-input" placeholder="Type a message..." autocomplete="off" required id="chatInput">
+    <form class="chat-input-bar" action="{{ url_for('events.send_message', competition_id=event.competition_id) }}"
+        method="POST" id="chatForm">
+        <input type="text" name="message" class="chat-input" placeholder="Type a message..." autocomplete="off" required
+            id="chatInput">
         <button type="submit" class="btn btn-primary chat-send" id="chatSendBtn">
             <i class="fas fa-paper-plane"></i>
         </button>
@@ -77,7 +84,7 @@
                             html += '<button class="chat-delete" onclick="deleteMessage(' + msg.id + ', this)" title="Delete message">&times;</button>';
                         }
                         if (!msg.is_mine) {
-                            html += '<div class="chat-author">' + msg.author + '</div>';
+                            html += '<a href="{{ url_for("messages.messages") }}?user_id=' + msg.user_id + '" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">' + msg.author + '</a>';
                         }
                         html += '<div class="chat-text">' + msg.content + '</div>';
                         html += '<div class="chat-time">' + msg.time + '</div>';
@@ -90,7 +97,7 @@
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }
             })
-            .catch(() => {});
+            .catch(() => { });
     }
 
     setInterval(pollMessages, 3000);
@@ -99,7 +106,7 @@
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
 
-    chatForm.addEventListener('submit', function(e) {
+    chatForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const message = chatInput.value.trim();
         if (!message) return;
@@ -125,16 +132,6 @@
             const pending = document.querySelector('.pending-msg');
             if (pending) pending.remove();
             setTimeout(pollMessages, 300);
-
-            // Trigger an auto-reply after a short delay (feels natural)
-            const delay = 2000 + Math.random() * 2000;
-            setTimeout(() => {
-                fetch('{{ url_for("events.auto_reply", competition_id=event.competition_id) }}', {
-                    method: 'POST'
-                }).then(() => {
-                    setTimeout(pollMessages, 500);
-                });
-            }, delay);
         });
     });
 
