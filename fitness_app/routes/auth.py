@@ -257,7 +257,7 @@ def pt_clients():
         return redirect(url_for('auth.user_settings'))
  
     # Show all customers who have share_with_pt enabled, and are matched with that PT
-        clients = (
+    clients = (
         User.query
         .join(TrainingClient, TrainingClient.client_id == User.user_id)
         .join(PrivacySettings, PrivacySettings.user_id == User.user_id)

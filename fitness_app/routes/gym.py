@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy import func
 
 from fitness_app.extensions import db
-from fitness_app.models import User, GymExercise, GymAssignment, GymWorkout
+from fitness_app.models import User, GymExercise, GymAssignment, GymWorkout, SessionBooking
 
 gym_bp = Blueprint('gym', __name__)
 
@@ -127,7 +127,17 @@ def gym_page():
     clients = []
 
     if user.role == "pt":
-        clients = User.query.filter_by(role="customer").order_by(User.username.asc()).all()
+        clients = (
+            User.query
+            .join(SessionBooking, SessionBooking.client_id == User.user_id)
+            .filter(
+                SessionBooking.trainer_id == user.user_id,
+                SessionBooking.status == "confirmed"
+            )
+            .distinct()
+            .order_by(User.username.asc())
+            .all()
+        )
 
     # send everything to the html page
     return render_template(

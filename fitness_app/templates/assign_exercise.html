@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Exercise - FitTrack{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 760px; margin: 60px auto;">
+    <h1>Assign Exercise</h1>
+    <p style="color: #888; margin-bottom: 24px;">
+        Assign a gym exercise to one of your confirmed clients.
+    </p>
+
+    <form method="POST" class="settings-card" style="padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+
+        <label>Client</label>
+        <select name="client_id" required class="trainer-search">
+            <option value="">-- Pick a client --</option>
+            {% for client in clients %}
+                <option value="{{ client.user_id }}">
+                    {{ client.username }} - {{ client.email }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Exercise</label>
+        <select name="exercise_id" required class="trainer-search">
+            <option value="">-- Pick an exercise --</option>
+            {% for exercise in exercises %}
+                <option value="{{ exercise.gym_exercise_id }}">
+                    {{ exercise.name }} - {{ exercise.muscle_group }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Sets</label>
+        <input type="number" name="sets" min="0" class="trainer-search">
+
+        <label>Reps</label>
+        <input type="number" name="reps" min="0" class="trainer-search">
+
+        <label>Weight kg</label>
+        <input type="number" name="weight_kg" min="0" step="0.5" class="trainer-search">
+
+        <label>Notes</label>
+        <textarea name="notes" rows="4" class="trainer-search" placeholder="Example: Focus on slow controlled movement."></textarea>
+
+        <button type="submit" class="btn-login" style="margin-top: 10px;">
+            Assign Exercise
+        </button>
+    </form>
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('trainers.trainer_dashboard') }}">← Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
