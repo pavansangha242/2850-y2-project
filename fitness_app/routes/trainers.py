@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 from fitness_app.extensions import db
-from fitness_app.models import User, TrainerProfile, SessionBooking, TrainerMessage, TrainingClient
+from fitness_app.models import User, TrainerProfile, SessionBooking, TrainerMessage, TrainingClient, GymExercise, GymAssignment
 
 trainers = Blueprint('trainers', __name__)
 
@@ -268,11 +268,12 @@ def pt_clients():
 
     clients = (
         User.query
-        .join(TrainingClient, TrainingClient.client_id == User.user_id)
+        .join(SessionBooking, SessionBooking.client_id == User.user_id)
         .filter(
-            TrainingClient.trainer_id == user.user_id,
-            TrainingClient.active == True
+            SessionBooking.trainer_id == user.user_id,
+            SessionBooking.status  == 'confirmed'
         )
+        .distinct()
         .all()
     )
 
@@ -283,29 +284,179 @@ def trainer_dashboard():
     user = get_logged_in_user()
     
     if not user:
-    return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login'))
     
     if user.role != 'pt':
-    flash('Access denied. Trainer account required.', 'error')
-    return redirect(url_for('home.index'))
+        flash('Access denied. Trainer account required.', 'error')
+        return redirect(url_for('home.index'))
     
     bookings = (
-    SessionBooking.query
-    .filter_by(trainer_id=user.user_id)
-    .filter(SessionBooking.status != 'cancelled')
-    .order_by(SessionBooking.date.desc())
-    .all()
+        SessionBooking.query
+        .filter_by(trainer_id=user.user_id)
+        .filter(SessionBooking.status != 'cancelled')
+        .order_by(SessionBooking.date.desc())
+        .all()
     )
     
     messages = (
-    TrainerMessage.query
-    .filter_by(receiver_id=user.user_id)
-    .order_by(TrainerMessage.sent_at.desc())
-    .all()
+        TrainerMessage.query
+        .filter_by(receiver_id=user.user_id)
+        .order_by(TrainerMessage.sent_at.desc())
+        .all()
     )
     
     return render_template(
-    'trainer_dashboard.html',
-    bookings=bookings,
-    messages=messages
+        'trainer_dashboard.html',
+        bookings=bookings,
+        messages=messages
+    )
+
+@trainers.route('/trainers/booking/confirm/<int:booking_id>', methods=['POST'])
+def confirm_booking(booking_id):
+    user = get_logged_in_user()
+    if not user or user.role != 'pt':
+        return redirect(url_for('auth.login'))
+
+    b = SessionBooking.query.filter_by(
+        booking_id=booking_id,
+        trainer_id=user.user_id
+    ).first()
+
+    if b:
+        b.status = 'confirmed'
+
+        existing_client = TrainingClient.query.filter_by(
+            trainer_id=user.user_id,
+            client_id=b.client_id
+        ).first()
+
+        if existing_client:
+            existing_client.active = True
+        else:
+            new_client = TrainingClient(
+                trainer_id=user.user_id,
+                client_id=b.client_id,
+                active=True
+            )
+            db.session.add(new_client)
+
+        db.session.commit()
+        flash('Booking confirmed and client added!', 'success')
+
+    return redirect(url_for('trainers.trainer_dashboard'))
+
+@trainers.route('/trainers/booking/decline/<int:booking_id>', methods=['POST'])
+def decline_booking(booking_id):
+    user = get_logged_in_user()
+    if not user or user.role != 'pt':
+        return redirect(url_for('auth.login'))
+
+    b = SessionBooking.query.filter_by(
+        booking_id=booking_id,
+        trainer_id=user.user_id
+    ).first()
+
+    if b:
+        b.status = 'cancelled'
+        db.session.commit()
+        flash('Booking declined.', 'success')
+
+    return redirect(url_for('trainers.trainer_dashboard'))
+
+@trainers.route('/trainer-profile/edit', methods=['GET', 'POST'])
+def edit_trainer_profile():
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    if user.role != 'pt':
+        flash('Access denied. Trainer account required.', 'error')
+        return redirect(url_for('home.index'))
+
+    profile = ensure_trainer_profile(user)
+
+    if request.method == 'POST':
+        profile.specialty = request.form.get('specialty', '').strip()
+
+        bio_text = request.form.get('bio', '').strip()
+        features = request.form.get('features', '').strip()
+
+        if features:
+            profile.bio = bio_text + '|||' + features.replace('\n', '|||')
+        else:
+            profile.bio = bio_text
+
+        db.session.commit()
+        flash('Trainer profile updated!', 'success')
+        return redirect(url_for('trainers.trainer_dashboard'))
+
+    parts = (profile.bio or '').split('|||')
+    bio_text = parts[0] if parts else ''
+    features_text = '\n'.join(parts[1:]) if len(parts) > 1 else ''
+
+    return render_template(
+        'edit_trainer_profile.html',
+        profile=profile,
+        bio_text=bio_text,
+        features_text=features_text
+    )
+
+
+@trainers.route('/trainer/assign-exercise', methods=['GET', 'POST'])
+def assign_exercise():
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    if user.role != 'pt':
+        flash('Access denied. Trainer account required.', 'error')
+        return redirect(url_for('home.index'))
+
+    clients = (
+        User.query
+        .join(SessionBooking, SessionBooking.client_id == User.user_id)
+        .filter(
+            SessionBooking.trainer_id == user.user_id,
+            SessionBooking.status == 'confirmed'
+        )
+        .distinct()
+        .all()
+    )
+
+    exercises = GymExercise.query.order_by(GymExercise.name.asc()).all()
+
+    if request.method == 'POST':
+        client_id = request.form.get('client_id', type=int)
+        exercise_id = request.form.get('exercise_id', type=int)
+        sets = request.form.get('sets', type=int)
+        reps = request.form.get('reps', type=int)
+        weight_kg = request.form.get('weight_kg', type=float)
+        notes = request.form.get('notes', '').strip()
+
+        if not client_id or not exercise_id:
+            flash('Please choose a client and an exercise.', 'error')
+            return redirect(url_for('trainers.assign_exercise'))
+
+        assignment = GymAssignment(
+            trainer_id=user.user_id,
+            client_id=client_id,
+            gym_exercise_id=exercise_id,
+            sets=sets or 0,
+            reps=reps or 0,
+            weight_kg=weight_kg or 0,
+            notes=notes
+        )
+
+        db.session.add(assignment)
+        db.session.commit()
+
+        flash('Exercise assigned to client!', 'success')
+        return redirect(url_for('trainers.assign_exercise'))
+
+    return render_template(
+        'assign_exercise.html',
+        clients=clients,
+        exercises=exercises
     )
