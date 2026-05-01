@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Trainer Dashboard - FitTrack{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div class="dashboard-hero">
+        <div>
+            <h1>Welcome back, {{ session.get('username') }} 👋</h1>
+            <p>Here's an overview of your clients and upcoming sessions.</p>
+        </div>
+    </div>
+
+    <div class="dash-stats-row">
+        <div class="dash-stat-card">
+            <div class="dash-stat-icon" style="background:#7c3aed;"><i class="fas fa-calendar-check"></i></div>
+            <div>
+                <div class="dash-stat-num">{{ bookings|length }}</div>
+                <div class="dash-stat-label">Upcoming Bookings</div>
+            </div>
+        </div>
+        <div class="dash-stat-card">
+            <div class="dash-stat-icon" style="background:#6C63FF;"><i class="fas fa-envelope"></i></div>
+            <div>
+                <div class="dash-stat-num">{{ messages|length }}</div>
+                <div class="dash-stat-label">Messages</div>
+            </div>
+        </div>
+        <div class="dash-stat-card">
+            <div class="dash-stat-icon" style="background:#4B44DB;"><i class="fas fa-users"></i></div>
+            <div>
+                <div class="dash-stat-num">{{ bookings|map(attribute='client_id')|list|unique|list|length }}</div>
+                <div class="dash-stat-label">Active Clients</div>
+            </div>
+        </div>
+        <div class="dash-stat-card">
+            <div class="dash-stat-icon" style="background:#2a2850;"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="dash-stat-num">{{ bookings|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+                <div class="dash-stat-label">Pending Bookings</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-grid">
+
+        <!-- Upcoming Bookings -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h2><i class="fas fa-calendar-alt"></i> Upcoming Bookings</h2>
+                <a href="/pt-clients" class="dash-link">View Clients →</a>
+            </div>
+
+            {% if bookings %}
+            <div class="booking-list">
+                {% for b in bookings %}
+                <div class="booking-item">
+                    <div class="booking-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="booking-info">
+                        <div class="booking-client">Client #{{ b.client_id }}</div>
+                        <div class="booking-time">
+                            <i class="fas fa-calendar"></i> {{ b.date }}
+                            &nbsp;
+                            <i class="fas fa-clock"></i> {{ b.time }}
+                        </div>
+                        {% if b.notes %}
+                        <div class="booking-notes">{{ b.notes }}</div>
+                        {% endif %}
+                    </div>
+                    <span class="booking-status status-{{ b.status }}">{{ b.status | capitalize }}</span>
+                    {% if b.status == 'pending' %}
+                    <div class="booking-actions">
+                        <form method="POST" action="/trainers/booking/confirm/{{ b.booking_id }}" style="display:inline;">
+                            <button type="submit" class="btn-confirm">✓ Confirm</button>
+                        </form>
+                        <form method="POST" action="/trainers/booking/decline/{{ b.booking_id }}" style="display:inline;">
+                            <button type="submit" class="btn-decline">✗ Decline</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="dash-empty">
+                <i class="fas fa-calendar-times"></i>
+                <p>No upcoming bookings yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h2><i class="fas fa-envelope"></i> Recent Messages</h2>
+                <a href="/trainer/inbox" class="dash-link">View All →</a>
+            </div>
+
+            {% if messages %}
+            <div class="message-list">
+                {% for msg in messages[:8] %}
+                <a class="msg-preview-item" href="/trainer/inbox?client_id={{ msg.sender_id }}">
+                    <div class="msg-preview-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="msg-preview-info">
+                        <div class="msg-preview-name">
+                            Client #{{ msg.sender_id }}
+                            {% if not msg.is_read %}
+                            <span class="unread-dot"></span>
+                            {% endif %}
+                        </div>
+                        <div class="msg-preview-text">{{ msg.message[:60] }}{% if msg.message|length > 60 %}...{% endif %}</div>
+                        <div class="msg-preview-time">{{ msg.sent_at.strftime('%d %b %H:%M') if msg.sent_at else '' }}</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="dash-empty">
+                <i class="fas fa-inbox"></i>
+                <p>No messages yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dash-card" style="margin-top: 20px;">
+        <div class="dash-card-header">
+            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+        </div>
+        <div class="quick-actions">
+            <a href="/pt-clients" class="quick-action-btn">
+                <i class="fas fa-users"></i>
+                <span>My Clients</span>
+            </a>
+            <a href="/trainer/inbox" class="quick-action-btn">
+                <i class="fas fa-envelope"></i>
+                <span>Inbox</span>
+            </a>
+            <a href="/trainer-profile/edit" class="quick-action-btn">
+                <i class="fas fa-user-tie"></i>
+                <span>Trainer Profile</span>
+            </a>
+            <a href="/trainer/assign-exercise" class="quick-action-btn">
+                <i class="fas fa-dumbbell"></i>
+                <span>Assign Exercise</span>
+            </a>
+            <a href="/settings" class="quick-action-btn">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
