@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import date
+from flask import session
 from fitness_app.extensions import db
 
 # Start of Pavan db model
@@ -288,7 +289,17 @@ class GymWorkout(db.Model):
 
 #test user id
 def get_current_user_id():
-    return 1
+    username = session.get("username")
+
+    if not username:
+        return None
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return None
+
+    return user.user_id
 
 
 def get_user_weight(user_id):

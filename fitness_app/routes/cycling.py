@@ -282,9 +282,12 @@ def log_ride():
             final_cals = None
 
     #no cals yet? work out w met
-    if final_cals is None and kg and dur_num:
-        met = get_cycling_met(final_speed)
-        final_cals = calculate_calories(met, kg, dur_num)
+    if final_cals is None and dur_num:
+    # Use saved user weight if available, otherwise use a default estimate
+        weight = kg if kg and kg > 0 else 70
+
+        met = get_running_met(dist_num, dur_num)
+        final_cals = calculate_calories(met, weight, dur_num)
 
     #new activity save
     new_ride = Activity(
