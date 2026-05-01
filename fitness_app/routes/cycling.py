@@ -286,7 +286,7 @@ def log_ride():
     # Use saved user weight if available, otherwise use a default estimate
         weight = kg if kg and kg > 0 else 70
 
-        met = get_cycling_met(dist_num, dur_num)
+        met = get_cycling_met(final_speed)
         final_cals = calculate_calories(met, weight, dur_num)
 
     #new activity save
