@@ -25,9 +25,16 @@ def index():
     today = date.today()
     today_activities = Activity.query.filter_by(user_id=current_user.user_id, date=today).all() if current_user else []
 
+    print("HOME TODAY:", today)
+    print("HOME USER:", current_user.user_id, current_user.username)
+    print("HOME ACTIVITIES:", today_activities)
+
+    for a in today_activities:
+        print("ACTIVITY:", a.activity_id, a.user_id, a.date, a.distance_km, a.calories)
+
     total_steps = 0
-    total_calories = sum(a.calories for a in today_activities)
-    total_distance = sum(a.distance_km for a in today_activities)
+    total_calories = sum((a.calories or 0) for a in today_activities)
+    total_distance = sum((a.distance_km or 0) for a in today_activities)
 
     # Workouts this week (count of activity entries in the last 7 days)
     week_start = today - timedelta(days=today.weekday())

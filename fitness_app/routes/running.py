@@ -268,9 +268,12 @@ def log_run():
         except ValueError:
             final_cals = None
 
-    if final_cals is None and kg and dur_num:
+    if final_cals is None and dur_num:
+    # Use saved user weight if available, otherwise use a default estimate
+        weight = kg if kg and kg > 0 else 70
+
         met = get_running_met(dist_num, dur_num)
-        final_cals = calculate_calories(met, kg, dur_num)
+        final_cals = calculate_calories(met, weight, dur_num)
 
     #save run
     new_run = Activity(

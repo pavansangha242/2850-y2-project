@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session, redirect, url_for
 from sqlalchemy import func
 
 from fitness_app.extensions import db
@@ -28,9 +28,15 @@ def build_query(user_id, sport_type):
 
 @progress.route("/progress")
 def progress_page():
-    user = User.query.first()
+    username = session.get("username")
+
+    if not username:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(username=username).first()
+
     if not user:
-        return "No users found in database."
+        return redirect(url_for("auth.login"))
 
     uid = user.user_id
     selected_sport = request.args.get('sport', 'all')
@@ -63,25 +69,57 @@ def progress_page():
         total_calories = db.session.query(
             func.coalesce(func.sum(Activity.calories), 0)
         ).filter(Activity.user_id == uid, *sport_filter).scalar() or 0
-
-        # different sports use different pace/speed metrics
-        if selected_sport == 'Cycling':
-            metric_key = 'average_speed_kmh'
-        elif selected_sport == 'Swimming':
-            metric_key = 'pace_per_100m'
-        else:
-            metric_key = 'pace_per_km'
-
-        pace_data = query.filter(getattr(Activity, metric_key) > 0).order_by(Activity.date.desc()).limit(8).all()
-        pace_data = list(reversed(pace_data))
-        chart_labels      = []
+        chart_labels = []
         chart_pace_values = []
-        for session_row in pace_data:
-            chart_labels.append(session_row.notes[:10] if session_row.notes else str(session_row.date))
-            val = float(getattr(session_row, metric_key) or 0)
-            if selected_sport != 'Cycling':
-                val = round(val / 60, 3)
-            chart_pace_values.append(round(val, 2))
+        
+        if selected_sport == 'Swimming':
+            pace_data = (
+                query.filter(Activity.pace_per_100m > 0)
+                .order_by(Activity.date.desc())
+                .limit(8)
+                .all()
+            )
+
+            pace_data = list(reversed(pace_data))
+
+            for session_row in pace_data:
+                chart_labels.append(
+                    session_row.notes[:10] if session_row.notes else str(session_row.date)
+                )
+                val = float(session_row.pace_per_100m)
+                chart_pace_values.append(round(val, 1))
+
+        else:
+            pace_data = (
+                query.filter(
+                    Activity.distance_km > 0,
+                    Activity.duration_minutes > 0
+                )
+                .order_by(Activity.date.desc())
+                .limit(8)
+                .all()
+            )
+
+            pace_data = list(reversed(pace_data))
+
+            for session_row in pace_data:
+                chart_labels.append(
+                    session_row.notes[:10] if session_row.notes else str(session_row.date)
+                )
+
+                if selected_sport == 'Cycling':
+                    hours = session_row.duration_minutes / 60
+                    val = session_row.distance_km / hours if hours > 0 else 0
+                else:
+                    val = session_row.duration_minutes / session_row.distance_km
+
+                chart_pace_values.append(round(val, 2))
+
+            if chart_pace_values:
+                if selected_sport == "Cycling":
+                    best_pace = max(chart_pace_values)
+                else:
+                    best_pace = min(chart_pace_values)
 
         dist_data     = query.filter(Activity.distance_km > 0).order_by(Activity.date.desc()).limit(8).all()
         dist_data     = list(reversed(dist_data))

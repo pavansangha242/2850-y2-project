@@ -49,8 +49,8 @@ def leaderboard_page():
         .all()
     )
 
-    # Get the current user to highlight their row (defaulting to 'ahmed' for demo)
-    current_user = User.query.filter_by(username='ahmed').first()
+    # Get the current user to highlight their row
+    current_user = User.query.filter_by(username=session.get('username')).first()
 
     return render_template('leaderboard.html',
                            rankings=rankings,
