@@ -2,7 +2,7 @@
 # messages: customer views their trainer conversations
 # trainer inbox: trainer views all client messages
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session 
 from sqlalchemy import or_, and_
 
 from fitness_app.extensions import db
@@ -10,14 +10,19 @@ from fitness_app.models import User, TrainerProfile, TrainerMessage
 
 messages_bp = Blueprint('messages', __name__)
 
+def get_logged_in_user():
+    username = session.get('username')
+    if not username:
+        return None
+    return User.query.filter_by(username=username).first()
 
 # user massgaes page
 
 @messages_bp.route('/messages')
 def messages():
-    user = User.query.first()
+    user = get_logged_in_user()
     if not user:
-        return "No users found in database."
+        return redirect(url_for('auth.login'))
 
     selected_id = request.args.get('trainer_id', type=int)
 
@@ -109,9 +114,9 @@ def messages():
 
 @messages_bp.route('/messages/send', methods=['POST'])
 def send_user_message():
-    user = User.query.first()
+    user = get_logged_in_user()
     if not user:
-        return "No users found in database."
+        return redirect(url_for('auth.login'))
 
     trainer_id = request.form.get('trainer_id', type=int)
     message_txt = request.form.get('message', '').strip()
@@ -132,9 +137,12 @@ def send_user_message():
 
 @messages_bp.route('/trainer/inbox')
 def trainer_inbox():
-    user = User.query.filter_by(username='ahmed_ali').first()
+    user = get_logged_in_user()
     if not user:
-        return "Ahmed trainer not found."
+        return redirect(url_for('auth.login'))
+   
+    if user.role != 'pt':
+        return redirect(url_for('messages.messages'))
 
     selected_id = request.args.get('client_id', type=int)
     search = request.args.get('q', '').strip().lower()
@@ -244,9 +252,12 @@ def trainer_inbox():
 
 @messages_bp.route('/trainer/inbox/send', methods=['POST'])
 def send_trainer_message():
-    user = User.query.filter_by(username='ahmed_ali').first()
+    user = get_logged_in_user()
     if not user:
-        return "Ahmed trainer not found."
+        return redirect(url_for('auth.login'))
+    
+    if user.role != 'pt':
+        return redirect(url_for('messages.messages'))
 
     client_id = request.form.get('client_id', type=int)
     message_txt = request.form.get('message', '').strip()
