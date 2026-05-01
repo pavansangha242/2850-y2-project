@@ -259,6 +259,17 @@ def log_swim():
             dur_num = int(dur)
         except ValueError:
             dur_num = None
+    laps_num = 0
+    if laps:
+        try:
+            laps_num = int(laps)
+        except ValueError:
+            laps_num = 0
+
+    # If distance is blank, estimate it from laps.
+    # Assumes 25m pool: 1 lap = 25m = 0.025 km
+    if (not dist_num or dist_num <= 0) and laps_num > 0:
+        dist_num = laps_num * 0.025
 
     #pace per 100m
     if dist_num and dur_num and dist_num > 0:
@@ -288,9 +299,9 @@ def log_swim():
         date=date.fromisoformat(d) if d else date.today(),
         duration_minutes=dur_num or 0,
         distance_km=dist_num or 0.0,
-        laps=int(laps) if laps else 0,
+        laps=laps_num,
+        pace_per_100m=pace_100 or 0.0,
         stroke_type=stroke or '',
-        pace_per_100m=pace_100,
         calories=final_cals or 0,
         notes=note or ''
     )
