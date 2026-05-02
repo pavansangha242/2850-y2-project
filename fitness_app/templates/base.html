@@ -30,7 +30,7 @@
                 {% if g.get('nav_role') == 'admin' %}
                 <!-- admin view -->
                 <li>
-                    <a href="/home" class="{% if request.path.startswith('/home') %}active{% endif %}">
+                    <a href="{{ url_for('home.index') }}" class="{% if request.path == url_for('home.index') %}active{% endif %}">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
@@ -101,7 +101,7 @@
                 {% else %}
                 <!--customer view -->
                 <li>
-                    <a href="/home" class="{% if request.path.startswith('/home') %}active{% endif %}">
+                    <a href="{{ url_for('home.index') }}" class="{% if request.path == url_for('home.index') %}active{% endif %}">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
