@@ -26,6 +26,7 @@ def messages():
         return redirect(url_for('auth.login'))
 
     selected_id = request.args.get('trainer_id', type=int)
+    selected_group_id = request.args.get('group_id', type=int)
 
     # find all trainers this user has talked to
     subq = db.session.query(
@@ -167,17 +168,17 @@ def send_user_message():
 
     trainer_id = request.form.get('trainer_id', type=int)
     message_txt = request.form.get('message', '').strip()
- 
-    if contact_id and message_txt:
+
+    if trainer_id and message_txt:
         msg = TrainerMessage(
             sender_id=user.user_id,
-            receiver_id=contact_id,
+            receiver_id=trainer_id,
             message=message_txt
         )
         db.session.add(msg)
         db.session.commit()
- 
-    return redirect(url_for('messages.messages') + f'?user_id={contact_id}')
+
+    return redirect(url_for('messages.messages') + f'?trainer_id={trainer_id}')
 
 
 # trainer inbox page
