@@ -19,31 +19,22 @@
 
     {% if show_nav is not defined or show_nav != false %}
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="nav-logo">
-                <i class="fas fa-dumbbell"></i>
-                <span>FitTrack</span>
-            </a>
+  <nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">
+            <i class="fas fa-dumbbell"></i>
+            <span>FitTrack</span>
+        </a>
 
             <ul class="nav-links">
-                {% if g.get('nav_role') == 'admin' %}
+                {% if g.get('nav_role') == 'administrator' %}
                 <!-- admin view -->
-                <li>
-                    <a href="{{ url_for('home.index') }}" class="{% if request.path == url_for('home.index') %}active{% endif %}">
-                        <i class="fas fa-home"></i> Home
-                    </a>
-                </li>
+
                 <li>
                     <a href="/admin" class="{% if request.path.startswith('/admin') %}active{% endif %}">
                         <i class="fas fa-shield-alt"></i> Admin
                     </a>
-                </li>
 
-                <li>
-                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
-                        <i class="fas fa-chart-line"></i> Trainers
-                    </a>
                 </li>
 
                 <li>
@@ -58,14 +49,23 @@
                     </a>
                 </li>
 
-                {% elif g.get('nav_role') == 'pt' %}
-     
+                <li>
+                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
+                        <i class="fas fa-user-tie"></i> Trainers
+                    </a>
+                </li>
+
                 <!--trainer view-->
+                {% elif g.get('nav_role') == 'pt' %}
+
                 <li>
                     <a href="/trainer-dashboard" class="{% if request.path.startswith('/trainer-dashboard') %}active{% endif %}">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
+                    <a href="/trainers" class="{% if request.path.startswith('/trainers') %}active{% endif %}">
+                        <i class="fas fa-user-tie"></i> Trainers
                     </a>
                 </li>
+                
                 <li>
                     <a href="/pt-clients" class="{% if request.path.startswith('/pt-clients') %}active{% endif %}">
                         <i class="fas fa-users"></i> My Clients
@@ -85,21 +85,8 @@
                         <i class="fas fa-calendar-alt"></i> Events
                     </a>
                 </li>
-                <li class="nav-dropdown">
-                    <span class="dropdown-trigger {% if request.path in ['/swimming', '/cycling', '/running', '/walking', '/gym'] %}active{% endif %}">
-                        🏅 Exercises ▾
-                    </span>
-                    <ul class="dropdown-menu">
-                        <li><a href="/swimming" {% if request.path == '/swimming' %}class="active"{% endif %}>🏊 Swimming</a></li>
-                        <li><a href="/cycling" {% if request.path == '/cycling' %}class="active"{% endif %}>🚴 Cycling</a></li>
-                        <li><a href="/running" {% if request.path == '/running' %}class="active"{% endif %}>🏃 Running</a></li>
-                        <li><a href="/walking" {% if request.path == '/walking' %}class="active"{% endif %}>🚶 Walking</a></li>
-                        <li><a href="/gym" {% if request.path == '/gym' %}class="active"{% endif %}>🏋 Gym</a></li>
-                    </ul>
-                </li>
-
-                {% else %}
                 <!--customer view -->
+                {% else %}
                 <li>
                     <a href="{{ url_for('home.index') }}" class="{% if request.path == url_for('home.index') %}active{% endif %}">
                         <i class="fas fa-home"></i> Home
@@ -119,7 +106,8 @@
                     <a href="/events" class="{% if request.path.startswith('/events') %}active{% endif %}">
                         <i class="fas fa-calendar-alt"></i> Events
                     </a>
-                </li>
+
+                 </li>
                 <li>
                     <a href="/leaderboard" class="{% if request.path.startswith('/leaderboard') %}active{% endif %}">
                         <i class="fas fa-trophy"></i> Leaderboard
@@ -153,8 +141,8 @@
                 </li>
 
                 {% endif %}
-
             </ul>
+
             <div class="nav-profile">
                 <a href="/settings" class="profile-icon">
                     <i class="fas fa-user-circle"></i>
