@@ -415,15 +415,14 @@ def assign_exercise():
         return redirect(url_for('home.index'))
 
     clients = (
-        User.query
-        .join(SessionBooking, SessionBooking.client_id == User.user_id)
-        .filter(
-            SessionBooking.trainer_id == user.user_id,
-            SessionBooking.status == 'confirmed'
-        )
-        .distinct()
-        .all()
+    User.query
+    .join(TrainingClient, TrainingClient.client_id == User.user_id)
+    .filter(
+        TrainingClient.trainer_id == user.user_id,
+        TrainingClient.active == True
     )
+    .all()
+)
 
     exercises = GymExercise.query.order_by(GymExercise.name.asc()).all()
 
