@@ -59,6 +59,23 @@ def app():
             ExerciseType(name="Running", description="Running workouts"),
             ExerciseType(name="Cycling", description="Cycling workouts"),
             ExerciseType(name="Walking", description="Walking workouts"),
+            ExerciseType(name="Gym", description="Gym workouts"),
+        ])
+        db.session.commit()
+
+        db.session.add_all([
+            GymExercise(
+                name="Squat",
+                muscle_group="Legs",
+                description="Lower body exercise",
+                video_url=""
+            ),
+            GymExercise(
+                name="Bench Press",
+                muscle_group="Chest",
+                description="Upper body exercise",
+                video_url=""
+            ),
         ])
         db.session.commit()
 
