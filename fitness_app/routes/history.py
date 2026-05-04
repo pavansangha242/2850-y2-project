@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from sqlalchemy import func
 
 from fitness_app.extensions import db
@@ -11,9 +11,17 @@ PER_PAGE = 10
 
 @history.route('/history')
 def history_page():
-    user = User.query.first()
+    username = session.get("username")
+
+    if not username:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(username=username).first()
+
     if not user:
-        return "No users found in database."
+        return redirect(url_for("auth.login"))
+
+    uid = user.user_id
 
     uid = user.user_id
     selected_sport = request.args.get('sport', 'all')
@@ -82,10 +90,23 @@ def history_page():
 
 @history.route('/history/delete/<int:activity_id>', methods=['POST'])
 def delete_activity(activity_id):
-    act = Activity.query.get(activity_id)
-    if act:
-        db.session.delete(act)
-        db.session.commit()
+    username = session.get("username")
+
+    if not username:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return redirect(url_for("auth.login"))
+
+    act = Activity.query.filter_by(
+        activity_id=activity_id,
+        user_id=user.user_id
+    ).first_or_404()
+
+    db.session.delete(act)
+    db.session.commit()
 
     flash('Session deleted.', 'success')
     return redirect(url_for('history.history_page'))
