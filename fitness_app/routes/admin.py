@@ -25,8 +25,8 @@ def admin_dashboard():
         flash('Access denied. Administrator privileges required.', 'danger')
         return redirect(url_for('home.index'))
 
-    # Get active (non-admin) users, with optional search
-    users_query = User.query.filter(User.role != 'administrator')
+    # Get active users, with optional search
+    users_query = User.query
     if search_query:
         users_query = users_query.filter(
             (User.username.ilike(f'%{search_query}%')) |

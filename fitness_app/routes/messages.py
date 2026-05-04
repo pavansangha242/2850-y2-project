@@ -133,18 +133,21 @@ def messages():
     normalized_messages = []
     for m in msgs:
         if hasattr(m, 'message'): # TrainerMessage
+            author_role = user.role if m.sender_id == user.user_id else (selected_contact.role if selected_contact else 'customer')
             normalized_messages.append({
                 'is_mine': m.sender_id == user.user_id,
                 'text': m.message,
                 'time': m.sent_at,
-                'author_name': user.first_name if m.sender_id == user.user_id else (selected_contact.first_name if selected_contact else 'Unknown')
+                'author_name': user.first_name if m.sender_id == user.user_id else (selected_contact.first_name if selected_contact else 'Unknown'),
+                'author_role': author_role
             })
         else: # ChatMessage
             normalized_messages.append({
                 'is_mine': m.user_id == user.user_id,
                 'text': m.content,
                 'time': m.timestamp,
-                'author_name': m.author.first_name
+                'author_name': m.author.first_name,
+                'author_role': m.author.role
             })
 
     return render_template(

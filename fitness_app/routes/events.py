@@ -173,6 +173,7 @@ def get_messages(competition_id):
         {
             'id': m.message_id,
             'author': m.author.first_name,
+            'author_role': m.author.role,
             'user_id': m.user_id,
             'content': m.content,
             'time': m.timestamp.strftime('%H:%M'),

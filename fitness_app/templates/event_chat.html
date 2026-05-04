@@ -30,6 +30,9 @@
             {% if msg.user_id != current_user.user_id %}
             <a href="{{ url_for('messages.messages') }}?user_id={{ msg.user_id }}" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">
                 {{ msg.author.first_name }}
+                {% if msg.author.role == 'administrator' %}
+                <span style="color: red; font-size: 0.85em; margin-left: 4px; border: 1px solid red; border-radius: 4px; padding: 0 4px;">Admin</span>
+                {% endif %}
             </a>
             {% endif %}
             <div class="chat-text">{{ msg.content }}</div>
@@ -84,7 +87,11 @@
                             html += '<button class="chat-delete" onclick="deleteMessage(' + msg.id + ', this)" title="Delete message">&times;</button>';
                         }
                         if (!msg.is_mine) {
-                            html += '<a href="{{ url_for("messages.messages") }}?user_id=' + msg.user_id + '" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">' + msg.author + '</a>';
+                            html += '<a href="{{ url_for("messages.messages") }}?user_id=' + msg.user_id + '" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">' + msg.author;
+                            if (msg.author_role === 'administrator') {
+                                html += ' <span style="color: red; font-size: 0.85em; margin-left: 4px; border: 1px solid red; border-radius: 4px; padding: 0 4px;">Admin</span>';
+                            }
+                            html += '</a>';
                         }
                         html += '<div class="chat-text">' + msg.content + '</div>';
                         html += '<div class="chat-time">' + msg.time + '</div>';
