@@ -201,3 +201,29 @@ def test_progress_running_filter_loads(client, login_customer, app):
     response = client.get("/progress?sport=Running")
     assert response.status_code == 200
     assert b"Running" in response.data
+
+
+def test_history_page_shows_logged_activity(client, login_customer, app):
+    with app.app_context():
+        user = User.query.filter_by(username="test_customer").first()
+        running = ExerciseType.query.filter_by(name="Running").first()
+
+        activity = Activity(
+            user_id=user.user_id,
+            exercise_type_id=running.exercise_type_id,
+            date=date.today(),
+            duration_minutes=30,
+            distance_km=5,
+            pace_per_km=360,
+            calories=300,
+            notes="History test run",
+        )
+
+        db.session.add(activity)
+        db.session.commit()
+
+    response = client.get("/history")
+
+    assert response.status_code == 200
+    assert b"History test run" in response.data
+    assert b"Running" in response.data
