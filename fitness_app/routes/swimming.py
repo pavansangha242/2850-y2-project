@@ -54,7 +54,11 @@ def calculate_calories(met, weight_kg, duration_mins):
 
 @swimming_bp.route('/swimming')
 def swimming_page():
+    if not session.get("username"):
+        return redirect(url_for("auth.login"))
+
     uid = get_current_user_id()
+    
     sw_type = get_swimming_type_id()
     monday = get_week_start()
 

@@ -51,7 +51,9 @@ def get_week_start():
 
 @gym_bp.route('/gym')
 def gym_page():
-
+    
+    if not session.get("username"):
+        return redirect(url_for("auth.login"))
     ensure_default_gym_exercises()
     # get the user who is logged in
     user = get_logged_in_user()

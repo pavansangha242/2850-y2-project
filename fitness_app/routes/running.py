@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from sqlalchemy import func
 
 from fitness_app.extensions import db
@@ -52,6 +52,9 @@ def calculate_calories(met, weight_kg, duration_mins):
 
 @running_bp.route('/running')
 def running_page():
+    if not session.get("username"):
+        return redirect(url_for("auth.login"))
+
     uid = get_current_user_id()
     r_type = get_running_type_id()
     monday = get_week_start()
