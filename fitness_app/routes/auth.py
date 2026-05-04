@@ -70,7 +70,17 @@ def register():
             if existing_admin:
                 return render_template("register.html", error="An administrator account already exists. Administrator registration is disabled.", show_nav=False)
 
-        bio = request.form.get("bio") if role == "pt" else None
+        bio = None
+        # Bio is mandatory for PTs
+        if role == "pt":
+            bio = request.form.get("bio", "").strip()
+
+            if not bio:
+                return render_template(
+                    "register.html",
+                    error="Please enter your bio.",
+                    show_nav=False
+                )
         first_name = request.form.get("first_name", "").strip()
         last_name = request.form.get("last_name", "").strip()
 
@@ -95,27 +105,48 @@ def register():
         )
         new_user.set_password(password)
 
-        # goals only apply to customers, pts just have a bio
-        new_goals = UserGoal(
-            user=new_user,
-            step_target=request.form.get("step_target", 10000) or 10000,
-            weekly_exercise_hours=request.form.get("weekly_hours", 0) or 0,
-            workouts_per_week=request.form.get("workouts_per_week", 0) or 0,
-            age=request.form.get("age"),
-            weight_kg=request.form.get("weight"),
-            height_cm=request.form.get("height"),
-            sex=request.form.get("sex"),
-        )
+        # Backend validation for health fields (customers only)
+        if role == "customer":
+            required_fields = [
+                "step_target",
+                "weekly_hours",
+                "workouts_per_week",
+                "age",
+                "weight",
+                "height",
+                "sex"
+            ]
 
-        new_privacy = PrivacySettings(
-            user=new_user,
-            share_with_pt=True if request.form.get("share_with_pt") else False,
-            allow_meetings=True if request.form.get("allow_meetings") else False
-        )
+            for field in required_fields:
+                if not request.form.get(field):
+                    return render_template(
+                        "register.html",
+                        error="Please fill in all health goal fields.",
+                        show_nav=False
+                    )
+
+            # goals only apply to customers, pts just have a bio
+            new_goals = UserGoal(
+                user=new_user,
+                step_target=int(request.form.get("step_target")),
+                weekly_exercise_hours=float(request.form.get("weekly_hours")),
+                workouts_per_week=int(request.form.get("workouts_per_week")),
+                age=int(request.form.get("age")),
+                weight_kg=float(request.form.get("weight")),
+                height_cm=float(request.form.get("height")),
+                sex=request.form.get("sex"),
+            )
+
+            new_privacy = PrivacySettings(
+                user=new_user,
+                share_with_pt=True if request.form.get("share_with_pt") else False,
+                allow_meetings=True if request.form.get("allow_meetings") else False
+            )
+
+            db.session.add(new_goals)
+            db.session.add(new_privacy)
 
         db.session.add(new_user)
-        db.session.add(new_goals)
-        db.session.add(new_privacy)
         db.session.commit()
 
         session['username'] = new_user.username
@@ -262,7 +293,7 @@ def pt_clients():
         .join(TrainingClient, TrainingClient.client_id == User.user_id)
         .join(PrivacySettings, PrivacySettings.user_id == User.user_id)
         .filter(
-            TrainingClient.trainer_id == user.user_id,  # must be matched to this PT
+            TrainingClient.trainer_id == users.user_id,  # must be matched to this PT
             TrainingClient.active == True,               # only active relationships
             User.role == "customer",
             PrivacySettings.share_with_pt == True        # must have sharing on

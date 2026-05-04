@@ -84,7 +84,7 @@ def connect_strava():
         f"?client_id={CLIENT_ID}"
         f"&redirect_uri={callback_url}"
         f"&response_type=code"
-        f"&scope=activity:read_all"  # data asking for
+        f"&scope=activity:read_all"  # asking for all the data 
     )
     return redirect(strava_auth_url)
 
@@ -316,9 +316,11 @@ def activity_map(activity_id):
 
 @strava_bp.route("/activities")
 def activities():
-    # Use 'ahmed' as default for demo purposes
-    username = session.get('username', 'ahmed')
-    user = User.query.filter_by(username=username).first()
+    # Need to use username from user that is logged in to connect to strava
+    if "username" not in session:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=session["username"]).first()
     
     # Get filter from query string, default to 'week'
     period = request.args.get("period", "week")

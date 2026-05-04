@@ -59,6 +59,7 @@
                 <h3>Activity Goals</h3>
                 <label>Daily Step Target</label>
                 <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
+                <p id="step-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a step target.</p>
                 
                 <label>Weekly Exercise Hours</label>
                 <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
@@ -75,12 +76,14 @@
                 <label>Height</label>
                 <input type="number" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
 
-                <select name="sex" id="sex-select" class="input-field" required onchange="toggleFields()">
-                    <option value="" disabled selected>Select your sex, this is only used to calculate calories burnt</option>
+                <select name="sex" id="sex-select" class="input-field">
+                    <option value="" disabled selected>Select your sex</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
+                    <option value="other">Other</option>
                     <option value="prefer_not_to_say">Prefer not to say</option>
                 </select>
+                <p id="sex-error" style="color:red; display:none;">Please select your sex.</p>
 
                 <hr class="mb-2">
                 
@@ -104,9 +107,11 @@
         <div id="pt-fields" class="card mb-2" style="display: none;">
             <h3>Professional Profile</h3>
             <label>About You / Bio</label>
-            <textarea name="bio" placeholder="Tell us about your experience..." class="input-field" style="height: 120px; resize: vertical;"></textarea>
+            <textarea name="bio" id="bio" placeholder="Tell us about your experience..." class="input-field" style="height: 120px; resize: vertical;"></textarea>
         </div>
-            
+            <p id="bio-error" style="color:red; display:none; margin: 4px 0 8px;">
+                Please enter your bio.
+            </p>
         <input type="submit" value="Register" class="btn-login" />
         <div class="text-center mt-2">
             <a href="/">Already have an account? Login</a>
@@ -153,7 +158,7 @@ document.addEventListener('DOMContentLoaded', toggleFields);
 document.querySelector('form').addEventListener('submit', function(e) {
     let valid = true;
 
-    // Helper: show or hide an error paragraph
+    // show or hide an error paragraph
     function err(id, show) {
         document.getElementById(id).style.display = show ? 'block' : 'none';
         if (show) valid = false;
@@ -179,17 +184,37 @@ document.querySelector('form').addEventListener('submit', function(e) {
     // Role: must be selected
     err('role-error', document.getElementById('role-select').value === '');
 
+    // Only validate health data for customers
+    const role = document.getElementById('role-select').value;
+
+    if (role === 'customer') {
+        err('step-error', document.getElementById('step_target').value.trim() === '');
+
+        // full health validation
+        err('weekly-error', document.querySelector('[name="weekly_hours"]').value.trim() === '');
+        err('workouts-error', document.querySelector('[name="workouts_per_week"]').value.trim() === '');
+        err('age-error', document.querySelector('[name="age"]').value.trim() === '');
+        err('weight-error', document.querySelector('[name="weight"]').value.trim() === '');
+        err('height-error', document.querySelector('[name="height"]').value.trim() === '');
+        err('sex-error', document.getElementById('sex-select').value === '');
+    }
+
+    // PT bio must be filled
+    if (role === 'pt') {
+        err('bio-error', document.getElementById('bio').value.trim() === '');
+    }
+
     if (!valid) e.preventDefault(); // block form submission if any error
 });
 
-// Live: hide match error as soon as passwords match while typing
+// hide match error as soon as passwords match while typing
 document.getElementById('confirm_password').addEventListener('input', function() {
     if (this.value === document.getElementById('password').value) {
         document.getElementById('password-match-error').style.display = 'none';
     }
 });
 
-// Live: hide length error once password reaches 8 characters
+// hide length error once password reaches 8 characters
 document.getElementById('password').addEventListener('input', function() {
     if (this.value.length >= 8) {
         document.getElementById('password-length-error').style.display = 'none';

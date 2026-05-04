@@ -71,7 +71,7 @@
 
             <label>Do you smoke?</label>
             <select name="smokes" class="input-field">
-                <option value="" disabled {% if survey and survey.smokes is none %}selected{% endif %}>Select one</option>
+                <option value="" {% if survey and survey.smokes is none %}selected{% endif %}>Select one</option>
                 <option value="true"  {% if survey and survey.smokes == True  %}selected{% endif %}>Yes</option>
                 <option value="false" {% if survey and survey.smokes == False %}selected{% endif %}>No</option>
             </select>
@@ -109,12 +109,12 @@
 
             <label>Do you have any injuries?</label>
             <select name="has_injuries" id="has_injuries" class="input-field" onchange="toggleInjuries()">
-                <option value="" disabled {% if survey and survey.has_injuries is none %}selected{% endif %}>Select one</option>
+                <option value="" {% if survey and survey.has_injuries is none %}selected{% endif %}>Select one</option>
                 <option value="true"  {% if survey and survey.has_injuries == True  %}selected{% endif %}>Yes</option>
                 <option value="false" {% if survey and survey.has_injuries == False %}selected{% endif %}>No</option>
             </select>
 
-            <div id="injury-details-box">
+            <div id="injury-details-box" style="display: none;">
                 <label>Please describe your injuries</label>
                 <textarea name="injury_details" class="input-field" style="height: 80px; resize: vertical;"
                           placeholder="e.g. knee injury from 2022...">{{ survey.injury_details if survey and survey.injury_details else '' }}</textarea>
@@ -158,7 +158,13 @@
 // Show/hide injury details box based on yes/no selection
 function toggleInjuries() {
     const val = document.getElementById('has_injuries').value;
-    document.getElementById('injury-details-box').style.display = (val === 'true') ? 'block' : 'none';
+    const box = document.getElementById('injury-details-box');
+    
+    if (val === 'true') {
+        box.style.display = 'block';
+    } else {
+        box.style.display = 'none';
+    }
 }
 
 </script>

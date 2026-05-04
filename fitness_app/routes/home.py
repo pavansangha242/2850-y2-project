@@ -21,6 +21,11 @@ def index():
         return redirect(url_for('auth.login'))
     current_user = User.query.filter_by(username=username).first()
 
+
+    if not current_user:
+        session.pop("username", None)
+        return redirect(url_for('auth.login'))
+
     # Today's summary
     today = date.today()
     today_activities = Activity.query.filter_by(user_id=current_user.user_id, date=today).all() if current_user else []

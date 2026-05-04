@@ -72,9 +72,6 @@
         </a>
     {% endif %}
 
-    {% if user.role == 'pt' %}
-        <a href="{{ url_for('auth.pt_clients') }}">View My Clients</a>
-    {% endif %}
 
     {% if user.role == 'customer' %}
     <div class="settings-card mt-2">
@@ -145,6 +142,7 @@
                 <select name="sex" class="input-field" style="width: 160px;">
                     <option value="male" {% if user.goals.sex == 'male' %}selected{% endif %}>Male</option>
                     <option value="female" {% if user.goals.sex == 'female' %}selected{% endif %}>Female</option>
+                    <option value="other" {% if user.goals.sex == 'other' %}selected{% endif %}>Other</option>
                     <option value="prefer_not_to_say" {% if user.goals.sex == 'prefer_not_to_say' %}selected{% endif %}>Prefer not to say</option>
                 </select>
             </div>
@@ -169,7 +167,7 @@
     </div>
     {% endif %}
 
-    <div class="mt-3 text-center">
+    <div class="mt-3 text-center" style="text-align: center;">
         <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>
     </div>
 </div>
