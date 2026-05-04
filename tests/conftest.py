@@ -7,7 +7,7 @@ sys.path.insert(0, BASE_DIR)
 
 from run import app as flask_app
 from fitness_app.extensions import db
-from fitness_app.models import User, ExerciseType, TrainerProfile
+from fitness_app.models import User, ExerciseType, TrainerProfile, GymExercise
 
 
 @pytest.fixture
@@ -19,6 +19,8 @@ def app():
     )
 
     with flask_app.app_context():
+        db.session.remove()
+        db.drop_all()
         db.create_all()
 
         customer = User(
