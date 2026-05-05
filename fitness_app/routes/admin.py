@@ -41,23 +41,26 @@ def admin_dashboard():
         flash('Access denied. Administrator privileges required.', 'danger')
         return redirect(url_for('home.index'))
 
-    # Get active users, with optional search
-    users_query = User.query
+    # Base queries for different user roles
+    customer_query = User.query.filter_by(role='customer')
+    pending_pt_query = User.query.filter_by(role='pt', approved=False)
+    approved_pt_query = User.query.filter_by(role='pt', approved=True)
+
+    # Apply search filter if provided
     if search_query:
-        users_query = users_query.filter(
+        search_filter = (
             (User.username.ilike(f'%{search_query}%')) |
             (User.email.ilike(f'%{search_query}%')) |
             (User.first_name.ilike(f'%{search_query}%')) |
             (User.last_name.ilike(f'%{search_query}%'))
         )
-    active_users = users_query.all()
+        customer_query = customer_query.filter(search_filter)
+        pending_pt_query = pending_pt_query.filter(search_filter)
+        approved_pt_query = approved_pt_query.filter(search_filter)
 
-    # Pending PT users (role='pt' and not yet approved)
-    pending_pts = User.query.filter_by(role='pt', approved=False).all()
-
-    # Approved PT users
-    approved_pts = User.query.filter_by(role='pt', approved=True).all()
-
+    active_customers = customer_query.all()
+    pending_pts = pending_pt_query.all()
+    approved_pts = approved_pt_query.all()
     # Platform statistics
     total_users = User.query.count()
     total_customers = User.query.filter_by(role='customer').count()
@@ -69,7 +72,7 @@ def admin_dashboard():
 
     return render_template('admin.html',
                            admin_user=admin_user,
-                           active_users=active_users,
+                           active_customers=active_customers,
                            pending_pts=pending_pts,
                            approved_pts=approved_pts,
                            competitions=competitions,

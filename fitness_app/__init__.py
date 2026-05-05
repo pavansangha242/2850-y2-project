@@ -215,23 +215,5 @@ def seed_database():
                              finish_time='3:45:12', position=42, personal_best=True)
     db.session.add(res1)
 
-    # ---- Chat Messages ----
-    now = datetime.utcnow()
-    msg1 = ChatMessage(competition_id=comp1.competition_id, user_id=current_user.user_id,
-                       content='Hey everyone! Who else is training for the marathon?',
-                       timestamp=now - timedelta(hours=5))
-    msg2 = ChatMessage(competition_id=comp1.competition_id, user_id=user2.user_id,
-                       content='I am! Just finished a 20k long run today',
-                       timestamp=now - timedelta(hours=4, minutes=45))
-    msg3 = ChatMessage(competition_id=comp1.competition_id, user_id=user1.user_id,
-                       content='Good luck to everyone! I will be cheering from the sidelines',
-                       timestamp=now - timedelta(hours=3))
-    msg4 = ChatMessage(competition_id=comp1.competition_id, user_id=current_user.user_id,
-                       content='Thanks Noor! James what pace are you aiming for?',
-                       timestamp=now - timedelta(hours=2, minutes=30))
-    msg5 = ChatMessage(competition_id=comp1.competition_id, user_id=user2.user_id,
-                       content='Hoping for under 3:30, been pushing hard in training',
-                       timestamp=now - timedelta(hours=2))
-    db.session.add_all([msg1, msg2, msg3, msg4, msg5])
 
     db.session.commit()

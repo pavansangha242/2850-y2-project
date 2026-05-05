@@ -12,7 +12,12 @@
 
     <!-- Left: Conversations list -->
     <aside class="msg-sidebar">
-        <h3>Conversations</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="margin: 0;">Conversations</h3>
+            <a href="{{ url_for('messages.contact_admin') }}" style="background: var(--primary); color: white; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; text-decoration: none;">
+                <i class="fas fa-headset"></i> Contact Admin
+            </a>
+        </div>
         <div class="conv-list">
             {% if conversations %}
                 {% for conv in conversations %}
@@ -119,7 +124,7 @@
         <!-- Input bar -->
         {% if selected_contact %}
         <form class="msg-input-bar" method="POST" action="{{ url_for('messages.send_user_message') }}">
-            <input type="hidden" name="contact_id" value="{{ selected_contact.user_id }}">
+            <input type="hidden" name="user_id" value="{{ selected_contact.user_id }}">
             <input type="text" name="message" placeholder="Type a message to {{ selected_contact.first_name }}..." autocomplete="off" required>
             <button type="submit">Send ➤</button>
         </form>
