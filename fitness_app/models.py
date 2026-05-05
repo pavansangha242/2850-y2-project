@@ -20,15 +20,14 @@ class User(db.Model):
     approved = db.Column(db.Boolean, default=True, nullable=False)
 
     #relationship--Asma
-    training_plan = db.relationship('TrainingPlan', backref='user', uselist=False, lazy=True)
-    activities = db.relationship('Activity', backref='user', lazy=True)
-    goals = db.relationship('UserGoal', backref='user', lazy=True)
-    gym_workouts = db.relationship('GymWorkout', backref='user', lazy=True)
-    trainer_profile = db.relationship('TrainerProfile', backref='user', uselist=False, lazy=True)
+    training_plan = db.relationship('TrainingPlan', backref='user', uselist=False, lazy=True, cascade="all, delete-orphan")
+    activities = db.relationship('Activity', backref='user', lazy=True, cascade="all, delete-orphan")
+    gym_workouts = db.relationship('GymWorkout', backref='user', lazy=True, cascade="all, delete-orphan")
+    trainer_profile = db.relationship('TrainerProfile', backref='user', uselist=False, lazy=True, cascade="all, delete-orphan")
 
     ##asma
-    clients = db.relationship('TrainingClient', foreign_keys='TrainingClient.trainer_id', backref='trainer', lazy=True)
-    trainers = db.relationship('TrainingClient', foreign_keys='TrainingClient.client_id', backref='client', lazy=True)
+    clients = db.relationship('TrainingClient', foreign_keys='TrainingClient.trainer_id', backref='trainer', lazy=True, cascade="all, delete-orphan")
+    trainers = db.relationship('TrainingClient', foreign_keys='TrainingClient.client_id', backref='client', lazy=True, cascade="all, delete-orphan")
 
     strava_access_token = db.Column(db.String(200), nullable=True)
     strava_refresh_token = db.Column(db.String(200), nullable=True)

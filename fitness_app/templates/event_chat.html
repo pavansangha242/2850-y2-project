@@ -68,6 +68,12 @@
     // Poll for new messages every 3 seconds
     let lastMessageId = {{ messages[-1].message_id if messages else 0 }};
 
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = value;
+        return div.innerHTML;
+    }
+
     function pollMessages() {
         fetch('{{ url_for("events.get_messages", competition_id=event.competition_id) }}?after=' + lastMessageId)
             .then(res => res.json())
@@ -87,15 +93,16 @@
                             html += '<button class="chat-delete" onclick="deleteMessage(' + msg.id + ', this)" title="Delete message">&times;</button>';
                         }
                         if (!msg.is_mine) {
-                            html += '<a href="{{ url_for("messages.messages") }}?user_id=' + msg.user_id + '" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">' + msg.author;
+                            html += '<a href="{{ url_for("messages.messages") }}?user_id=' + msg.user_id + '" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">' + escapeHtml(msg.author);
                             if (msg.author_role === 'administrator') {
                                 html += ' <span style="color: red; font-size: 0.85em; margin-left: 4px; border: 1px solid red; border-radius: 4px; padding: 0 4px;">Admin</span>';
                             }
                             html += '</a>';
                         }
-                        html += '<div class="chat-text">' + msg.content + '</div>';
+                        html += '<div class="chat-text"></div>';
                         html += '<div class="chat-time">' + msg.time + '</div>';
                         bubble.innerHTML = html;
+                        bubble.querySelector('.chat-text').textContent = msg.content;
 
                         chatBox.appendChild(bubble);
                         lastMessageId = msg.id;
@@ -124,7 +131,14 @@
 
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble mine pending-msg';
-        bubble.innerHTML = '<div class="chat-text">' + message + '</div><div class="chat-time">sending...</div>';
+        const text = document.createElement('div');
+        text.className = 'chat-text';
+        text.textContent = message;
+        const time = document.createElement('div');
+        time.className = 'chat-time';
+        time.textContent = 'sending...';
+        bubble.appendChild(text);
+        bubble.appendChild(time);
         chatBox.appendChild(bubble);
         chatBox.scrollTop = chatBox.scrollHeight;
         chatInput.value = '';

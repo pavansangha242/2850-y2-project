@@ -48,7 +48,7 @@ def app():
             first_name="Test",
             last_name="Admin",
             email="admin@test.com",
-            role="admin",
+            role="administrator",
             password_hash="test",
             approved=True,
         )

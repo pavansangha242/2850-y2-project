@@ -16,6 +16,9 @@ leaderboard_bp = Blueprint('leaderboard', __name__)
 @leaderboard_bp.route('/leaderboard')
 def leaderboard_page():
     """Leaderboard page — rank users by workouts in the selected period."""
+    if not session.get('username'):
+        return redirect(url_for('auth.login'))
+
     period = request.args.get('period', 'week')
 
     # Work out the start date based on the selected period

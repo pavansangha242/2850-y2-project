@@ -108,7 +108,7 @@
                 </div>
             {% endif %}
         </section>
-
+        
         <!-- Trainer Approvals -->
         <section style="margin-top: 2.5rem;">
             <h2 class="section-title">Trainer Approvals</h2>
@@ -163,6 +163,64 @@
             {% else %}
                 <div class="card" style="text-align: center; padding: 1.5rem;">
                     <p style="color: var(--text-muted);">No approved trainers yet.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Manage Events (Competitions) -->
+        <section style="margin-top: 2.5rem;">
+            <h2 class="section-title">Manage Events</h2>
+            
+            <!-- Add Event Form -->
+            <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+                <h3 class="section-subtitle" style="margin-top: 0;">Add New Event</h3>
+                <form action="{{ url_for('admin.add_event') }}" method="POST" class="grid-2" style="gap: 1rem;">
+                    <div class="form-group">
+                        <label>Event Name</label>
+                        <input type="text" name="name" class="form-input" placeholder="e.g. London Marathon" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" name="location" class="form-input" placeholder="e.g. Greenwich Park">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Distance (km)</label>
+                        <input type="number" step="0.1" name="distance" class="form-input" placeholder="e.g. 42.2">
+                    </div>
+                    <div class="grid-span-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Event
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <h3 class="section-subtitle">Upcoming Events</h3>
+            {% if competitions %}
+                {% for event in competitions %}
+                <div class="user-item">
+                    <div class="user-avatar" style="background: rgba(100, 108, 255, 0.1); color: var(--primary);">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ event.name }}</div>
+                        <div class="user-email">{{ event.date.strftime('%B %d, %Y') }} — {{ event.location }}</div>
+                    </div>
+                    <form action="{{ url_for('admin.delete_event', event_id=event.competition_id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete the event: {{ event.name }}?')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 1.5rem;">
+                    <p style="color: var(--text-muted);">No events scheduled.</p>
                 </div>
             {% endif %}
         </section>
