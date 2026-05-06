@@ -17,17 +17,22 @@ cycling_bp = Blueprint("cycling", __name__)
 
 
 def get_cycling_type_id():
+    """Returns the database ID for the cycling exercise type."""
     return get_exercise_type_id("Cycling")
 
 
 # monday of this week
 def get_week_start():
+    """Returns the date of this week's Monday."""
     today = date.today()
     return today - timedelta(days=today.weekday())
 
 
 # work out met from speed
 def get_cycling_met(speed_kmh):
+    """Picks the right MET value based on how fast the user cycling.
+    So MET is a measure of effort — faster riding means a higher MET and more which mean calories burned.
+    Returns a number between 4.0 if easy and 12.0 for very fast."""    
     if speed_kmh and speed_kmh > 0:
         # faster = more cals
         if speed_kmh >= 30:
@@ -46,6 +51,8 @@ def get_cycling_met(speed_kmh):
 
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
+    """Estimates calories burned using MET x weight x time in hours.
+    Returns None if any of the inputs are missing or zero, otherwise returns a rounded whole number."""
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
         hrs = duration_mins / 60
         return round(met * weight_kg * hrs)
@@ -54,6 +61,9 @@ def calculate_calories(met, weight_kg, duration_mins):
 
 @cycling_bp.route("/cycling")
 def cycling_page():
+    """Loads everything needed for the main cycling dashboard.
+    Pulls together ride history, weekly stats, streak, speed progress, training plan and goal.
+    Redirects to login if the user isn't logged in, or shows an empty dashboard if cycling isn't in the database."""
     # user id / cyc type / monday
     if not session.get("username"):
         return redirect(url_for("auth.login"))
@@ -264,6 +274,9 @@ def cycling_page():
 
 @cycling_bp.route("/cycling/log", methods=["POST"])
 def log_ride():
+    """Saves a new ride when the user submits the log form.
+    Auto-calculates speed and calories if the user left those fields blank.
+    Redirects back to the dashboard with a success message once saved."""
     uid = get_current_user_id()
     c_type = get_cycling_type_id()
 
@@ -349,6 +362,7 @@ def log_ride():
 
 @cycling_bp.route("/cycling/plan", methods=["POST"])
 def create_cycling_plan():
+    """Creates a cycling training plan, or updates the existing one if the user already has one. Redirects back to the dashboard once saved."""
     uid = get_current_user_id()
 
     # plan from form
@@ -392,6 +406,8 @@ def create_cycling_plan():
 
 @cycling_bp.route("/cycling/goal", methods=["POST"])
 def set_cycling_goal():
+    """Saves the user's cycling goal, or updates it if they've set one before.
+    Redirects back to the dashboard once done."""
     uid = get_current_user_id()
 
     # goal stuff from form
@@ -434,6 +450,8 @@ def set_cycling_goal():
 
 @cycling_bp.route("/cycling/delete/<int:activity_id>", methods=["POST"])
 def delete_ride(activity_id):
+    """Deletes a ride, but only if it actually belongs to the logged-in user.
+    Redirects back to the dashboard with a confirmation message once deleted."""
     uid = get_current_user_id()
 
     # only delete user own rides
