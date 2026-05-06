@@ -413,3 +413,16 @@ def send_trainer_message():
         db.session.commit()
 
     return redirect(url_for("messages.trainer_inbox") + f"?client_id={client_id}")
+@messages_bp.route("/messages/contact-admin")
+def contact_admin():
+    """Redirect user to a conversation with an administrator."""
+    user = get_logged_in_user()
+    if not user:
+        return redirect(url_for("auth.login"))
+
+    # find the first admin user
+    admin = User.query.filter_by(role="administrator").first()
+    if admin:
+        return redirect(url_for("messages.messages", trainer_id=admin.user_id))
+
+    return redirect(url_for("messages.messages"))
