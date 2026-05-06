@@ -4,7 +4,6 @@ Mostly focused on making sure a random user can't access the admin panel
 or break the site by entering a large string in the event chat. 
 Also checks that script tags are escaped, not executed.
 """
-import pytest
 
 
 class TestSecurity:

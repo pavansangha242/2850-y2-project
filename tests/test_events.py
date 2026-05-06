@@ -3,10 +3,7 @@ Event system
 Tests the logic for discovering competitions and making sure the
 registration process actually links the user to the event in the DB.
 """
-from datetime import date
-from fitness_app.models import Competition, CompetitionResult, User
-from fitness_app.extensions import db
-import pytest
+from fitness_app.models import CompetitionResult, User
 
 
 class TestEvents:

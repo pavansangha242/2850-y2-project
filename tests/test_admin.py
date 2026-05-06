@@ -4,7 +4,6 @@ Covers deleting users and the PT approval workflow.
 These tests ensure the administrator role 
 privileges are being enforced correctly.
 """
-import pytest
 from fitness_app.models import User
 from fitness_app.extensions import db
 

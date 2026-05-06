@@ -2,10 +2,7 @@
 Community chat.
 The chat tests ensure only logged in users can participate in the feed.
 """
-from datetime import date
-from fitness_app.models import Competition, ChatMessage, User
-from fitness_app.extensions import db
-import pytest
+from fitness_app.models import ChatMessage
 
 
 class TestEventChat:

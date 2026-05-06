@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from fitness_app.extensions import db
 from fitness_app.models import (

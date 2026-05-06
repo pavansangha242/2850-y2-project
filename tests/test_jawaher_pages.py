@@ -3,10 +3,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import pytest
 from datetime import date
 
-from fitness_app import create_app
 from fitness_app.extensions import db
 from fitness_app.models import (
     User,

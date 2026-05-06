@@ -11,9 +11,7 @@ Checks empty messages aren't saved to the db and PTs get their own
 inbox.
 """
 
-import pytest
 from fitness_app.models import User, TrainerMessage
-from fitness_app.extensions import db
 
 
 class TestMessagesPage:

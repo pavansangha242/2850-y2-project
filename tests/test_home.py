@@ -1,4 +1,3 @@
-import pytest
 from fitness_app.models import Activity, User
 from fitness_app.extensions import db
 
