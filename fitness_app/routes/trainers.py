@@ -321,8 +321,25 @@ def trainer_dashboard():
         .all()
     )
 
+    client_ids = {b.client_id for b in bookings}
+
+    clients = (
+        User.query
+        .filter(User.user_id.in_(client_ids))
+        .all()
+        if client_ids else []
+    )
+
+    client_names = {
+        c.user_id: f"{c.first_name} {c.last_name}".strip() or c.username
+        for c in clients
+    }
+
     return render_template(
-        "trainer_dashboard.html", bookings=bookings, messages=messages
+        "trainer_dashboard.html",
+        bookings=bookings,
+        messages=messages,
+        client_names=client_names
     )
 
 
