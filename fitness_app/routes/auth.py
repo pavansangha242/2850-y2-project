@@ -330,9 +330,9 @@ def pt_clients():
         .join(PrivacySettings, PrivacySettings.user_id == User.user_id)
         .filter(
             TrainingClient.trainer_id == user.user_id,  # must be matched to this PT
-            TrainingClient.active == True,  # only active relationships
+            TrainingClient.active,  # only active relationships
             User.role == "customer",
-            PrivacySettings.share_with_pt == True,  # must have sharing on
+            PrivacySettings.share_with_pt,  # must have sharing on
         )
         .all()
     )

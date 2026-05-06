@@ -2,10 +2,6 @@ import os
 import sys
 import pytest
 from datetime import date
-
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, BASE_DIR)
-
 from run import app as flask_app
 from fitness_app.extensions import db
 from fitness_app.models import (
@@ -18,6 +14,9 @@ from fitness_app.models import (
     ChatMessage,
 )
 
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, BASE_DIR)
 
 @pytest.fixture
 def app():
@@ -158,8 +157,6 @@ def registered_event(app):
         )
         db.session.add(event)
         db.session.commit()
-
-        event_id = event.competition_id
 
         result = CompetitionResult(
             user_id=user.user_id, competition_id=event.competition_id
