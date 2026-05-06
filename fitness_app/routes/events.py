@@ -8,7 +8,6 @@ from flask import Blueprint, render_template, redirect, url_for, make_response, 
 from fitness_app.extensions import db
 from fitness_app.models import Competition, CompetitionResult, User, ChatMessage
 from datetime import date, datetime, timedelta
-import random
 
 events_bp = Blueprint('events', __name__)
 
@@ -197,6 +196,4 @@ def delete_message(message_id):
         db.session.commit()
         return jsonify({'status': 'deleted'})
  
-    return jsonify({'status': 'not allowed'}), 403
-
     return jsonify({'status': 'not allowed'}), 403

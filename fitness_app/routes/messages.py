@@ -25,7 +25,7 @@ def messages():
     if not user:
         return redirect(url_for('auth.login'))
 
-    selected_id = request.args.get('trainer_id', type=int)
+    selected_id = request.args.get('user_id', type=int) or request.args.get('trainer_id', type=int)
     selected_group_id = request.args.get('group_id', type=int)
 
     # find all trainers this user has talked to
@@ -169,19 +169,33 @@ def send_user_message():
     if not user:
         return redirect(url_for('auth.login'))
 
-    trainer_id = request.form.get('trainer_id', type=int)
+    receiver_id = request.form.get('user_id', type=int) or request.form.get('trainer_id', type=int)
     message_txt = request.form.get('message', '').strip()
 
-    if trainer_id and message_txt:
+    if receiver_id and message_txt:
         msg = TrainerMessage(
             sender_id=user.user_id,
-            receiver_id=trainer_id,
+            receiver_id=receiver_id,
             message=message_txt
         )
         db.session.add(msg)
         db.session.commit()
 
-    return redirect(url_for('messages.messages') + f'?trainer_id={trainer_id}')
+    return redirect(url_for('messages.messages') + f'?user_id={receiver_id}')
+
+@messages_bp.route('/messages/contact_admin')
+def contact_admin():
+    user = get_logged_in_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+        
+    admin = User.query.filter_by(role='administrator').first()
+    if not admin:
+        admin = User.query.filter_by(role='admin').first()
+        
+    if admin:
+        return redirect(url_for('messages.messages') + f'?user_id={admin.user_id}')
+    return redirect(url_for('messages.messages'))
 
 
 # trainer inbox page
