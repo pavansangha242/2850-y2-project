@@ -217,3 +217,47 @@ def delete_event(event_id):
     flash(f'Event "{event.name}" has been deleted.', "success")
 
     return redirect(url_for("admin.admin_dashboard"))
+
+
+@admin_bp.route("/admin/event-participants/<int:event_id>")
+def event_participants(event_id):
+    """View all users registered for a specific event."""
+    if not get_admin_user():
+        flash("Access denied. Administrator privileges required.", "danger")
+        return redirect(url_for("home.index"))
+
+    event = Competition.query.get_or_404(event_id)
+
+    # Get all users who have a record in CompetitionResult for this event
+    participants = (
+        User.query.join(CompetitionResult, CompetitionResult.user_id == User.user_id)
+        .filter(CompetitionResult.competition_id == event_id)
+        .all()
+    )
+
+    return render_template(
+        "admin_event_participants.html", event=event, participants=participants
+    )
+
+
+@admin_bp.route(
+    "/admin/remove-participant/<int:event_id>/<int:user_id>", methods=["POST"]
+)
+def remove_event_participant(event_id, user_id):
+    """Remove a user from a specific event."""
+    if not get_admin_user():
+        flash("Access denied. Administrator privileges required.", "danger")
+        return redirect(url_for("home.index"))
+
+    result = CompetitionResult.query.filter_by(
+        competition_id=event_id, user_id=user_id
+    ).first()
+    if result:
+        db.session.delete(result)
+        db.session.commit()
+        flash("Participant has been removed from the event.", "success")
+    else:
+        flash("Participant not found.", "error")
+
+    return redirect(url_for("admin.event_participants", event_id=event_id))
+
