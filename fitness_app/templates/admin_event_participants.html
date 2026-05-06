@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}FitTrack — Event Participants{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline btn-sm" style="margin-bottom: 1rem; display: inline-block;">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1>Participants for "{{ event.name }}"</h1>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1rem;">
+    {% if participants %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in participants %}
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="user-avatar-sm" style="background: var(--primary-light); color: var(--primary); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                            {{ user.first_name[0] }}{{ user.last_name[0] }}
+                        </div>
+                        {{ user.first_name }} {{ user.last_name }}
+                    </div>
+                </td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td><span class="role-badge">{{ user.role|title }}</span></td>
+                <td>{{ user.date_joined.strftime('%Y-%m-%d') if user.date_joined else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <i class="fas fa-users-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">No users have registered for this event yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

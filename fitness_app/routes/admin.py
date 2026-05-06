@@ -228,3 +228,23 @@ def delete_event(event_id):
 
     return redirect(url_for('admin.admin_dashboard'))
 
+@admin_bp.route('/admin/event-participants/<int:event_id>')
+def event_participants(event_id):
+    """View all users registered for a specific event."""
+    if not get_admin_user():
+        flash('Access denied. Administrator privileges required.', 'danger')
+        return redirect(url_for('home.index'))
+
+    event = Competition.query.get_or_404(event_id)
+    
+    # Get all users who have a record in CompetitionResult for this event
+    participants = (
+        User.query
+        .join(CompetitionResult, CompetitionResult.user_id == User.user_id)
+        .filter(CompetitionResult.competition_id == event_id)
+        .all()
+    )
+
+    return render_template('admin_event_participants.html', 
+                           event=event, 
+                           participants=participants)
