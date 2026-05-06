@@ -88,19 +88,20 @@
     <div class="event-actions">
         <button type="button" class="btn btn-outline" id="addToCalBtn"
                 data-event-date="{{ event.date.isoformat() }}"
-                data-event-name="{{ event.name }}">
+                data-event-name="{{ event.name }}"
+                style="justify-content: center;">
             <i class="fas fa-calendar-plus"></i> Add to Calendar
         </button>
 
         {% if not is_registered %}
-        <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="display: inline;">
-            <button type="submit" class="btn btn-primary">
+        <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="display: flex;">
+            <button type="submit" class="btn btn-primary" style="justify-content: center;">
                 <i class="fas fa-envelope"></i> Register Now
             </button>
         </form>
         {% endif %}
 
-        <a href="{{ url_for('events.event_chat', competition_id=event.competition_id) }}" class="btn btn-success">
+        <a href="{{ url_for('events.event_chat', competition_id=event.competition_id) }}" class="btn btn-success" style="justify-content: center;">
             <i class="fas fa-comments"></i> Group Chat
         </a>
     </div>

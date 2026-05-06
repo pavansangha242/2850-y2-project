@@ -63,9 +63,9 @@
                     </p>
                 </div>
                 <div style="display: flex; gap: 0.5rem; margin-top: auto;">
-                    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm" style="flex: 1; text-align: center;">Details</a>
-                    <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="flex: 1;">
-                        <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">Register</button>
+                    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm" style="flex: 1; text-align: center; justify-content: center;">Details</a>
+                    <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="flex: 1; display: flex;">
+                        <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center;">Register</button>
                     </form>
                 </div>
             </div>
@@ -133,15 +133,15 @@
             <button type="button" class="btn btn-outline" id="addToCalBtn"
                     data-event-date="{{ next_event.date.isoformat() }}"
                     data-event-name="{{ next_event.name }}"
-                    style="width: 100%;">
+                    style="width: 100%; justify-content: center;">
                 <i class="fas fa-calendar-plus"></i> Add to Calendar
             </button>
-            <form action="{{ url_for('events.register_event', competition_id=next_event.competition_id) }}" method="POST" style="width: 100%;">
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <form action="{{ url_for('events.register_event', competition_id=next_event.competition_id) }}" method="POST" style="width: 100%; display: flex;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
                     <i class="fas fa-envelope"></i> Register
                 </button>
             </form>
-            <a href="{{ url_for('events.event_details', competition_id=next_event.competition_id) }}" class="btn btn-outline" style="width: 100%; text-align: center;">
+            <a href="{{ url_for('events.event_details', competition_id=next_event.competition_id) }}" class="btn btn-outline" style="width: 100%; text-align: center; justify-content: center;">
                 <i class="fas fa-info-circle"></i> View Details
             </a>
         </div>
