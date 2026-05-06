@@ -29,7 +29,7 @@
         <div class="dash-stat-card">
             <div class="dash-stat-icon" style="background:#4B44DB;"><i class="fas fa-users"></i></div>
             <div>
-                <div class="dash-stat-num">{{ bookings|map(attribute='client_id')|list|unique|list|length }}</div>
+                <div class="dash-stat-num">{{ active_clients_count }}</div>
                 <div class="dash-stat-label">Active Clients</div>
             </div>
         </div>
@@ -59,7 +59,9 @@
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="booking-info">
-                        <div class="booking-client">Client #{{ b.client_id }}</div>
+                        <div class="booking-client">
+                            {{client_names.get(b.client_id, 'Client #' ~ b.client_id)}}
+                        </div>
                         <div class="booking-time">
                             <i class="fas fa-calendar"></i> {{ b.date }}
                             &nbsp;
@@ -69,17 +71,25 @@
                         <div class="booking-notes">{{ b.notes }}</div>
                         {% endif %}
                     </div>
-                    <span class="booking-status status-{{ b.status }}">{{ b.status | capitalize }}</span>
-                    {% if b.status == 'pending' %}
-                    <div class="booking-actions">
-                        <form method="POST" action="/trainers/booking/confirm/{{ b.booking_id }}" style="display:inline;">
-                            <button type="submit" class="btn-confirm">✓ Confirm</button>
-                        </form>
-                        <form method="POST" action="/trainers/booking/decline/{{ b.booking_id }}" style="display:inline;">
-                            <button type="submit" class="btn-decline">✗ Decline</button>
-                        </form>
+                    <div class="booking-right">
+                        <span class="booking-status status-{{ b.status }}"> 
+                            {{ b.status | capitalize }}
+                        </span>
+                        <div class="booking-actions">
+                            {% if b.status == 'pending'%}
+                            <form method="POST" action="/trainers/booking/confirm/{{ b.booking_id }}" style="display:inline;">
+                                <button type="submit" class="btn-confirm">✓ Confirm</button>
+                            </form>
+                            <form method="POST" action="/trainers/booking/decline/{{ b.booking_id }}" style="display:inline;">
+                                <button type="submit" class="btn-decline">✗ Decline</button>
+                            </form>
+                            {% endif %}
+
+                            <form method = "POST" action="/trainer/booking/cancel/{{ b.booking_id }}" style="display:inline;">
+                                <button type="submit" class="btn-decline">Cancel</button>
+                            </form>
+                        </div>
                     </div>
-                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -107,7 +117,7 @@
                     </div>
                     <div class="msg-preview-info">
                         <div class="msg-preview-name">
-                            Client #{{ msg.sender_id }}
+                            {{ client_names.get(msg.sender_id, 'Client #' ~ msg.sender_id) }}
                             {% if not msg.is_read %}
                             <span class="unread-dot"></span>
                             {% endif %}

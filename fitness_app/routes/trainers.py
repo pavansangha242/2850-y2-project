@@ -293,11 +293,27 @@ def trainer_dashboard():
     bookings = (
         SessionBooking.query
         .filter_by(trainer_id=user.user_id)
-        .filter(SessionBooking.status != 'cancelled')
+        .filter(SessionBooking.status!= 'cancelled')
         .order_by(SessionBooking.date.desc())
         .all()
     )
     
+    client_ids = [b.client_id for b in bookings]
+
+    clients = (
+        User.query
+        .filter(User.user_id.in_(client_ids))
+        .all() 
+        if client_ids else []
+    )
+
+    client_names = {
+        c.user_id: f"{c.first_name} {c.last_name}"
+        for c in clients
+    }
+
+    active_clients_count = len(set(client_ids))
+        
     messages = (
         TrainerMessage.query
         .filter_by(receiver_id=user.user_id)
@@ -308,7 +324,10 @@ def trainer_dashboard():
     return render_template(
         'trainer_dashboard.html',
         bookings=bookings,
-        messages=messages
+        messages=messages,
+        client_names=client_names,
+        active_clients_count=active_clients_count
+
     )
 
 @trainers.route('/trainers/booking/confirm/<int:booking_id>', methods=['POST'])
@@ -415,15 +434,15 @@ def assign_exercise():
         return redirect(url_for('home.index'))
 
     clients = (
-    User.query
-    .join(SessionBooking, SessionBooking.client_id == User.user_id)
-    .filter(
-        TrainingClient.trainer_id == user.user_id,
-        TrainingClient.active == "confirmed"
+        User.query
+        .join(SessionBooking, SessionBooking.client_id == User.user_id)
+        .filter(
+            TrainingClient.trainer_id == user.user_id,
+            TrainingClient.active == 'confirmed'
+        )
+        .distinct()
+        .all()
     )
-    .distinct()
-    .all()
-)
 
     exercises = GymExercise.query.order_by(GymExercise.name.asc()).all()
 
@@ -460,3 +479,33 @@ def assign_exercise():
         clients=clients,
         exercises=exercises
     )
+@trainers.route('/trainer/booking/cancel/<int:booking_id>', methods=['POST'])
+def trainer_cancel_booking(booking_id):
+    user = get_logged_in_user()
+
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    if user.role != 'pt':
+        flash('Access denied. Trainer account required.', 'error')
+        return redirect(url_for('home.index'))
+
+    booking = SessionBooking.query.filter_by(
+        booking_id=booking_id,
+        trainer_id=user.user_id
+    ).first_or_404()
+
+    booking.status = 'cancelled'
+
+    client_link = TrainingClient.query.filter_by(
+        trainer_id=user.user_id,
+        client_id=booking.client_id
+    ).first()
+
+    if client_link:
+        client_link.active = False
+
+    db.session.commit()
+
+    flash('Booking cancelled.', 'success')
+    return redirect(url_for('trainers.trainer_dashboard'))
