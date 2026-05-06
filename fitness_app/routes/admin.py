@@ -48,12 +48,17 @@ def admin_dashboard():
 
     # Apply search filter if provided
     if search_query:
-        search_filter = (
-            (User.username.ilike(f'%{search_query}%')) |
-            (User.email.ilike(f'%{search_query}%')) |
-            (User.first_name.ilike(f'%{search_query}%')) |
-            (User.last_name.ilike(f'%{search_query}%'))
-        )
+        # Simple full name search check
+        if ' ' in search_query:
+            first, last = search_query.split(' ', 1)
+            search_filter = (User.first_name.ilike(f'%{first}%')) & (User.last_name.ilike(f'%{last}%'))
+        else:
+            search_filter = (
+                (User.username.ilike(f'%{search_query}%')) |
+                (User.email.ilike(f'%{search_query}%')) |
+                (User.first_name.ilike(f'%{search_query}%')) |
+                (User.last_name.ilike(f'%{search_query}%'))
+            )
         customer_query = customer_query.filter(search_filter)
         pending_pt_query = pending_pt_query.filter(search_filter)
         approved_pt_query = approved_pt_query.filter(search_filter)
@@ -70,6 +75,9 @@ def admin_dashboard():
     # Competition / Event management
     competitions = Competition.query.order_by(Competition.date.asc()).all()
 
+    # All user names for suggestions
+    all_user_names = [f"{u.first_name} {u.last_name}" for u in User.query.filter(User.role != 'administrator').all()]
+
     return render_template('admin.html',
                            admin_user=admin_user,
                            active_customers=active_customers,
@@ -80,7 +88,8 @@ def admin_dashboard():
                            total_users=total_users,
                            total_customers=total_customers,
                            total_pts=total_pts,
-                           total_admins=total_admins)
+                           total_admins=total_admins,
+                           all_user_names=all_user_names)
 
 
 @admin_bp.route('/admin/delete-user/<int:user_id>', methods=['POST'])
@@ -91,8 +100,13 @@ def delete_user(user_id):
         return redirect(url_for('home.index'))
 
     user = User.query.get_or_404(user_id)
+    admin_user = get_admin_user()
 
-    # Don't allow deleting admin users
+    # Don't allow deleting self or other admin users
+    if user.user_id == admin_user.user_id:
+        flash('Error: You cannot delete your own administrator account!', 'error')
+        return redirect(url_for('admin.admin_dashboard'))
+
     if user.role == 'administrator':
         return redirect(url_for('admin.admin_dashboard'))
 

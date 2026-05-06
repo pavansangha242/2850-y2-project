@@ -419,16 +419,22 @@ SPORT_THEMES = {
 
 @sport_stats.route('/stats/<sport_slug>')
 def sport_stats_page(sport_slug):
-    user = User.query.first()
+    from flask import session, redirect, url_for
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('auth.login'))
+        
+    user = User.query.filter_by(username=username).first()
     if not user:
-        return "No users found in database."
+        return redirect(url_for('auth.login'))
 
+    user_id = user.user_id
+    
     # check if the sport slug is valid before doing anything else
     theme = SPORT_THEMES.get(sport_slug.lower())
     if not theme:
         abort(404)
 
-    user_id = user.user_id
     sport_type = ExerciseType.query.filter_by(name=theme['sport_name']).first()
     if not sport_type:
         abort(404)
