@@ -46,11 +46,11 @@
 <section style="margin-top: 2.5rem;">
     <h2 class="section-title">Quick Actions</h2>
     <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-        <a href="#activities" class="card action-card">
+        <a href="{{ url_for('auth.user_settings') }}" class="card action-card">
             <div class="action-icon" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
-                <i class="fas fa-plus"></i>
+                <i class="fas fa-user-circle"></i>
             </div>
-            <span class="action-label">Log Workout</span>
+            <span class="action-label">My Profile</span>
         </a>
 
         <a href="{{ url_for('progress.progress_page') }}" class="card action-card">
@@ -92,7 +92,7 @@
 </section>
 
 <!-- Recommended Activities -->
-<section id="activities" style="margin-top: 2.5rem;">
+<section style="margin-top: 2.5rem;">
     <h2 class="section-title">Recommended Activities</h2>
     <div class="grid-4">
         <a href="/running" class="card activity-card">
