@@ -52,11 +52,11 @@
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
                         <h3 style="margin: 0; font-size: 1.2rem;">{{ event.name }}</h3>
-                        <span style="font-size: 0.8rem; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 12px; font-weight: 600;">
+                        <span style="font-size: 0.8rem; background: var(--primary); color: white;padding: 2px 8px; border-radius: 12px; font-weight: 600;">May 26</span>
                             {{ event.date.strftime('%b %d') }}
                         </span>
                     </div>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                    <p style="color: #a0a0c0; font-size: 0.9rem; margin-bottom: 1rem;">
                         <i class="fas fa-map-marker-alt"></i> {{ event.location or 'Location TBA' }}
                         <br>
                         <i class="fas fa-route"></i> {{ event.distance }} km
@@ -73,7 +73,7 @@
         </div>
     {% else %}
         <div class="card" style="text-align: center; padding: 2rem;">
-            <p style="color: var(--text-muted);">No upcoming events at the moment.</p>
+            <p style="color: #a0a0c0;">No upcoming events at the moment.</p>
         </div>
     {% endif %}
 </section>
@@ -83,9 +83,9 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h2 class="section-title" style="margin: 0;">Calendar</h2>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <button class="btn btn-outline btn-sm" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-outline btn-sm" onclick="changeMonth(-1)" aria-label="Previous month" ><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
             <span id="currentMonthYear" style="font-weight: 600; min-width: 120px; text-align: center;"></span>
-            <button class="btn btn-outline btn-sm" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+            <button class="btn btn-outline btn-sm" onclick="changeMonth(1)"> aria-label="Next month"<i class="fas fa-chevron-right" aria-hidden="true"></i></button>
         </div>
     </div>
     <div class="card" style="padding: 1.5rem;">
