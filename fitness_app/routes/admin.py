@@ -57,7 +57,12 @@ def admin_dashboard():
             | (User.first_name.ilike(f"%{search_query}%"))
             | (User.last_name.ilike(f"%{search_query}%"))
         )
-    active_users = users_query.all()
+    
+    # Separate users by role for the template
+    active_customers = users_query.filter_by(role="customer").all()
+    
+    # Get all usernames for search suggestions
+    all_user_names = [u.first_name + " " + u.last_name for u in User.query.all()]
 
     # Pending PT users (role='pt' and not yet approved)
     pending_pts = User.query.filter_by(role="pt", approved=False).all()
@@ -77,7 +82,8 @@ def admin_dashboard():
     return render_template(
         "admin.html",
         admin_user=admin_user,
-        active_users=active_users,
+        active_customers=active_customers,
+        all_user_names=all_user_names,
         pending_pts=pending_pts,
         approved_pts=approved_pts,
         competitions=competitions,
