@@ -9,7 +9,7 @@ from fitness_app.models import (
     User, TrainerProfile, Competition, CompetitionResult, ChatMessage,
     TrainerReview, SessionBooking, TrainerMessage
 )
-from datetime import datetime
+from datetime import datetime, date
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -194,6 +194,10 @@ def add_event():
     if name and date_str:
         try:
             event_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            if event_date < date.today():
+                flash('Cannot create events in the past.', 'danger')
+                return redirect(url_for('admin.admin_dashboard'))
+
             distance = float(distance_str) if distance_str else 0.0
             new_event = Competition(
                 name=name,

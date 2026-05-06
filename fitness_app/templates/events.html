@@ -29,7 +29,7 @@
         </div>
         <div class="form-group">
             <label>Date</label>
-            <input type="date" name="date" class="form-input" required>
+            <input type="date" name="date" id="eventDateInput" class="form-input" required>
         </div>
         <div class="form-group">
             <label>Distance (km)</label>
@@ -46,15 +46,31 @@
     <h2 class="section-title">Upcoming Events</h2>
 
     {% if events %}
-        {% for event in events %}
-        <div class="event-item">
-            <span class="event-date">
-                <i class="fas fa-circle" style="font-size: 0.5rem; vertical-align: middle; margin-right: 0.3rem;"></i>
-                {{ event.date.strftime('%B %d, %Y') }}
-            </span>
-            <span class="event-name">{{ event.name }}</span>
+        <div class="events-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+            {% for event in events %}
+            <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                        <h3 style="margin: 0; font-size: 1.2rem;">{{ event.name }}</h3>
+                        <span style="font-size: 0.8rem; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 12px; font-weight: 600;">
+                            {{ event.date.strftime('%b %d') }}
+                        </span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                        <i class="fas fa-map-marker-alt"></i> {{ event.location or 'Location TBA' }}
+                        <br>
+                        <i class="fas fa-route"></i> {{ event.distance }} km
+                    </p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+                    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm" style="flex: 1; text-align: center;">Details</a>
+                    <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="flex: 1;">
+                        <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">Register</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     {% else %}
         <div class="card" style="text-align: center; padding: 2rem;">
             <p style="color: var(--text-muted);">No upcoming events at the moment.</p>
@@ -295,6 +311,12 @@
             addBtn.innerHTML = '<i class="fas fa-calendar-check"></i> Added!';
             addBtn.classList.remove('btn-outline');
             addBtn.classList.add('btn-danger');
+        }
+        // Set min date for the event creation form
+        const dateInput = document.getElementById('eventDateInput');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
         }
     }
 </script>
