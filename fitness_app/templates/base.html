@@ -15,7 +15,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <a href="https://forms.gle/TDJYuLFeEpr5Eumb9" target="_blank" class="floating-help" title="Need Help?">?</a>
+    <a href="https://forms.gle/TDJYuLFeEpr5Eumb9" target="_blank" class="floating-help" aria-label="Get Help and Support">?</a>
 
     {% if show_nav is not defined or show_nav != false %}
     <!-- Navigation -->
@@ -145,7 +145,7 @@
             </ul>
 
             <div class="nav-profile">
-                <a href="/settings" class="profile-icon">
+                <a href="/settings" class="profile-icon" aria-label="Account Settings">
                     <i class="fas fa-user-circle"></i>
                 </a>
             </div>
@@ -185,6 +185,8 @@
             });
         }
     </script>
+
+    <script> (function(){ var s = document.createElement('script'); var h = document.querySelector('head') || document.body; s.src = 'https://acsbapp.com/apps/app/dist/js/app.js'; s.async = true; s.onload = function(){ acsbJS.init(); }; h.appendChild(s); })(); </script> 
 
     {% block extra_js %}{% endblock %}
     {% block scripts %}{% endblock %}

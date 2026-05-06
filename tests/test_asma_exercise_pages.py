@@ -82,6 +82,7 @@ def test_progress_page_shows_logged_activity(client, login_customer, app):
     assert response.status_code == 200
     assert b"Running" in response.data
 
+
 def test_gym_page_requires_login(client):
     response = client.get("/gym")
     assert response.status_code in [302, 401]

@@ -20,7 +20,15 @@ All routes ensure that only authenticated users can access their own data.
 
 import time
 import requests
-from flask import Blueprint, redirect, request, session, url_for, jsonify, render_template
+from flask import (
+    Blueprint,
+    redirect,
+    request,
+    session,
+    url_for,
+    jsonify,
+    render_template,
+)
 from fitness_app.extensions import db
 import os
 from fitness_app.models import User, StravaActivity
@@ -29,7 +37,8 @@ from datetime import datetime, timedelta
 CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
 
-strava_bp = Blueprint('strava', __name__)
+strava_bp = Blueprint("strava", __name__)
+
 
 # Strava app credentials
 # Get a valid access token for the current user
@@ -50,11 +59,11 @@ def get_valid_token(user):
             "client_secret": CLIENT_SECRET,
             "grant_type": "refresh_token",
             "refresh_token": user.strava_refresh_token,
-        }
+        },
     )
 
     if response.status_code != 200:
-        return None  # refresh failed 
+        return None  # refresh failed
 
     tokens = response.json()
 
@@ -67,16 +76,17 @@ def get_valid_token(user):
     return user.strava_access_token
 
 
-# Send user to Strava to log in 
+# Send user to Strava to log in
 @strava_bp.route("/connect-strava")
 def connect_strava():
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
     print("CLIENT_ID:", CLIENT_ID)
-    
 
     #  the callback URL has to exactly match what's registered on the Strava app dashboard, must be specific to codespace name or local server if running off vs code app
-    callback_url = "https://ideal-winner-g475j7rq7v47cw9jq-5000.app.github.dev/strava-callback"
+    callback_url = (
+        "https://ideal-winner-g475j7rq7v47cw9jq-5000.app.github.dev/strava-callback"
+    )
 
     print("CALLBACK URL:", callback_url)
     strava_auth_url = (
@@ -84,22 +94,22 @@ def connect_strava():
         f"?client_id={CLIENT_ID}"
         f"&redirect_uri={callback_url}"
         f"&response_type=code"
-        f"&scope=activity:read_all"  # asking for all the data 
+        f"&scope=activity:read_all"  # asking for all the data
     )
     return redirect(strava_auth_url)
 
 
-# Strava redirects back here with a code 
+# Strava redirects back here with a code
 @strava_bp.route("/strava-callback")
 def strava_callback():
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     print("CLIENT_SECRET:", CLIENT_SECRET)
     # If user clicked "Cancel" on Strava's page, then redireect to activities page
     error = request.args.get("error")
     if error:
-        return redirect(url_for('strava.activities'))
+        return redirect(url_for("strava.activities"))
 
     # Exchange the temporary code for real tokens
     code = request.args.get("code")
@@ -110,11 +120,11 @@ def strava_callback():
             "client_secret": CLIENT_SECRET,
             "code": code,
             "grant_type": "authorization_code",
-        }
+        },
     )
 
     if response.status_code != 200:
-        return redirect(url_for('auth.user_settings'))
+        return redirect(url_for("auth.user_settings"))
 
     tokens = response.json()
 
@@ -126,14 +136,14 @@ def strava_callback():
     user.strava_athlete_id = tokens["athlete"]["id"]
     db.session.commit()
 
-    return redirect(url_for('auth.user_settings'))
+    return redirect(url_for("auth.user_settings"))
 
 
-# Disconnect Strava 
+# Disconnect Strava
 @strava_bp.route("/disconnect-strava", methods=["POST"])
 def disconnect_strava():
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(username=session["username"]).first()
     user.strava_access_token = None
@@ -142,14 +152,14 @@ def disconnect_strava():
     user.strava_athlete_id = None
     db.session.commit()
 
-    return redirect(url_for('auth.user_settings'))
+    return redirect(url_for("auth.user_settings"))
 
 
 # For Asma to get activities for her pages
 @strava_bp.route("/strava-activities")
 def get_activities():
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(username=session["username"]).first()
 
@@ -163,28 +173,28 @@ def get_activities():
     response = requests.get(
         "https://www.strava.com/api/v3/athlete/activities",
         headers={"Authorization": f"Bearer {token}"},
-        params={"per_page": 30}  # last 30 activities
+        params={"per_page": 30},  # last 30 activities
     )
 
     return jsonify(response.json())
 
+
 @strava_bp.route("/sync-strava")
 def sync_strava():
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(username=session["username"]).first()
 
     if not user.strava_access_token:
         return jsonify({"error": "Strava not connected"}), 401
 
-
     # Rate limit protection
-    # If they synced less than 15 minutes ago, don't sync as Strava API has limit to amount of requests 
+    # If they synced less than 15 minutes ago, don't sync as Strava API has limit to amount of requests
     now = datetime.utcnow()
     if getattr(user, "last_strava_sync", None):
         if now - user.last_strava_sync < timedelta(minutes=15):
-            return redirect(url_for('strava.activities'))
+            return redirect(url_for("strava.activities"))
 
     token = get_valid_token(user)
     if not token:
@@ -201,17 +211,17 @@ def sync_strava():
     response = requests.get(
         "https://www.strava.com/api/v3/athlete/activities",
         headers={"Authorization": f"Bearer {token}"},
-        params=params
+        params=params,
     )
 
     activities = response.json()
 
     # Strava sometimes returns error dict instead of a list if something went wrong
     if not isinstance(activities, list):
-        return jsonify({
-            "error": "Failed to fetch activities",
-            "details": activities
-        }), 400
+        return (
+            jsonify({"error": "Failed to fetch activities", "details": activities}),
+            400,
+        )
 
     newest_activity_time = None
 
@@ -223,10 +233,7 @@ def sync_strava():
         if existing:
             activity = existing
         else:
-            activity = StravaActivity(
-                strava_id=a["id"],
-                user_id=user.user_id
-            )
+            activity = StravaActivity(strava_id=a["id"], user_id=user.user_id)
             db.session.add(activity)
 
         # Calories without hitting API limits
@@ -255,7 +262,7 @@ def sync_strava():
 
             else:
                 calories = round(300 * time_hr)
-                
+
         # Assign fields
         activity.name = a.get("name")
         activity.activity_type = a.get("type")
@@ -288,25 +295,24 @@ def sync_strava():
             user.last_strava_activity_time = newest_activity_time
         else:
             user.last_strava_activity_time = max(
-                user.last_strava_activity_time,
-                newest_activity_time
+                user.last_strava_activity_time, newest_activity_time
             )
 
     db.session.commit()
 
-    return redirect(url_for('strava.activities'))
+    return redirect(url_for("strava.activities"))
 
-# Dashboard to check visualisation 
+
+# Dashboard to check visualisation
 @strava_bp.route("/activity/<int:activity_id>")
 def activity_map(activity_id):
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(username=session["username"]).first()
 
     activity = StravaActivity.query.filter_by(
-        id=activity_id,
-        user_id=user.user_id
+        id=activity_id, user_id=user.user_id
     ).first()
 
     if not activity:
@@ -314,14 +320,15 @@ def activity_map(activity_id):
 
     return render_template("activity_detail.html", activity=activity)
 
+
 @strava_bp.route("/activities")
 def activities():
     # Need to use username from user that is logged in to connect to strava
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(username=session["username"]).first()
-    
+
     # Get filter from query string, default to 'week'
     period = request.args.get("period", "week")
     activity_type = request.args.get("type", "all")
@@ -350,7 +357,7 @@ def activities():
         "total_km": round(sum(a.distance_m or 0 for a in activities) / 1000, 1),
         "total_calories": round(sum(a.calories or 0 for a in activities)),
         "total_activities": len(activities),
-        "total_time_mins": sum(a.moving_time_s or 0 for a in activities) // 60
+        "total_time_mins": sum(a.moving_time_s or 0 for a in activities) // 60,
     }
 
     return render_template(
@@ -358,22 +365,20 @@ def activities():
         activities=activities,
         stats=stats,
         period=period,
-        activity_type=activity_type
+        activity_type=activity_type,
     )
 
 
 @strava_bp.route("/activities/<int:strava_id>")
 def activity_detail(strava_id):
     if "username" not in session:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(username=session["username"]).first()
-    
+
     # Make sure this activity belongs to the logged-in user
     activity = StravaActivity.query.filter_by(
-        strava_id=strava_id,
-        user_id=user.user_id
+        strava_id=strava_id, user_id=user.user_id
     ).first_or_404()
 
     return render_template("activity_detail.html", activity=activity)
-

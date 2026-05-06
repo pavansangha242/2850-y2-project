@@ -1,13 +1,22 @@
 import os
 import sys
 import pytest
+from datetime import date
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, BASE_DIR)
 
 from run import app as flask_app
 from fitness_app.extensions import db
-from fitness_app.models import User, ExerciseType, TrainerProfile, GymExercise
+from fitness_app.models import (
+    User,
+    ExerciseType,
+    TrainerProfile,
+    GymExercise,
+    Competition,
+    CompetitionResult,
+    ChatMessage,
+)
 
 
 @pytest.fixture
@@ -56,29 +65,33 @@ def app():
         db.session.add_all([customer, trainer, admin])
         db.session.commit()
 
-        db.session.add_all([
-            ExerciseType(name="Swimming", description="Swimming workouts"),
-            ExerciseType(name="Running", description="Running workouts"),
-            ExerciseType(name="Cycling", description="Cycling workouts"),
-            ExerciseType(name="Walking", description="Walking workouts"),
-            ExerciseType(name="Gym", description="Gym workouts"),
-        ])
+        db.session.add_all(
+            [
+                ExerciseType(name="Swimming", description="Swimming workouts"),
+                ExerciseType(name="Running", description="Running workouts"),
+                ExerciseType(name="Cycling", description="Cycling workouts"),
+                ExerciseType(name="Walking", description="Walking workouts"),
+                ExerciseType(name="Gym", description="Gym workouts"),
+            ]
+        )
         db.session.commit()
 
-        db.session.add_all([
-            GymExercise(
-                name="Squat",
-                muscle_group="Legs",
-                description="Lower body exercise",
-                video_url=""
-            ),
-            GymExercise(
-                name="Bench Press",
-                muscle_group="Chest",
-                description="Upper body exercise",
-                video_url=""
-            ),
-        ])
+        db.session.add_all(
+            [
+                GymExercise(
+                    name="Squat",
+                    muscle_group="Legs",
+                    description="Lower body exercise",
+                    video_url="",
+                ),
+                GymExercise(
+                    name="Bench Press",
+                    muscle_group="Chest",
+                    description="Upper body exercise",
+                    video_url="",
+                ),
+            ]
+        )
         db.session.commit()
 
         trainer_profile = TrainerProfile(
@@ -118,3 +131,65 @@ def login_trainer(client):
 def login_admin(client):
     with client.session_transaction() as sess:
         sess["username"] = "test_admin"
+
+
+# Tests for Mohammed's code
+@pytest.fixture
+def sample_event(app):
+    """Create a sample competition event."""
+    with app.app_context():
+        event = Competition(
+            name="Test Marathon", location="London", distance=10, date=date(2030, 1, 1)
+        )
+        db.session.add(event)
+        db.session.commit()
+        # Return the integer ID, not object
+        return event.competition_id
+
+
+@pytest.fixture
+def registered_event(app):
+    """Create an event and register test_customer."""
+    with app.app_context():
+        user = User.query.filter_by(username="test_customer").first()
+
+        event = Competition(
+            name="Registered Event", location="Test", distance=5, date=date(2030, 1, 1)
+        )
+        db.session.add(event)
+        db.session.commit()
+
+        event_id = event.competition_id
+
+        result = CompetitionResult(
+            user_id=user.user_id, competition_id=event.competition_id
+        )
+        db.session.add(result)
+        db.session.commit()
+
+    return event.competition_id
+
+
+@pytest.fixture
+def sample_chat_message(app):
+    """Create a chat message for testing."""
+    with app.app_context():
+        user = User.query.filter_by(username="test_customer").first()
+
+        event = Competition.query.first()
+        if not event:
+            event = Competition(
+                name="Chat Event", location="Test", distance=5, date=date(2030, 1, 1)
+            )
+            db.session.add(event)
+            db.session.commit()
+
+        msg = ChatMessage(
+            user_id=user.user_id,
+            competition_id=event.competition_id,
+            content="Test message",
+        )
+        db.session.add(msg)
+        db.session.commit()
+
+    return msg
