@@ -81,7 +81,7 @@ def trainers_page():
     trainers_raw = (
         db.session.query(User, TrainerProfile)
         .join(TrainerProfile, User.user_id == TrainerProfile.user_id)
-        .filter(User.role == "pt", User.approved == True)
+        .filter(User.role == "pt", User.approved)
         .order_by(TrainerProfile.average_rating.desc())
         .all()
     )
@@ -446,7 +446,8 @@ def assign_exercise():
     clients = (
         User.query.join(TrainingClient, TrainingClient.client_id == User.user_id)
         .filter(
-            TrainingClient.trainer_id == user.user_id, TrainingClient.active == True
+            TrainingClient.trainer_id == user.user_id,
+            TrainingClient.active,
         )
         .all()
     )
