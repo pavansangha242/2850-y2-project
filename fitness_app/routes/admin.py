@@ -1,5 +1,5 @@
 """
-Admin dashboard routes for the FitTrack application.
+Admin dashboard routes for the Motivara application.
 Handles user management (search, delete), personal trainer
 approval/rejection, and platform statistics display.
 """
