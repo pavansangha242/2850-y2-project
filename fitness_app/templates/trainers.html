@@ -73,8 +73,22 @@
             <div class="booking-section">
                 <h3>&#128197; Book a Session</h3>
                 {% if booking %}
-                <div class="booking-existing">✅ <strong>Upcoming:</strong> {{ booking['date'] }} at {{ booking['time'] }} — {{ booking['status'] | capitalize }}</div>
-                <div class="booking-actions"><a class="btn-cancel" href="/trainers/cancel/{{ booking['booking_id'] }}" onclick="return confirm('Cancel this booking?')">Cancel Booking</a></div>
+                <div class="booking-existing">
+                    ✅ <strong>Upcoming:</strong> {{ booking['date'] }} at {{ booking['time'] }} — {{ booking['status'] | capitalize }}</div>
+                <div>
+
+                <div class="booking-actions">
+                    <form
+                        method="POST"
+                        action="/trainers/cancel/{{ booking['booking_id'] }}"
+                        style="display: inline;"
+                    >
+                        <button type="submit" class="btn-cancel">
+                            Cancel booking
+                            </button>
+                        </form>
+                    </div>
+
                 {% else %}
                 <form class="booking-form" method="POST" action="/trainers/book">
                     <input type="hidden" name="trainer_id" value="{{ profile_trainer.id }}">

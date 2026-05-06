@@ -416,11 +416,12 @@ def assign_exercise():
 
     clients = (
     User.query
-    .join(TrainingClient, TrainingClient.client_id == User.user_id)
+    .join(SessionBooking, SessionBooking.client_id == User.user_id)
     .filter(
         TrainingClient.trainer_id == user.user_id,
-        TrainingClient.active == True
+        TrainingClient.active == "confirmed"
     )
+    .distinct()
     .all()
 )
 

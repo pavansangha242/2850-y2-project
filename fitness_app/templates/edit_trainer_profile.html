@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Trainer Profile - FitTrack{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+    <h1>Edit Trainer Profile</h1>
+    <p>Update the details customers see on your trainer profile.</p>
+</div>
+
+<div class="profile-panel" style="max-width: 850px; margin: 30px auto; padding: 30px;">
+
+    <form method="POST">
+
+        <div style="margin-bottom: 18px;">
+            <label style="display:block; margin-bottom:8px; color:#fff; font-weight:600;">
+                Specialty
+            </label>
+            <input
+                type="text"
+                name="specialty"
+                placeholder="e.g. Strength, Weight Loss, Personal Trainer"
+                value="{{ profile.specialty if profile and profile.specialty else '' }}"
+                required
+                style="
+                    width:100%;
+                    padding:14px 16px;
+                    border-radius:12px;
+                    border:1px solid #2d2a55;
+                    background:#121225;
+                    color:white;
+                    font-size:15px;
+                    box-sizing:border-box;
+                "
+            >
+        </div>
+
+        <div style="margin-bottom: 18px;">
+            <label style="display:block; margin-bottom:8px; color:#fff; font-weight:600;">
+                Bio
+            </label>
+            <textarea
+                name="bio"
+                placeholder="Write a short bio about yourself..."
+                style="
+                    width:100%;
+                    min-height:130px;
+                    padding:14px 16px;
+                    border-radius:12px;
+                    border:1px solid #2d2a55;
+                    background:#121225;
+                    color:white;
+                    font-size:15px;
+                    resize:vertical;
+                    box-sizing:border-box;
+                "
+            >{{ profile.bio if profile and profile.bio else '' }}</textarea>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+            <label style="display:block; margin-bottom:8px; color:#fff; font-weight:600;">
+                Features / Skills
+            </label>
+            <textarea
+                name="features"
+                placeholder="Write one feature per line. Example:
+Strength training
+Weight loss support
+Beginner friendly"
+                style="
+                    width:100%;
+                    min-height:150px;
+                    padding:14px 16px;
+                    border-radius:12px;
+                    border:1px solid #2d2a55;
+                    background:#121225;
+                    color:white;
+                    font-size:15px;
+                    resize:vertical;
+                    box-sizing:border-box;
+                "
+            >{{ features_text if features_text else '' }}</textarea>
+        </div>
+
+        <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn-book" style="flex:1;">
+                Save Profile
+            </button>
+
+            <a href="/trainer-dashboard" class="btn-cancel" style="text-decoration:none; text-align:center;">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

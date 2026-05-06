@@ -164,15 +164,16 @@
                                     <span class="session-notes">🔥 {{ act['calories'] }} kcal</span>
                                 {% endif %}
 
-                                <a
-                                    class="delete-btn"
-                                    href="{{ url_for('history.delete_activity', activity_id=act['activity_id']) }}"
-                                    onclick="return confirm('Delete this session?')"
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('history.delete_activity', activity_id=act['activity_id']) }}"
+                                    style="display:inline;"
                                 >
-                                    Delete
-                                </a>
+                                    <button type="submit" class="delete-btn">
+                                        Delete
+                                    </button>
+                                </form>
                             </div>
-                        </div>
                     {% endfor %}
                 {% else %}
                     <div class="empty-state-card">
