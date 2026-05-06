@@ -446,9 +446,7 @@ def assign_exercise():
     clients = (
         User.query.join(TrainingClient, TrainingClient.client_id == User.user_id)
         .filter(
-            TrainingClient.trainer_id == user.user_id,
-            TrainingClient.active,
-        )
+            TrainingClient.trainer_id == user.user_id, TrainingClient.active)
         .all()
     )
 

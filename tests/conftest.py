@@ -1,10 +1,15 @@
 import os
 import sys
-import pytest
 from datetime import date
-from run import app as flask_app
-from fitness_app.extensions import db
-from fitness_app.models import (
+
+import pytest
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, BASE_DIR)
+
+from run import app as flask_app # noqa: E402
+from fitness_app.extensions import db # noqa: E402
+from fitness_app.models import ( # noqa: E402
     User,
     ExerciseType,
     TrainerProfile,
@@ -13,10 +18,6 @@ from fitness_app.models import (
     CompetitionResult,
     ChatMessage,
 )
-
-
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, BASE_DIR)
 
 @pytest.fixture
 def app():
