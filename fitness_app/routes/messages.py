@@ -1,6 +1,8 @@
-# messages.py for messaging between customers and trainers
-# messages: customer views their trainer conversations
-# trainer inbox: trainer views all client messages
+"""
+Messaging routes for the Motivara application.
+
+Handles direct messages between customers and trainers, as well as event group chats.
+"""
 
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from sqlalchemy import or_, and_
@@ -19,6 +21,7 @@ messages_bp = Blueprint("messages", __name__)
 
 
 def get_logged_in_user():
+    """Return the User object for the currently logged-in user, or None."""
     username = session.get("username")
     if not username:
         return None
@@ -30,6 +33,7 @@ def get_logged_in_user():
 
 @messages_bp.route("/messages")
 def messages():
+    """Display the customer view of all their conversations (DMs and groups)."""
     user = get_logged_in_user()
     if not user:
         return redirect(url_for("auth.login"))
@@ -237,6 +241,7 @@ def messages():
 
 @messages_bp.route("/messages/send", methods=["POST"])
 def send_user_message():
+    """Handle a customer sending a message to a trainer."""
     user = get_logged_in_user()
     if not user:
         return redirect(url_for("auth.login"))
@@ -259,6 +264,7 @@ def send_user_message():
 
 @messages_bp.route("/trainer/inbox")
 def trainer_inbox():
+    """Trainer view of all their client conversations."""
     user = get_logged_in_user()
     if not user:
         return redirect(url_for("auth.login"))
@@ -395,6 +401,7 @@ def trainer_inbox():
 
 @messages_bp.route("/trainer/inbox/send", methods=["POST"])
 def send_trainer_message():
+    """Handle a trainer sending a message to a customer."""
     user = get_logged_in_user()
     if not user:
         return redirect(url_for("auth.login"))

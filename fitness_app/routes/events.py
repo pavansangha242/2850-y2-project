@@ -1,8 +1,7 @@
 """
-Events page routes for the FitTrack application.
-Handles competition listing, event detail views,
-calendar file downloads (.ics), user registration,
-and group chat for upcoming competitions.
+Event management routes for the Motivara application.
+
+Handles event listing, details, registration, and group chat.
 """
 
 from flask import (

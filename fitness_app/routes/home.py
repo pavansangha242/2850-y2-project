@@ -1,8 +1,7 @@
 """
-Home page routes for the FitTrack application.
-Handles the main dashboard view with today's summary
-statistics (calories, distance), weekly workout count,
-quick actions, and recommended activities.
+Home routes for the Motivara application.
+
+Displays the user dashboard with quick actions and fitness summary.
 """
 
 from flask import Blueprint, render_template, session, redirect, url_for

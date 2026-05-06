@@ -1,7 +1,7 @@
 """
-Leaderboard page routes for the FitTrack application.
-Ranks users by the number of workouts completed in the
-current week, along with total calories and distance.
+Leaderboard routes for the Motivara application.
+
+Displays the global ranking of users based on their logged activities.
 Supports filtering by time period (week, month, all time).
 """
 
