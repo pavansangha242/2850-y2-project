@@ -69,7 +69,6 @@ def swimming_page():
     """Loads everything needed for the main swimming dashboard.
     Redirects to login if its not user."""
     if not session.get("username"):
-    if not session.get("username"):
         return redirect(url_for("auth.login"))
 
     uid = get_current_user_id()
