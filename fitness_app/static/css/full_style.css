@@ -3795,3 +3795,70 @@ th {
     font-weight: 600;
 }
 
+.register-submit {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.client-card-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.client-email {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.stats-grid-spacing {
+    margin-bottom: 2rem;
+}
+
+.activity-card {
+    margin-bottom: 0.5rem;
+}
+
+.activity-row-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.activity-title {
+    margin: 0;
+}
+
+.activity-meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.activity-stats {
+    text-align: right;
+}
+
+.activity-distance {
+    font-weight: 700;
+    margin: 0;
+}
+
+.activity-extra-stats {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.activity-detail-grid {
+    margin-top: 2rem;
+}
+
+.manual-workout-note {
+    text-align: center;
+    color: var(--warm);
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
