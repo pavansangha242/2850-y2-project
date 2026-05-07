@@ -55,7 +55,8 @@ def get_walking_met(distance_km, duration_mins):
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
     """Estimates calories burned using MET x weight x time in hours.
-    Returns None if any inputs are missing or zero, otherwise returns a rounded whole number."""
+    Returns None if any inputs are missing or zero, otherwise returns a rounded whole number.
+    """
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
         hrs = duration_mins / 60
         return round(met * weight_kg * hrs)
@@ -455,7 +456,7 @@ def set_walking_goal():
 
 @walking_bp.route("/walking/delete/<int:activity_id>", methods=["POST"])
 def delete_walk(activity_id):
-    """Deletes a walk. Redirects back to the dashboard with a 
+    """Deletes a walk. Redirects back to the dashboard with a
     confirmation message once deleted."""
     uid = get_current_user_id()
 

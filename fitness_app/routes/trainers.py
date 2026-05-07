@@ -1,7 +1,7 @@
 """Handle trainers page, bookings, messages, and PT tools.
 
 this file showa the trainer page, let the user to book sessions and send messages,
-and gives PT users tools to manage booking, clients, profiles and 
+and gives PT users tools to manage booking, clients, profiles and
 assigned gym exercises for the clients.
 """
 
@@ -463,8 +463,7 @@ def assign_exercise():
 
     clients = (
         User.query.join(TrainingClient, TrainingClient.client_id == User.user_id)
-        .filter(
-            TrainingClient.trainer_id == user.user_id, TrainingClient.active)
+        .filter(TrainingClient.trainer_id == user.user_id, TrainingClient.active)
         .all()
     )
 

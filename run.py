@@ -1,3 +1,5 @@
+"""Application entry point for running the Flask server."""
+
 from dotenv import load_dotenv
 
 from fitness_app import create_app

@@ -55,7 +55,8 @@ def get_running_met(distance_km, duration_mins):
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
     """Estimates calories burned using MET x weight x time in hours.
-    Returns None if any inputs are missing or zero, otherwise returns a rounded whole number."""
+    Returns None if any inputs are missing or zero, otherwise returns a rounded whole number.
+    """
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
         hrs = duration_mins / 60
         return round(met * weight_kg * hrs)
@@ -64,7 +65,7 @@ def calculate_calories(met, weight_kg, duration_mins):
 
 @running_bp.route("/running")
 def running_page():
-    """Loads everything needed for the main running dashboard. 
+    """Loads everything needed for the main running dashboard.
     or shows an empty dashboard if running isn't in the database."""
 
     if not session.get("username"):

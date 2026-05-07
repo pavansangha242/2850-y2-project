@@ -1,4 +1,5 @@
 """Database models and helper functions for the fitness application."""
+
 from datetime import date, datetime
 
 from flask import session
@@ -9,6 +10,7 @@ from fitness_app.extensions import db
 # Start of Pavan db model
 class User(db.Model):
     """Application user account model."""
+
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True)
@@ -95,6 +97,7 @@ class User(db.Model):
 
 class UserGoal(db.Model):
     """Fitness goals and target metrics for a user."""
+
     __tablename__ = "user_goals"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -115,6 +118,7 @@ class UserGoal(db.Model):
 
 class PrivacySettings(db.Model):
     """User privacy and data sharing preferences."""
+
     __tablename__ = "privacy_settings"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -128,6 +132,7 @@ class PrivacySettings(db.Model):
 
 class StravaActivity(db.Model):
     """Fitness activity synced from Strava."""
+
     __tablename__ = "strava_activities"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -163,6 +168,7 @@ class StravaActivity(db.Model):
 # PTs can view surveys of customers who have share_with_pt enabled.
 class HealthSurvey(db.Model):
     """Health and lifestyle survey completed by a user."""
+
     __tablename__ = "health_surveys"
 
     id = db.Column(db.Integer, primary_key=True)

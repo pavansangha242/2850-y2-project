@@ -1,3 +1,5 @@
+"""Fitness app package and application factory."""
+
 import os
 from datetime import date, datetime, timedelta
 
@@ -20,6 +22,7 @@ from fitness_app.models import (
 
 # set up the flask app
 def create_app():
+    """Create and configure the Flask application."""
     app = Flask(__name__)
 
     # config stuff

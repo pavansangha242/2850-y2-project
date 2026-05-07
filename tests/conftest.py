@@ -1,3 +1,5 @@
+"""Pytest fixtures and shared test configuration."""
+
 import os
 import sys
 from datetime import date
@@ -7,7 +9,6 @@ import pytest
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, BASE_DIR)
 
-from run import app as flask_app  # noqa: E402
 from fitness_app.extensions import db  # noqa: E402
 from fitness_app.models import (  # noqa: E402
     ChatMessage,
@@ -18,10 +19,12 @@ from fitness_app.models import (  # noqa: E402
     TrainerProfile,
     User,
 )
+from run import app as flask_app  # noqa: E402
+
 
 @pytest.fixture
 def app():
-    """Sets up a memory test database with sample users, exercise types and gym exercises."""
+    """Create and configure a Flask test application."""
     flask_app.config.update(
         TESTING=True,
         WTF_CSRF_ENABLED=False,
@@ -113,27 +116,27 @@ def app():
 
 @pytest.fixture
 def client(app):
-    """Returns a test client"""
+    """Create a Flask test client."""
     return app.test_client()
 
 
 @pytest.fixture
 def login_customer(client):
-    """Logs in as the test customer"""
+    """Log in a test customer user."""
     with client.session_transaction() as sess:
         sess["username"] = "test_customer"
 
 
 @pytest.fixture
 def login_trainer(client):
-    """Logs in as the test trainer"""
+    """Log in a test trainer user."""
     with client.session_transaction() as sess:
         sess["username"] = "test_trainer"
 
 
 @pytest.fixture
 def login_admin(client):
-    """Logs in as the test admin"""
+    """Log in a test administrator user."""
     with client.session_transaction() as sess:
         sess["username"] = "test_admin"
 

@@ -1,9 +1,10 @@
 """Handle the progress page and progress statistics for the website.
 
-this file contains helper functions and the progress route, 
+this file contains helper functions and the progress route,
 it gets the logged in user's acticity data,
-applies sport filters, calculate summary,statistics and prepares chart data for the progress page. 
+applies sport filters, calculate summary,statistics and prepares chart data for the progress page.
 """
+
 from datetime import date, timedelta
 
 from flask import Blueprint, redirect, render_template, request, session, url_for

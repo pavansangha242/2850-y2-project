@@ -32,7 +32,7 @@ def get_week_start():
 def get_cycling_met(speed_kmh):
     """Picks the right MET value based on how fast the user cycling.
     So MET is a measure of effort — faster riding means a higher MET and more which mean calories burned.
-    Returns a number between 4.0 if easy and 12.0 for very fast."""    
+    Returns a number between 4.0 if easy and 12.0 for very fast."""
     if speed_kmh and speed_kmh > 0:
         # faster = more cals
         if speed_kmh >= 30:
@@ -52,7 +52,8 @@ def get_cycling_met(speed_kmh):
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
     """Estimates calories burned using MET x weight x time in hours.
-    Returns None if any of the inputs are missing or zero, otherwise returns a rounded whole number."""
+    Returns None if any of the inputs are missing or zero, otherwise returns a rounded whole number.
+    """
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
         hrs = duration_mins / 60
         return round(met * weight_kg * hrs)
@@ -63,7 +64,8 @@ def calculate_calories(met, weight_kg, duration_mins):
 def cycling_page():
     """Loads everything needed for the main cycling dashboard.
     Pulls together ride history, weekly stats, streak, speed progress, training plan and goal.
-    Redirects to login if the user isn't logged in, or shows an empty dashboard if cycling isn't in the database."""
+    Redirects to login if the user isn't logged in, or shows an empty dashboard if cycling isn't in the database.
+    """
     # user id / cyc type / monday
     if not session.get("username"):
         return redirect(url_for("auth.login"))
