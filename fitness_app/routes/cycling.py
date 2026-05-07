@@ -1,3 +1,9 @@
+"""
+Running activity routes for the Motivara application.
+
+Handles logging runs, calculating pace and calories automatically,
+tracking streaks and weekly stats, and managing running plans and goals.
+"""
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for

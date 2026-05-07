@@ -229,6 +229,7 @@ class TrainingPlan(db.Model):
     )
 
     def __repr__(self):
+        """Shows the plan name."""
         return f"<TrainingPlan {self.name}>"
 
 
@@ -249,6 +250,7 @@ class PlannedWorkout(db.Model):
     target_distance = db.Column(db.Float, default=0.0)  # km
 
     def __repr__(self):
+        """Shows the planned workout ID."""
         return f"<PlannedWorkout {self.planned_workout_id}>"
 
 
@@ -268,6 +270,7 @@ class ExerciseType(db.Model):
     )
 
     def __repr__(self):
+        """Shows the exercise type name."""
         return f"<ExerciseType {self.name}>"
 
 
@@ -317,6 +320,7 @@ class Activity(db.Model):
     notes = db.Column(db.Text, default="")
 
     def __repr__(self):
+        """Shows activity and user ID."""
         return f"<Activity {self.activity_id} by User {self.user_id}>"
 
 
@@ -336,6 +340,7 @@ class GymExercise(db.Model):
     workouts = db.relationship("GymWorkout", backref="exercise", lazy=True)
 
     def __repr__(self):
+        """Shows the gym exercise name."""
         return f"<GymExercise {self.name}>"
 
 
@@ -357,6 +362,7 @@ class GymAssignment(db.Model):
     date_assigned = db.Column(db.Date, default=date.today)
 
     def __repr__(self):
+        """Shows the assigned client ID."""
         return f"<GymAssignment for client={self.client_id}>"
 
 
@@ -381,6 +387,7 @@ class GymWorkout(db.Model):
     notes = db.Column(db.Text, default="")
 
     def __repr__(self):
+        """Shows workout and user ID."""
         return f"<GymWorkout {self.gym_workout_id} by User {self.user_id}>"
 
 

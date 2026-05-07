@@ -1,3 +1,9 @@
+"""
+Gym activity routes for the Motivara application.
+
+Handles logging gym workouts, seeding default exercises,
+assigning exercises to clients, and displaying weekly gym stats.
+"""
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for

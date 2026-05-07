@@ -1,3 +1,8 @@
+""" Running activity routes for the Motivara application.
+
+Handles logging runs, calculating pace and calories automatically,
+tracking streaks and weekly stats, and managing running plans and goals.
+"""
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
@@ -31,8 +36,7 @@ def get_week_start():
 
 # work out met from run speed
 def get_running_met(distance_km, duration_mins):
-    """Picks the right MET value based on how fast the user was running.
-    Returns a number between 6.0 easy and 14.5 hard."""
+    """Picks the right MET value based on how fast the user was running. Returns a number between 6.0 easy and 14.5 hard."""
     if distance_km and duration_mins and distance_km > 0 and duration_mins > 0:
         # speed = dist/time
         speed = distance_km / (duration_mins / 60)
@@ -54,9 +58,7 @@ def get_running_met(distance_km, duration_mins):
 
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
-    """Estimates calories burned using MET x weight x time in hours.
-    Returns None if any inputs are missing or zero, otherwise returns a rounded whole number.
-    """
+    """Estimates calories burned using MET x weight x time in hours. Returns None if any inputs are missing or zero, otherwise returns a rounded whole number."""
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
         hrs = duration_mins / 60
         return round(met * weight_kg * hrs)
@@ -65,12 +67,9 @@ def calculate_calories(met, weight_kg, duration_mins):
 
 @running_bp.route("/running")
 def running_page():
-    """Loads everything needed for the main running dashboard.
-    or shows an empty dashboard if running isn't in the database."""
-
+    """Loads everything needed for the main running dashboard, or shows an empty dashboard if running isn't in the database."""
     if not session.get("username"):
         return redirect(url_for("auth.login"))
-
     uid = get_current_user_id()
     r_type = get_running_type_id()
     monday = get_week_start()
@@ -272,8 +271,7 @@ def running_page():
 
 @running_bp.route("/running/log", methods=["POST"])
 def log_run():
-    """Saves a new run when the user submits the log form.
-    Redirects back to the dashboard with a success message once saved."""
+    """Saves a new run when the user submits the log form. Redirects back to the dashboard with a success message once saved."""
     uid = get_current_user_id()
     r_type = get_running_type_id()
 

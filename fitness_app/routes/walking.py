@@ -1,3 +1,9 @@
+"""
+Walking activity routes for the Motivara application.
+
+Handles logging walks, tracking steps and distance,
+calculating calories, and managing walking plans and goals.
+"""
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
