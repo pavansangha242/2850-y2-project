@@ -13,7 +13,16 @@ Additionally, it ensures user session handling and makes the current user's
 role available globally for template rendering.
 """
 
-from flask import Blueprint, g, redirect, render_template, request, session, url_for
+from flask import (
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from fitness_app.extensions import db
 from fitness_app.models import (
@@ -65,8 +74,8 @@ def login():
                 return redirect(url_for("admin.admin_dashboard"))
             return redirect(url_for("auth.user_settings"))
         else:
-            return render_template(
-                "login.html", error="Invalid username or password", show_nav=False
+            flash("Invalid username or password", "error")
+            return redirect(url_for("auth.login")
             )
 
     return render_template("login.html", show_nav=False)
