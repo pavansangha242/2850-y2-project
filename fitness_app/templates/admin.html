@@ -8,9 +8,11 @@
         background: rgba(255, 255, 255, 0.1) !important;
         color: var(--primary);
     }
+
     .suggestion-item:last-child {
         border-bottom: none;
     }
+
     #searchSuggestions {
         border-radius: 12px;
         overflow: hidden;
@@ -20,12 +22,13 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('adminSearchInput');
-    const suggestionsBox = document.getElementById('searchSuggestions');
-    const userItems = document.querySelectorAll('.user-item');
-    const allUserNames = {{ all_user_names | tojson }};
-    
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('adminSearchInput');
+        const suggestionsBox = document.getElementById('searchSuggestions');
+        const userItems = document.querySelectorAll('.user-item');
+        const allUserNames = {{ all_user_names | tojson
+    }};
+
     // Live Search Function
     function performLiveSearch(query) {
         const lowerQuery = query.toLowerCase().trim();
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         userItems.forEach(item => {
             const name = item.getAttribute('data-name') || '';
             const email = item.getAttribute('data-email') || '';
-            
+
             if (name.includes(lowerQuery) || email.includes(lowerQuery)) {
                 item.style.display = 'flex';
                 resultsCount++;
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const visibleInList = list.querySelectorAll('.user-item[style="display: flex;"]').length;
             const noResultsCard = list.querySelector('.no-results');
-            
+
             if (visibleInList === 0 && lowerQuery !== '') {
                 section.style.display = 'none';
             } else {
@@ -61,13 +64,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    searchInput.addEventListener('input', function() {
+    searchInput.addEventListener('input', function () {
         const query = this.value;
         performLiveSearch(query);
 
         // Update Suggestions
         if (query.length > 0) {
-            const matches = allUserNames.filter(name => 
+            const matches = allUserNames.filter(name =>
                 name.toLowerCase().includes(query.toLowerCase())
             ).slice(0, 5);
 
@@ -82,26 +85,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Add click events to suggestions
                 suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
-                    item.addEventListener('mouseover', function() {
+                    item.addEventListener('mouseover', function () {
                         this.style.background = 'rgba(255,255,255,0.1)';
                     });
-                    item.addEventListener('mouseout', function() {
+                    item.addEventListener('mouseout', function () {
                         this.style.background = 'transparent';
                     });
-                        suggestionsBox.style.display = 'none';
-                        performLiveSearch(selectedName);
-                    });
+                    suggestionsBox.style.display = 'none';
+                    performLiveSearch(selectedName);
                 });
+            });
             } else {
-                suggestionsBox.style.display = 'none';
-            }
+        suggestionsBox.style.display = 'none';
+    }
         } else {
-            suggestionsBox.style.display = 'none';
-        }
+        suggestionsBox.style.display = 'none';
+    }
     });
 
     // Close suggestions when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
             suggestionsBox.style.display = 'none';
         }
@@ -165,7 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <ul class="profile-details">
                 <li><strong>Role:</strong> {{ admin_user.role|title }}</li>
-                <li><strong>Member Since:</strong> {{ admin_user.date_joined.strftime('%B %Y') if admin_user.date_joined else 'N/A' }}</li>
+                <li><strong>Joined On:</strong> {{ admin_user.date_joined.strftime('%d %b %Y') if admin_user.date_joined
+                    else 'N/A' }}</li>
                 <li><strong>Email:</strong> {{ admin_user.email }}</li>
             </ul>
         </div>
@@ -179,24 +183,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <div class="search-container" style="position: relative; max-width: 600px; margin-bottom: 1.5rem;">
                 <div class="search-wrapper" style="position: relative;">
-                    <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <input type="text"
-                           id="adminSearchInput"
-                           class="form-input"
-                           placeholder="Search users by name or email..."
-                           value="{{ search_query }}"
-                           autocomplete="off"
-                           style="padding-left: 2.8rem; width: 100%; border-radius: 12px; height: 48px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+                    <i class="fas fa-search"
+                        style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="adminSearchInput" class="form-input"
+                        placeholder="Search users by name or email..." value="{{ search_query }}" autocomplete="off"
+                        style="padding-left: 2.8rem; width: 100%; border-radius: 12px; height: 48px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
                 </div>
-                
+
                 <!-- Custom Suggestions Dropdown -->
-                <div id="searchSuggestions" class="card" style="display: none; position: absolute; top: 55px; left: 0; right: 0; z-index: 1000; padding: 0.5rem; border: 1px solid rgba(255,255,255,0.1); background: #1a1b2e; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                <div id="searchSuggestions" class="card"
+                    style="display: none; position: absolute; top: 55px; left: 0; right: 0; z-index: 1000; padding: 0.5rem; border: 1px solid rgba(255,255,255,0.1); background: #1a1b2e; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                     <!-- suggestions will be injected here -->
                 </div>
 
                 {% if search_query %}
                 <div id="clearSearchContainer" style="margin-top: 0.5rem;">
-                    <a href="{{ url_for('admin.admin_dashboard') }}" style="color: var(--primary); font-size: 0.9rem; text-decoration: none;">
+                    <a href="{{ url_for('admin.admin_dashboard') }}"
+                        style="color: var(--primary); font-size: 0.9rem; text-decoration: none;">
                         <i class="fas fa-times-circle"></i> Clear search results
                     </a>
                 </div>
@@ -208,9 +211,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3 class="section-subtitle">Customers</h3>
 
                 <div id="customersList">
-                {% if active_customers %}
+                    {% if active_customers %}
                     {% for user in active_customers %}
-                    <div class="user-item" data-name="{{ user.first_name|lower }} {{ user.last_name|lower }}" data-email="{{ user.email|lower }}">
+                    <div class="user-item" data-name="{{ user.first_name|lower }} {{ user.last_name|lower }}"
+                        data-email="{{ user.email|lower }}">
                         <div class="user-avatar">
                             <i class="fas fa-user"></i>
                         </div>
@@ -219,28 +223,29 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="user-email">{{ user.email }}</div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('messages.messages', user_id=user.user_id) }}" class="btn btn-primary btn-sm" style="text-decoration: none;">
+                            <a href="{{ url_for('messages.messages', user_id=user.user_id) }}"
+                                class="btn btn-primary btn-sm" style="text-decoration: none;">
                                 <i class="fas fa-comment"></i> Message
                             </a>
                             <form action="{{ url_for('admin.delete_user', user_id=user.user_id) }}" method="POST">
                                 <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Are you sure you want to delete {{ user.first_name }} {{ user.last_name }}?')">
+                                    onclick="return confirm('Are you sure you want to delete {{ user.first_name }} {{ user.last_name }}?')">
                                     <i class="fas fa-trash-alt"></i> Delete
                                 </button>
                             </form>
                         </div>
                     </div>
                     {% endfor %}
-                {% else %}
+                    {% else %}
                     <div class="card no-results" style="text-align: center; padding: 1.5rem;">
                         <p style="color: var(--text-muted);">No customers found.</p>
                     </div>
-                {% endif %}
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
         </section>
-        
+
         <!-- Trainer Approvals -->
         {% if pending_pts or not search_query %}
         <section id="pendingSection" style="margin-top: 2.5rem;">
@@ -248,9 +253,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="section-subtitle">Pending Requests</h3>
 
             <div id="pendingList">
-            {% if pending_pts %}
+                {% if pending_pts %}
                 {% for pt in pending_pts %}
-                <div class="user-item" data-name="{{ pt.first_name|lower }} {{ pt.last_name|lower }}" data-email="{{ pt.email|lower }}">
+                <div class="user-item" data-name="{{ pt.first_name|lower }} {{ pt.last_name|lower }}"
+                    data-email="{{ pt.email|lower }}">
                     <div class="user-avatar" style="background: rgba(255, 179, 71, 0.15); color: var(--amber);">
                         <i class="fas fa-user-clock"></i>
                     </div>
@@ -259,6 +265,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="user-email">{{ pt.email }}</div>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
+                        <a href="{{ url_for('messages.messages', user_id=pt.user_id) }}" class="btn btn-primary btn-sm"
+                            style="text-decoration: none;">
+                            <i class="fas fa-comment"></i> Message
+                        </a>
                         <form action="{{ url_for('admin.approve_pt', user_id=pt.user_id) }}" method="POST">
                             <button type="submit" class="btn btn-success btn-sm">
                                 <i class="fas fa-check"></i> Approve
@@ -266,18 +276,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         </form>
                         <form action="{{ url_for('admin.reject_pt', user_id=pt.user_id) }}" method="POST">
                             <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Reject {{ pt.first_name }} {{ pt.last_name }}? This will remove their account.')">
+                                onclick="return confirm('Reject {{ pt.first_name }} {{ pt.last_name }}? This will remove their account.')">
                                 <i class="fas fa-times"></i> Reject
                             </button>
                         </form>
                     </div>
                 </div>
                 {% endfor %}
-            {% else %}
+                {% else %}
                 <div class="card no-results" style="text-align: center; padding: 1.5rem;">
                     <p style="color: var(--text-muted);">No pending trainer requests.</p>
                 </div>
-            {% endif %}
+                {% endif %}
             </div>
         </section>
         {% endif %}
@@ -288,9 +298,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="section-subtitle">Approved Trainers</h3>
 
             <div id="approvedList">
-            {% if approved_pts %}
+                {% if approved_pts %}
                 {% for pt in approved_pts %}
-                <div class="user-item" data-name="{{ pt.first_name|lower }} {{ pt.last_name|lower }}" data-email="{{ pt.email|lower }}">
+                <div class="user-item" data-name="{{ pt.first_name|lower }} {{ pt.last_name|lower }}"
+                    data-email="{{ pt.email|lower }}">
                     <div class="user-avatar" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
                         <i class="fas fa-user-check"></i>
                     </div>
@@ -299,23 +310,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="user-email">{{ pt.email }}</div>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
-                        <a href="{{ url_for('messages.messages', user_id=pt.user_id) }}" class="btn btn-primary btn-sm" style="text-decoration: none;">
+                        <a href="{{ url_for('messages.messages', user_id=pt.user_id) }}" class="btn btn-primary btn-sm"
+                            style="text-decoration: none;">
                             <i class="fas fa-comment"></i> Message
                         </a>
                         <form action="{{ url_for('admin.delete_user', user_id=pt.user_id) }}" method="POST">
                             <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Are you sure you want to delete {{ pt.first_name }} {{ pt.last_name }}?')">
+                                onclick="return confirm('Are you sure you want to delete {{ pt.first_name }} {{ pt.last_name }}?')">
                                 <i class="fas fa-trash-alt"></i> Delete
                             </button>
                         </form>
                     </div>
                 </div>
                 {% endfor %}
-            {% else %}
+                {% else %}
                 <div class="card no-results" style="text-align: center; padding: 1.5rem;">
                     <p style="color: var(--text-muted);">No approved trainers yet.</p>
                 </div>
-            {% endif %}
+                {% endif %}
             </div>
         </section>
         {% endif %}
@@ -323,35 +335,36 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Manage Events (Competitions) -->
         <section style="margin-top: 2.5rem;">
             <h2 class="section-title">Manage Events</h2>
-            
+
             <h3 class="section-subtitle">Upcoming Events</h3>
             {% if competitions %}
-                {% for event in competitions %}
-                <div class="user-item">
-                    <div class="user-avatar" style="background: rgba(100, 108, 255, 0.1); color: var(--primary);">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">{{ event.name }}</div>
-                        <div class="user-email">{{ event.date.strftime('%B %d, %Y') }} — {{ event.location }}</div>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <a href="{{ url_for('admin.event_participants', event_id=event.competition_id) }}" class="btn btn-outline btn-sm" title="View Participants">
-                            <i class="fas fa-users"></i> Participants
-                        </a>
-                        <form action="{{ url_for('admin.delete_event', event_id=event.competition_id) }}" method="POST">
-                            <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Are you sure you want to delete the event: {{ event.name }}?')">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </form>
-                    </div>
+            {% for event in competitions %}
+            <div class="user-item">
+                <div class="user-avatar" style="background: rgba(100, 108, 255, 0.1); color: var(--primary);">
+                    <i class="fas fa-trophy"></i>
                 </div>
-                {% endfor %}
+                <div class="user-info">
+                    <div class="user-name">{{ event.name }}</div>
+                    <div class="user-email">{{ event.date.strftime('%B %d, %Y') }} — {{ event.location }}</div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="{{ url_for('admin.event_participants', event_id=event.competition_id) }}"
+                        class="btn btn-outline btn-sm" title="View Participants">
+                        <i class="fas fa-users"></i> Participants
+                    </a>
+                    <form action="{{ url_for('admin.delete_event', event_id=event.competition_id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to delete the event: {{ event.name }}?')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
             {% else %}
-                <div class="card" style="text-align: center; padding: 1.5rem;">
-                    <p style="color: var(--text-muted);">No events scheduled.</p>
-                </div>
+            <div class="card" style="text-align: center; padding: 1.5rem;">
+                <p style="color: var(--text-muted);">No events scheduled.</p>
+            </div>
             {% endif %}
         </section>
     </div>

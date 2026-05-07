@@ -110,14 +110,7 @@
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="no-messages">
-                    <span>👋</span>
-                    {% if selected_contact %}
-                    Say hello to {{ selected_contact.first_name }}!
-                    {% else %}
-                    No messages in this group yet.
-                    {% endif %}
-                </div>
+                <div class="no-messages"></div>
             {% endif %}
         </div>
 

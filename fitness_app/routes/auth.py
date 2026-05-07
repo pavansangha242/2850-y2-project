@@ -49,6 +49,9 @@ def load_nav_user():
 def login():
     """Handle user login and session creation."""
     if "username" in session:
+        user = User.query.filter_by(username=session["username"]).first()
+        if user and user.role == "administrator":
+            return redirect(url_for("admin.admin_dashboard"))
         return redirect(url_for("home.index"))
 
     if request.method == "POST":
@@ -58,6 +61,8 @@ def login():
 
         if user and user.check_password(password):
             session["username"] = username
+            if user.role == "administrator":
+                return redirect(url_for("admin.admin_dashboard"))
             return redirect(url_for("auth.user_settings"))
         else:
             return render_template(
