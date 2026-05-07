@@ -21,6 +21,7 @@ from fitness_app.models import (  # noqa: E402
 
 @pytest.fixture
 def app():
+    """Sets up a memory test database with sample users, exercise types and gym exercises."""
     flask_app.config.update(
         TESTING=True,
         WTF_CSRF_ENABLED=False,
@@ -112,23 +113,27 @@ def app():
 
 @pytest.fixture
 def client(app):
+    """Returns a test client"""
     return app.test_client()
 
 
 @pytest.fixture
 def login_customer(client):
+    """Logs in as the test customer"""
     with client.session_transaction() as sess:
         sess["username"] = "test_customer"
 
 
 @pytest.fixture
 def login_trainer(client):
+    """Logs in as the test trainer"""
     with client.session_transaction() as sess:
         sess["username"] = "test_trainer"
 
 
 @pytest.fixture
 def login_admin(client):
+    """Logs in as the test admin"""
     with client.session_transaction() as sess:
         sess["username"] = "test_admin"
 
