@@ -29,7 +29,7 @@
             <!--log gym workout-->
             <div class="card">
                 <h2>Log a gym workout</h2>
-                <form action="{{ url_for('gym.log_gym_workout') }}" method="POST">
+                <form action="{{ url_for("gym.log_gym_workout") }}" method="POST">
                     <div class="form-group">
                         <label for="date">Date:</label>
                         <input type="date" id="date" name="date" required>
@@ -169,7 +169,7 @@
             </div>
         </div>
         <!--strava link-->
-        <a href="{{ url_for('strava.activities') }}" class="card action-card">
+        <a href="{{ url_for("strava.activities") }}" class="card action-card">
             <div class="action-icon"
                  style="background: rgba(252, 76, 2, 0.15);
                         color: #FC4C02">

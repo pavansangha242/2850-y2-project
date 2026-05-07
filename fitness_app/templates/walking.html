@@ -10,7 +10,7 @@
             <!--log a walk-->
             <div class="card">
                 <h2>Log a walk</h2>
-                <form action="{{ url_for('walking.log_walk') }}" method="POST">
+                <form action="{{ url_for("walking.log_walk") }}" method="POST">
                     <div class="form-group">
                         <label for="date">Date:</label>
                         <input type="date" id="date" name="date" required>
@@ -101,7 +101,7 @@
                         <p class="value">Daily step target: {{ training_plan.target_pace or 'Not set' }}</p>
                     </div>
                 {% endif %}
-                <form action="{{ url_for('walking.create_walking_plan') }}" method="POST">
+                <form action="{{ url_for("walking.create_walking_plan") }}" method="POST">
                     <div class="form-group">
                         <label for="walks_per_week">Amount of walks per week:</label>
                         <input type="number"
@@ -130,7 +130,7 @@
             <!--goals-->
             <div class="card">
                 <h2>Enter your goals</h2>
-                <form action="{{ url_for('walking.set_walking_goal') }}" method="POST">
+                <form action="{{ url_for("walking.set_walking_goal") }}" method="POST">
                     <div class="form-group">
                         <label>What are you training for:</label>
                         <div class="goal-options">
@@ -208,7 +208,7 @@
             </div>
         </div>
         <!--strava link-->
-        <a href="{{ url_for('strava.activities') }}" class="card action-card">
+        <a href="{{ url_for("strava.activities") }}" class="card action-card">
             <div class="action-icon"
                  style="background: rgba(252, 76, 2, 0.15);
                         color: #FC4C02">

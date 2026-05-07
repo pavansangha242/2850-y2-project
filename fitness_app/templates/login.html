@@ -6,7 +6,7 @@
         <h3 class="auth-subheading">Please enter your details below to login</h3>
         {% if error %}<p class="error-text">{{ error }}</p>{% endif %}
         <!-- Login fields-->
-        <form id="auth-form" action="{{ url_for('auth.login') }}" method="post">
+        <form id="auth-form" action="{{ url_for("auth.login") }}" method="post">
             <input type="text"
                    name="username"
                    placeholder="Username"

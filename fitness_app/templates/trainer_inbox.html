@@ -17,7 +17,7 @@
                 </div>
                 <!-- Search -->
                 <form method="GET"
-                      action="{{ url_for('messages.trainer_inbox') }}"
+                      action="{{ url_for("messages.trainer_inbox") }}"
                       class="msg-search-form">
                     {% if selected_id %}<input type="hidden" name="client_id" value="{{ selected_id }}">{% endif %}
                     <input class="msg-search-input"
@@ -31,7 +31,7 @@
                         {% for conv in conversations %}
                             {% set c = conv.client %}
                             <a class="conv-item {% if selected_id == c.user_id %}active{% endif %}"
-                               href="{{ url_for('messages.trainer_inbox') }}?client_id={{ c.user_id }}">
+                               href="{{ url_for("messages.trainer_inbox") }}?client_id={{ c.user_id }}">
                                 <div class="conv-avatar">{{ c.first_name[0] if c.first_name else '?' }}</div>
                                 <div class="conv-info">
                                     <div class="conv-name">{{ c.first_name }} {{ c.last_name }}</div>
@@ -92,7 +92,7 @@
                     </div>
                     <form class="msg-input-bar"
                           method="POST"
-                          action="{{ url_for('messages.send_trainer_message') }}">
+                          action="{{ url_for("messages.send_trainer_message") }}">
                         <input type="hidden" name="client_id" value="{{ selected_client.user_id }}">
                         <input type="text"
                                name="message"

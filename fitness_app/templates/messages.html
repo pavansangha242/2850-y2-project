@@ -13,7 +13,7 @@
                         align-items: center;
                         margin-bottom: 1rem">
                 <h1 style="margin: 0;">Conversations</h1>
-                <a href="{{ url_for('messages.contact_admin') }}"
+                <a href="{{ url_for("messages.contact_admin") }}"
                    style="background: var(--primary);
                           color: white;
                           border-radius: 4px;
@@ -68,7 +68,7 @@
                         <span>💬</span>
                         No conversations yet.
                         <br>
-                        <a href="{{ url_for('trainers.trainers_page') }}">Find a trainer →</a>
+                        <a href="{{ url_for("trainers.trainers_page") }}">Find a trainer →</a>
                     </div>
                 {% endif %}
             </div>
@@ -91,7 +91,7 @@
                             </div>
                         </div>
                         {% if selected_contact.role == 'pt' %}
-                            <a href="{{ url_for('trainers.trainers_page') }}?trainer_id={{ selected_contact.user_id }}"
+                            <a href="{{ url_for("trainers.trainers_page") }}?trainer_id={{ selected_contact.user_id }}"
                                class="view-profile-btn">View Profile</a>
                         {% endif %}
                     </div>
@@ -142,7 +142,7 @@
                 {% if selected_contact %}
                     <form class="msg-input-bar"
                           method="POST"
-                          action="{{ url_for('messages.send_user_message') }}">
+                          action="{{ url_for("messages.send_user_message") }}">
                         <input type="hidden" name="user_id" value="{{ selected_contact.user_id }}">
                         <input type="text"
                                name="message"

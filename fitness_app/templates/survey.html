@@ -7,11 +7,11 @@
         <h3 class="survey-subheading">Help your PT understand you better by filling in the details below.</h3>
         <p class="muted-text survey-info">
             Your answers are only visible to PTs if you have enabled data sharing in your
-            <a href="{{ url_for('auth.user_settings') }}">account settings</a>.
+            <a href="{{ url_for("auth.user_settings") }}">account settings</a>.
         </p>
         {% if success %}<p class="success-text">Survey saved successfully!</p>{% endif %}
         {% if error %}<p class="error-text">{{ error }}</p>{% endif %}
-        <form action="{{ url_for('auth.survey') }}" method="post">
+        <form action="{{ url_for("auth.survey") }}" method="post">
             <!-- ACTIVITY -->
             <div class="card mb-2">
                 <h3>Activity</h3>
@@ -174,7 +174,7 @@
             </div>
             <input type="submit" value="Save Survey" class="btn-login" />
             <div class="text-center mt-2">
-                <a href="{{ url_for('auth.user_settings') }}">← Back to Account Settings</a>
+                <a href="{{ url_for("auth.user_settings") }}">← Back to Account Settings</a>
             </div>
         </form>
     </div>

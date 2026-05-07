@@ -55,7 +55,7 @@
         {% endif %}
         <!-- Link to survey to give PTs extra information -->
         {% if user.role == 'customer' %}
-            <a href="{{ url_for('auth.survey') }}" class="btn-login">Fill in Health Survey</a>
+            <a href="{{ url_for("auth.survey") }}" class="btn-login">Fill in Health Survey</a>
         {% endif %}
         {% if user.role == 'customer' %}
             <div class="settings-card mt-2">
@@ -88,19 +88,19 @@
                 </div>
                 <div class="settings-row settings-actions">
                     {% if user.strava_athlete_id %}
-                        <a href="{{ url_for('strava.sync_strava') }}" class="btn-login">Sync Activities</a>
-                        <form action="{{ url_for('strava.disconnect_strava') }}" method="post">
+                        <a href="{{ url_for("strava.sync_strava") }}" class="btn-login">Sync Activities</a>
+                        <form action="{{ url_for("strava.disconnect_strava") }}" method="post">
                             <button type="submit" class="btn-login btn-danger-override small-btn">Disconnect</button>
                         </form>
                     {% else %}
-                        <a href="{{ url_for('strava.connect_strava') }}" class="btn-login">Connect Strava</a>
+                        <a href="{{ url_for("strava.connect_strava") }}" class="btn-login">Connect Strava</a>
                     {% endif %}
                 </div>
             </div>
             <!-- Partly used to calculate calories if required -->
             <div class="settings-card mt-2">
                 <h2>Physical Stats</h2>
-                <form action="{{ url_for('auth.update_stats') }}" method="post">
+                <form action="{{ url_for("auth.update_stats") }}" method="post">
                     <div class="settings-row">
                         <label for="age" class="settings-label">Age</label>
                         <input type="number"
@@ -149,7 +149,7 @@
             </div>
             <div class="settings-card mt-2">
                 <h2>Privacy & Data</h2>
-                <form action="{{ url_for('auth.update_privacy') }}" method="post">
+                <form action="{{ url_for("auth.update_privacy") }}" method="post">
                     <div class="settings-row">
                         <label class="settings-label">
                             <input type="checkbox"
@@ -172,12 +172,12 @@
             </div>
         {% endif %}
         <div class="mt-3 text-center center-text">
-            <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>
+            <a href="{{ url_for("auth.logout") }}" class="btn-logout">Logout</a>
         </div>
     </div>
     <!-- button alignment using shared css -->
     <div class="delete-account-section center-text">
-        <form action="{{ url_for('auth.delete_account') }}"
+        <form action="{{ url_for("auth.delete_account") }}"
               method="post"
               onsubmit="return confirmDelete()"
               class="delete-form">

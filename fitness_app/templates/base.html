@@ -89,7 +89,7 @@
                             <!--customer view -->
                         {% else %}
                             <li>
-                                <a href="{{ url_for('home.index') }}"
+                                <a href="{{ url_for("home.index") }}"
                                    class="{% if request.path == url_for('home.index') %}active{% endif %}">
                                     <i class="fas fa-home"></i> Home
                                 </a>

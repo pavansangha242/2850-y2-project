@@ -25,7 +25,7 @@
         <h3 class="register-subheading">Please enter your details below to register</h3>
         {% if error %}<p class="server-error">{{ error }}</p>{% endif %}
         <!-- disables browser's built-in popups so JS errors show instead since they don't always show  -->
-        <form action="{{ url_for('auth.register') }}" method="post" novalidate>
+        <form action="{{ url_for("auth.register") }}" method="post" novalidate>
             <div class="card mb-2">
                 <h3>Account details</h3>
                 <!-- ids added so JS can read and validate the value -->

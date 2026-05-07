@@ -2,7 +2,7 @@
 {% block extra_css %}{% endblock %}
 {% block content %}
     <div class="container">
-        <a href="{{ url_for('strava.activities') }}" class="muted-link">← Back to activities</a>
+        <a href="{{ url_for("strava.activities") }}" class="muted-link">← Back to activities</a>
         <h1 class="top-margin">{{ activity.name }}</h1>
         <p class="muted-text">
             {{ activity.activity_type }} · {{ activity.start_date.strftime("%d %b %Y, %H:%M") if activity.start_date else 'N/A' }}
