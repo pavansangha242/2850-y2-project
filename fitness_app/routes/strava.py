@@ -84,14 +84,10 @@ def connect_strava():
     """Redirect the user to Strava OAuth for account connection."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
-    print("CLIENT_ID:", CLIENT_ID)
 
     #  the callback URL has to exactly match what's registered on the Strava app dashboard, must be specific to codespace name or local server if running off vs code app
-    callback_url = (
-        "https://ideal-winner-g475j7rq7v47cw9jq-5000.app.github.dev/strava-callback"
-    )
+    callback_url = url_for("strava.strava_callback", _external=True)
 
-    print("CALLBACK URL:", callback_url)
     strava_auth_url = (
         f"https://www.strava.com/oauth/authorize"
         f"?client_id={CLIENT_ID}"
@@ -109,7 +105,6 @@ def strava_callback():
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
-    print("CLIENT_SECRET:", CLIENT_SECRET)
     # If user clicked "Cancel" on Strava's page, then redireect to activities page
     error = request.args.get("error")
     if error:
