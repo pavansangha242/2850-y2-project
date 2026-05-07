@@ -432,6 +432,7 @@ def get_exercise_type_id(exercise_name):
 
 # --------- start if jawaher's part ---------
 class TrainerProfile(db.Model):
+    """Store the profile details for a personal trainer."""
     __tablename__ = "trainer_profiles"
 
     trainer_profile_id = db.Column(db.Integer, primary_key=True)
@@ -444,10 +445,12 @@ class TrainerProfile(db.Model):
     total_reviews = db.Column(db.Integer, default=0)
 
     def __repr__(self):
+        """Show the trainer profile as text."""
         return f"<TrainerProfile user={self.user_id}>"
 
 
 class TrainingClient(db.Model):
+    """Store the relationship between a trainer and their client."""
     __tablename__ = "training_clients"
 
     trainer_client_id = db.Column(db.Integer, primary_key=True)
@@ -457,10 +460,12 @@ class TrainingClient(db.Model):
     active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
+        """Show the trainer and client links as a text."""
         return f"<TrainingClient trainer={self.trainer_id} client={self.client_id}>"
 
 
 class TrainerReview(db.Model):
+    """Store reviwes given to personal trainers."""
     __tablename__ = "trainer_reviews"
 
     review_id = db.Column(db.Integer, primary_key=True)
@@ -471,10 +476,12 @@ class TrainerReview(db.Model):
     date = db.Column(db.Date, default=date.today)
 
     def __repr__(self):
+        """Show the trainer review as a text."""
         return f"<TrainerReview trainer={self.trainer_id} rating={self.rating}>"
 
 
 class SessionBooking(db.Model):
+    """Store booking requests between users and trainers."""
     __tablename__ = "session_bookings"
 
     booking_id = db.Column(db.Integer, primary_key=True)
@@ -486,10 +493,12 @@ class SessionBooking(db.Model):
     notes = db.Column(db.Text, default="")
 
     def __repr__(self):
+        """Show the session booking as a text."""
         return f"<SessionBooking {self.booking_id} status={self.status}>"
 
 
 class TrainerMessage(db.Model):
+    """Store messages between users and trainers."""
     __tablename__ = "trainer_messages"
     message_id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
