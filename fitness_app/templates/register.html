@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 
 {% block extra_css %}
+<style>
+.server-error {
+    color: #d93025;
+    background-color: #ffeaea;
+    border: 1px solid #f5b5b5;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* keep JS validation errors hidden initially */
+.error-text,
+.error-text-simple {
+    display: none;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +28,7 @@
     <h3 class="register-subheading">Please enter your details below to register</h3>
 
     {% if error %}
-        <p class="error-text">{{ error }}</p>
+        <p class="server-error">{{ error }}</p>
     {% endif %}
 
     <!-- disables browser's built-in popups so JS errors show instead since they don't always show  -->
@@ -57,27 +74,27 @@
             <div class="card mb-2">
                 <h3>Activity Goals</h3>
                 <label>Daily Step Target</label>
-                <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
+                <input type="number" id="step_target" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
                 <p id="step-error" class="error-text-simple">Please enter a step target.</p>
                 
                 <label>Weekly Exercise Hours</label>
-                <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
+                <input type="number" id="weekly_hours" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
                 <p id="weekly-error" class="error-text-simple">Please enter weekly hours.</p>
 
                 <label>Workouts per Week</label>
-                <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
+                <input type="number" id="workouts_per_week" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
                 <p id="workouts-error" class="error-text-simple">Please enter workouts per week.</p>
 
                 <label>Age</label>
-                <input type="number" name="age" placeholder="e.g. 18" class="input-field" required min="0" />
+                <input type="number" id="age" name="age" placeholder="e.g. 18" class="input-field" required min="0" />
                 <p id="age-error" class="error-text-simple">Please enter age.</p>
 
                 <label>Weight</label>
-                <input type="number" name="weight" placeholder="please enter in kg" class="input-field" required min="0" />
+                <input type="number" id="weight" name="weight" placeholder="please enter in kg" class="input-field" required min="0" />
                 <p id="weight-error" class="error-text-simple">Please enter weight.</p>
 
                 <label>Height</label>
-                <input type="number" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
+                <input type="number" id="height" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
                 <p id="height-error" class="error-text-simple">Please enter height.</p>
 
                 <select name="sex" id="sex-select" class="input-field" required>
@@ -145,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ptFields.style.display = 'none';
         }
 
-        const customerInputs = extraFields.querySelectorAll('input');
+        const customerInputs = extraFields.querySelectorAll('input, select');
         customerInputs.forEach(input => {
             input.disabled = (extraFields.style.display === 'none');
         });
