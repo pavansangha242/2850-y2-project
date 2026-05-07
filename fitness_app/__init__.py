@@ -1,23 +1,11 @@
 """Fitness app package and application factory."""
 
 import os
-from datetime import date, datetime, timedelta
 
 from flask import Flask
 
 from fitness_app.extensions import db
-from fitness_app.models import (
-    Activity,
-    ChatMessage,
-    Competition,
-    CompetitionResult,
-    ExerciseType,
-    PlannedWorkout,
-    TrainerProfile,
-    TrainingClient,
-    TrainingPlan,
-    User,
-)
+from fitness_app.models import ExerciseType, TrainerProfile, User
 
 
 # set up the flask app
