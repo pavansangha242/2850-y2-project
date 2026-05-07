@@ -1,31 +1,20 @@
 {% extends "base.html" %}
-
 {% block extra_css %}{% endblock %}
-
 {% block content %}
     <div class="container">
-        <a href="{{ url_for('strava.activities') }}" class="muted-link">
-            ← Back to activities
-        </a>
-
+        <a href="{{ url_for("strava.activities") }}" class="muted-link">← Back to activities</a>
         <h1 class="top-margin">{{ activity.name }}</h1>
-
         <p class="muted-text">
             {{ activity.activity_type }} ·
             {{ activity.start_date.strftime("%d %b %Y, %H:%M") if activity.start_date else 'N/A' }}
         </p>
-
         <!-- GPS Map -->
         {% if activity.polyline %}
             <div id="map" class="activity-map"></div>
-
             <link rel="stylesheet"
                   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
             <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
             <script src="https://unpkg.com/@mapbox/polyline@1.1.1/src/polyline.js"></script>
-
             <script>
                 const coords = polyline.decode("{{ activity.polyline }}");
                 const map = L.map('map').setView(coords[0], 13);
@@ -41,65 +30,42 @@
                 map.fitBounds(route.getBounds());
             </script>
         {% endif %}
-
         <!-- Stats grid -->
         <div class="grid-3 activity-stats-grid">
             <div class="card stat-card">
-                <div class="stat-value">
-                    {{ "%.1f"|format(activity.distance_m / 1000) }} km
-                </div>
-
+                <div class="stat-value">{{ "%.1f"|format(activity.distance_m / 1000) }} km</div>
                 <div class="stat-label">Distance</div>
             </div>
-
             <div class="card stat-card">
-                <div class="stat-value">
-                    {{ activity.moving_time_s // 60 }} min
-                </div>
-
+                <div class="stat-value">{{ activity.moving_time_s // 60 }} min</div>
                 <div class="stat-label">Moving Time</div>
             </div>
-
             {% if activity.calories %}
                 <div class="card stat-card">
                     <div class="stat-value">{{ activity.calories|int }}</div>
                     <div class="stat-label">Calories</div>
                 </div>
             {% endif %}
-
             {% if activity.avg_heart_rate %}
                 <div class="card stat-card">
-                    <div class="stat-value">
-                        {{ activity.avg_heart_rate|int }} bpm
-                    </div>
-
+                    <div class="stat-value">{{ activity.avg_heart_rate|int }} bpm</div>
                     <div class="stat-label">Avg Heart Rate</div>
                 </div>
             {% endif %}
-
             {% if activity.elevation_gain %}
                 <div class="card stat-card">
-                    <div class="stat-value">
-                        {{ activity.elevation_gain|int }} m
-                    </div>
-
+                    <div class="stat-value">{{ activity.elevation_gain|int }} m</div>
                     <div class="stat-label">Elevation Gain</div>
                 </div>
             {% endif %}
-
             {% if activity.avg_speed %}
                 <div class="card stat-card">
                     {% set pace_secs = (1000 / activity.avg_speed)|int %}
-
-                    <div class="stat-value">
-                        {{ pace_secs // 60 }}:{{ '%02d'|format(pace_secs % 60) }} /km
-                    </div>
-
+                    <div class="stat-value">{{ pace_secs // 60 }}:{{ '%02d'|format(pace_secs % 60) }} /km</div>
                     <div class="stat-label">Avg Pace</div>
                 </div>
             {% endif %}
         </div>
-
         {% if activity.is_manual %}
             <p class="manual-workout-warning">
                 <i class="fas fa-info-circle"></i>
