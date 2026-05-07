@@ -4,6 +4,7 @@ Handles logging runs, calculating pace and calories automatically,
 
 tracking streaks and weekly stats, and managing running plans and goals.
 """
+
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
@@ -37,9 +38,9 @@ def get_week_start():
 # work out met from speed
 def get_cycling_met(speed_kmh):
     """Picks the right MET value based on how fast the user cycling.
-    
+
     So MET is a measure of effort — faster riding means a higher MET and more which mean calories burned.
-    
+
     Returns a number between 4.0 if easy and 12.0 for very fast.
     """
     if speed_kmh and speed_kmh > 0:
@@ -61,7 +62,7 @@ def get_cycling_met(speed_kmh):
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
     """Estimates calories burned using MET x weight x time in hours.
-    
+
     Returns None if any of the inputs are missing or zero, otherwise returns a rounded whole number.
     """
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
@@ -73,9 +74,9 @@ def calculate_calories(met, weight_kg, duration_mins):
 @cycling_bp.route("/cycling")
 def cycling_page():
     """Loads everything needed for the main cycling dashboard.
-    
+
     Pulls together ride history, weekly stats, streak, speed progress, training plan and goal.
-    
+
     Redirects to login if the user isn't logged in, or shows an empty dashboard if cycling isn't in the database.
     """
     # user id / cyc type / monday
@@ -289,9 +290,9 @@ def cycling_page():
 @cycling_bp.route("/cycling/log", methods=["POST"])
 def log_ride():
     """Saves a new ride when the user submits the log form.
-    
+
     Auto-calculates speed and calories if the user left those fields blank.
-    
+
     Redirects back to the dashboard with a success message once saved.
     """
     uid = get_current_user_id()
@@ -424,7 +425,7 @@ def create_cycling_plan():
 @cycling_bp.route("/cycling/goal", methods=["POST"])
 def set_cycling_goal():
     """Saves the user's cycling goal, or updates it if they've set one before.
-    
+
     Redirects back to the dashboard once done.
     """
     uid = get_current_user_id()

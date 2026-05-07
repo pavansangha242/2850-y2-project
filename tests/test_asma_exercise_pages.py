@@ -97,6 +97,7 @@ def test_progress_page_shows_logged_activity(client, login_customer, app):
 def test_gym_page_requires_login(client):
     from datetime import date
 
+
 from fitness_app.extensions import db
 from fitness_app.models import Activity, ExerciseType, User
 

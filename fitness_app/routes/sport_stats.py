@@ -6,7 +6,6 @@ calculates streaks, weekly distance, personal bests and prepers
 chart and breakdown data for the stats page.
 """
 
-
 from datetime import date, timedelta
 
 from flask import Blueprint, abort, render_template

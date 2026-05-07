@@ -3,6 +3,7 @@
 Handles logging runs, calculating pace and calories automatically,
 tracking streaks and weekly stats, and managing running plans and goals.
 """
+
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
@@ -347,7 +348,7 @@ def log_run():
 @running_bp.route("/running/plan", methods=["POST"])
 def create_running_plan():
     """Creates a running training plan.
-    
+
     Redirects back to the dashboard once saved.
     """
     uid = get_current_user_id()

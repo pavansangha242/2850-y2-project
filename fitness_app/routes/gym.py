@@ -4,6 +4,7 @@ Handles logging gym workouts, seeding default exercises,
 
 assigning exercises to clients, and displaying weekly gym stats.
 """
+
 from datetime import date, timedelta
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
@@ -321,7 +322,7 @@ def log_gym_workout():
 @gym_bp.route("/gym/assign", methods=["POST"])
 def assign_exercise():
     """Lets a PT assign a specific exercise to one of their clients with sets, reps and weight.
-    
+
     Redirects back to the gym page once the assignment is saved.
     """
     # the trainer

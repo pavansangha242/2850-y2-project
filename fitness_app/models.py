@@ -212,6 +212,7 @@ class HealthSurvey(db.Model):
 
 class TrainingPlan(db.Model):
     """A training plan belonging to a user with weekly targets and dates."""
+
     __tablename__ = "training_plans"
 
     plan_id = db.Column(db.Integer, primary_key=True)
@@ -236,6 +237,7 @@ class TrainingPlan(db.Model):
 # planed workouts inside a plan
 class PlannedWorkout(db.Model):
     """A single planned workout that sits inside a training plan."""
+
     __tablename__ = "planned_workouts"
 
     planned_workout_id = db.Column(db.Integer, primary_key=True)
@@ -257,6 +259,7 @@ class PlannedWorkout(db.Model):
 # list of exer types
 class ExerciseType(db.Model):
     """A category of exercise like Running, Cycling, Swimming etc."""
+
     __tablename__ = "exercise_types"
 
     exercise_type_id = db.Column(db.Integer, primary_key=True)
@@ -297,6 +300,7 @@ def ensure_default_exercise_types():
 # logged workouts
 class Activity(db.Model):
     """A single logged workout activity for a user."""
+
     __tablename__ = "activities"
 
     activity_id = db.Column(db.Integer, primary_key=True)
@@ -327,6 +331,7 @@ class Activity(db.Model):
 # gym exers w descriptions
 class GymExercise(db.Model):
     """A gym exercise with its muscle group, description and video link."""
+
     __tablename__ = "gym_exercises"
 
     gym_exercise_id = db.Column(db.Integer, primary_key=True)
@@ -347,6 +352,7 @@ class GymExercise(db.Model):
 # exers the trainer has given to client
 class GymAssignment(db.Model):
     """An exercise a PT has assigned to one of their clients."""
+
     __tablename__ = "gym_assignments"
 
     assignment_id = db.Column(db.Integer, primary_key=True)
@@ -369,6 +375,7 @@ class GymAssignment(db.Model):
 # gym workouts the user has done
 class GymWorkout(db.Model):
     """A completed gym workout session logged by the user."""
+
     __tablename__ = "gym_workouts"
 
     gym_workout_id = db.Column(db.Integer, primary_key=True)
@@ -446,6 +453,7 @@ def get_exercise_type_id(exercise_name):
 # --------- start if jawaher's part ---------
 class TrainerProfile(db.Model):
     """Store the profile details for a personal trainer."""
+
     __tablename__ = "trainer_profiles"
 
     trainer_profile_id = db.Column(db.Integer, primary_key=True)
@@ -464,6 +472,7 @@ class TrainerProfile(db.Model):
 
 class TrainingClient(db.Model):
     """Store the relationship between a trainer and their client."""
+
     __tablename__ = "training_clients"
 
     trainer_client_id = db.Column(db.Integer, primary_key=True)
@@ -479,6 +488,7 @@ class TrainingClient(db.Model):
 
 class TrainerReview(db.Model):
     """Store reviwes given to personal trainers."""
+
     __tablename__ = "trainer_reviews"
 
     review_id = db.Column(db.Integer, primary_key=True)
@@ -495,6 +505,7 @@ class TrainerReview(db.Model):
 
 class SessionBooking(db.Model):
     """Store booking requests between users and trainers."""
+
     __tablename__ = "session_bookings"
 
     booking_id = db.Column(db.Integer, primary_key=True)
@@ -512,6 +523,7 @@ class SessionBooking(db.Model):
 
 class TrainerMessage(db.Model):
     """Store messages between users and trainers."""
+
     __tablename__ = "trainer_messages"
     message_id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
