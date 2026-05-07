@@ -1,120 +1,135 @@
 {% extends 'base.html' %}
-
 {% block title %}Motivara — Leaderboard{% endblock %}
-
 {% block content %}
-<!-- Page Header -->
-<div class="welcome-banner" style="background: linear-gradient(135deg, #FFB347 0%, #FF6B6B 50%, #6C63FF 100%);">
-    <h1><i class="fas fa-trophy"></i> Leaderboard</h1>
-</div>
-
-<!-- Period Filter Tabs -->
-<section>
-    <div class="leaderboard-tabs">
-        <a href="{{ url_for('leaderboard.leaderboard_page', period='week') }}"
-           class="tab-btn {% if period == 'week' %}tab-active{% endif %}" id="tab-week">
-            <i class="fas fa-calendar-week"></i> This Week
-        </a>
-        <a href="{{ url_for('leaderboard.leaderboard_page', period='month') }}"
-           class="tab-btn {% if period == 'month' %}tab-active{% endif %}" id="tab-month">
-            <i class="fas fa-calendar-alt"></i> This Month
-        </a>
-        <a href="{{ url_for('leaderboard.leaderboard_page', period='all') }}"
-           class="tab-btn {% if period == 'all' %}tab-active{% endif %}" id="tab-all">
-            <i class="fas fa-globe"></i> All Time
-        </a>
+    <!-- Page Header -->
+    <div class="welcome-banner"
+         style="background: linear-gradient(135deg, #FFB347 0%, #FF6B6B 50%, #6C63FF 100%)">
+        <h1>
+            <i class="fas fa-trophy"></i> Leaderboard
+        </h1>
     </div>
-</section>
-
-<!-- Top 3 Podium -->
-{% if rankings|length >= 3 %}
-<section style="margin-top: 2rem;">
-    <div class="podium">
-        <!-- 2nd Place -->
-        <div class="podium-item podium-silver">
-            <div class="podium-medal">🥈</div>
-            <div class="podium-name">{{ rankings[1].first_name }} {{ rankings[1].last_name[0] + '.' if rankings[1].last_name else '' }}</div>
-            <div class="podium-stat">{{ rankings[1].workout_count }} workouts</div>
-            <div class="podium-bar podium-bar-2"></div>
+    <!-- Period Filter Tabs -->
+    <section>
+        <div class="leaderboard-tabs">
+            <a href="{{ url_for('leaderboard.leaderboard_page', period='week') }}"
+               class="tab-btn {% if period == 'week' %}tab-active{% endif %}"
+               id="tab-week">
+                <i class="fas fa-calendar-week"></i> This Week
+            </a>
+            <a href="{{ url_for('leaderboard.leaderboard_page', period='month') }}"
+               class="tab-btn {% if period == 'month' %}tab-active{% endif %}"
+               id="tab-month">
+                <i class="fas fa-calendar-alt"></i> This Month
+            </a>
+            <a href="{{ url_for('leaderboard.leaderboard_page', period='all') }}"
+               class="tab-btn {% if period == 'all' %}tab-active{% endif %}"
+               id="tab-all">
+                <i class="fas fa-globe"></i> All Time
+            </a>
         </div>
-        <!-- 1st Place -->
-        <div class="podium-item podium-gold">
-            <div class="podium-medal">🥇</div>
-            <div class="podium-name">{{ rankings[0].first_name }} {{ rankings[0].last_name[0] + '.' if rankings[0].last_name else '' }}</div>
-            <div class="podium-stat">{{ rankings[0].workout_count }} workouts</div>
-            <div class="podium-bar podium-bar-1"></div>
-        </div>
-        <!-- 3rd Place -->
-        <div class="podium-item podium-bronze">
-            <div class="podium-medal">🥉</div>
-            <div class="podium-name">{{ rankings[2].first_name }} {{ rankings[2].last_name[0] + '.' if rankings[2].last_name else '' }}</div>
-            <div class="podium-stat">{{ rankings[2].workout_count }} workouts</div>
-            <div class="podium-bar podium-bar-3"></div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- Full Rankings Table -->
-<section style="margin-top: 2.5rem;">
-    <h2 class="section-title"><i class="fas fa-list-ol"></i> Full Rankings</h2>
-
-    {% if rankings %}
-    <div class="card" style="padding: 0; overflow: hidden;">
-        <table class="leaderboard-table" id="leaderboard-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>User</th>
-                    <th>Workouts</th>
-                    <th>Calories</th>
-                    <th>Distance</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in rankings %}
-                <tr class="{% if current_user and row.user_id == current_user.user_id %}current-user-row{% endif %}">
-                    <td>
-                        <span class="rank-number">
-                            {% if loop.index == 1 %}🥇
-                            {% elif loop.index == 2 %}🥈
-                            {% elif loop.index == 3 %}🥉
-                            {% else %}{{ loop.index }}
-                            {% endif %}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="table-user">
-                            <div class="table-user-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div class="table-user-name">
-                                    {{ row.first_name }} {{ row.last_name }}
-                                    {% if current_user and row.user_id == current_user.user_id %}
-                                    <span class="you-badge">You</span>
-                                    {% endif %}
-                                </div>
-                                <div class="table-user-handle">@{{ row.username }}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><strong>{{ row.workout_count }}</strong></td>
-                    <td>{{ row.total_calories }} kcal</td>
-                    <td>{{ '%.1f'|format(row.total_distance) }} km</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <div class="card" style="text-align: center; padding: 3rem;">
-        <i class="fas fa-running" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-        <p style="color: var(--text-secondary);">No workouts logged yet for this period.</p>
-        <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.5rem;">
-            Start logging activities to see your ranking here!
-        </p>
-    </div>
+    </section>
+    <!-- Top 3 Podium -->
+    {% if rankings|length >= 3 %}
+        <section style="margin-top: 2rem;">
+            <div class="podium">
+                <!-- 2nd Place -->
+                <div class="podium-item podium-silver">
+                    <div class="podium-medal">🥈</div>
+                    <div class="podium-name">
+                        {{ rankings[1].first_name }} {{ rankings[1].last_name[0] + '.' if rankings[1].last_name else '' }}
+                    </div>
+                    <div class="podium-stat">{{ rankings[1].workout_count }} workouts</div>
+                    <div class="podium-bar podium-bar-2"></div>
+                </div>
+                <!-- 1st Place -->
+                <div class="podium-item podium-gold">
+                    <div class="podium-medal">🥇</div>
+                    <div class="podium-name">
+                        {{ rankings[0].first_name }} {{ rankings[0].last_name[0] + '.' if rankings[0].last_name else '' }}
+                    </div>
+                    <div class="podium-stat">{{ rankings[0].workout_count }} workouts</div>
+                    <div class="podium-bar podium-bar-1"></div>
+                </div>
+                <!-- 3rd Place -->
+                <div class="podium-item podium-bronze">
+                    <div class="podium-medal">🥉</div>
+                    <div class="podium-name">
+                        {{ rankings[2].first_name }} {{ rankings[2].last_name[0] + '.' if rankings[2].last_name else '' }}
+                    </div>
+                    <div class="podium-stat">{{ rankings[2].workout_count }} workouts</div>
+                    <div class="podium-bar podium-bar-3"></div>
+                </div>
+            </div>
+        </section>
     {% endif %}
-</section>
+    <!-- Full Rankings Table -->
+    <section style="margin-top: 2.5rem;">
+        <h2 class="section-title">
+            <i class="fas fa-list-ol"></i> Full Rankings
+        </h2>
+        {% if rankings %}
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <table class="leaderboard-table" id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Workouts</th>
+                            <th>Calories</th>
+                            <th>Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rankings %}
+                            <tr class="{% if current_user and row.user_id == current_user.user_id %}current-user-row{% endif %}">
+                                <td>
+                                    <span class="rank-number">
+                                        {% if loop.index == 1 %}
+                                            🥇
+                                        {% elif loop.index == 2 %}
+                                            🥈
+                                        {% elif loop.index == 3 %}
+                                            🥉
+                                        {% else %}
+                                            {{ loop.index }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-user-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="table-user-name">
+                                                {{ row.first_name }} {{ row.last_name }}
+                                                {% if current_user and row.user_id == current_user.user_id %}<span class="you-badge">You</span>{% endif %}
+                                            </div>
+                                            <div class="table-user-handle">@{{ row.username }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ row.workout_count }}</strong>
+                                </td>
+                                <td>{{ row.total_calories }} kcal</td>
+                                <td>{{ '%.1f'|format(row.total_distance) }} km</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <i class="fas fa-running"
+                   style="font-size: 2.5rem;
+                          color: var(--text-muted);
+                          margin-bottom: 1rem"></i>
+                <p style="color: var(--text-secondary);">No workouts logged yet for this period.</p>
+                <p style="color: var(--text-muted);
+                          font-size: 0.88rem;
+                          margin-top: 0.5rem">Start logging activities to see your ranking here!</p>
+            </div>
+        {% endif %}
+    </section>
 {% endblock %}

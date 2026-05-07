@@ -1,5 +1,4 @@
-"""
-Event management routes for the Motivara application.
+"""Event management routes for the Motivara application.
 
 Handles event listing, details, registration, and group chat.
 """

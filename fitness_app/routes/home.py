@@ -1,5 +1,4 @@
-"""
-Home routes for the Motivara application.
+"""Home routes for the Motivara application.
 
 Displays the user dashboard with quick actions and fitness summary.
 """

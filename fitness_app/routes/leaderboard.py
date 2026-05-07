@@ -1,5 +1,4 @@
-"""
-Leaderboard routes for the Motivara application.
+"""Leaderboard routes for the Motivara application.
 
 Displays the global ranking of users based on their logged activities.
 Supports filtering by time period (week, month, all time).

@@ -1,124 +1,123 @@
 {% extends 'base.html' %}
-
 {% block title %}Motivara — Home{% endblock %}
-
 {% block content %}
-<!-- Welcome Banner -->
-<div class="welcome-banner">
-    <h1>Welcome back, {{ user.first_name if user else 'Guest' }}!</h1>
-    <p>Here's your fitness overview for today</p>
-</div>
-
-<!-- Today's Summary -->
-<section>
-    <h2 class="section-title">Today's Summary</h2>
-    <div class="grid-3">
-        <!-- Distance Card -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--primary);">
-                <i class="fas fa-route"></i>
-            </div>
-            <div class="stat-value" style="color: var(--primary-light);">{{ '%.1f'|format(total_distance) }} km</div>
-            <div class="stat-label">Distance Today</div>
-        </div>
-
-        <!-- Calories Card -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--warm);">
-                <i class="fas fa-fire-flame-curved"></i>
-            </div>
-            <div class="stat-value" style="color: var(--warm-light);">{{ total_calories }}</div>
-            <div class="stat-label">Calories Burned</div>
-        </div>
-
-        <!-- Workouts Card -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--accent);">
-                <i class="fas fa-dumbbell"></i>
-            </div>
-            <div class="stat-value" style="color: var(--accent-light);">{{ workouts_this_week }}</div>
-            <div class="stat-label">Workouts This Week</div>
-        </div>
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h1>Welcome back, {{ user.first_name if user else 'Guest' }}!</h1>
+        <p>Here's your fitness overview for today</p>
     </div>
-</section>
-
-<!-- Quick Actions -->
-<section style="margin-top: 2.5rem;">
-    <h2 class="section-title">Quick Actions</h2>
-    <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-        <a href="{{ url_for('auth.user_settings') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(108, 99, 255, 0.15); color: var(--primary-light);">
-                <i class="fas fa-user-circle"></i>
+    <!-- Today's Summary -->
+    <section>
+        <h2 class="section-title">Today's Summary</h2>
+        <div class="grid-3">
+            <!-- Distance Card -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--primary);">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="stat-value" style="color: var(--primary-light);">{{ '%.1f'|format(total_distance) }} km</div>
+                <div class="stat-label">Distance Today</div>
             </div>
-            <span class="action-label">My Profile</span>
-        </a>
-
-        <a href="{{ url_for('progress.progress_page') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
-                <i class="fas fa-chart-bar"></i>
+            <!-- Calories Card -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--warm);">
+                    <i class="fas fa-fire-flame-curved"></i>
+                </div>
+                <div class="stat-value" style="color: var(--warm-light);">{{ total_calories }}</div>
+                <div class="stat-label">Calories Burned</div>
             </div>
-            <span class="action-label">View Progress</span>
-        </a>
-
-        <a href="{{ url_for('leaderboard.leaderboard_page') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(255, 179, 71, 0.15); color: var(--amber);">
-                <i class="fas fa-trophy"></i>
+            <!-- Workouts Card -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--accent);">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="stat-value" style="color: var(--accent-light);">{{ workouts_this_week }}</div>
+                <div class="stat-label">Workouts This Week</div>
             </div>
-            <span class="action-label">Leaderboard</span>
-        </a>
-
-        <a href="{{ url_for('events.events_page') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(255, 179, 71, 0.15); color: var(--amber);">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <span class="action-label">Upcoming Events</span>
-        </a>
-
-        <!-- Added Strava and Chat Box links -->
-        <a href="{{ url_for('strava.activities') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(252, 76, 2, 0.15); color: #FC4C02;">
-                <i class="fab fa-strava"></i>
-            </div>
-            <span class="action-label">Strava</span>
-        </a>
-
-        <a href="{{ url_for('messages.messages') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(0, 212, 170, 0.15); color: var(--accent);">
-                <i class="fas fa-comments"></i>
-            </div>
-            <span class="action-label">Chat Box</span>
-        </a>
-    </div>
-</section>
-
-<!-- Recommended Activities -->
-<section style="margin-top: 2.5rem;">
-    <h2 class="section-title">Recommended Activities</h2>
-    <div class="grid-4">
-        <a href="/running" class="card activity-card">
-            <div class="activity-icon">🏃</div>
-            <span class="activity-name">Running</span>
-        </a>
-
-        <a href="/cycling" class="card activity-card">
-            <div class="activity-icon">🚴</div>
-            <span class="activity-name">Cycling</span>
-        </a>
-
-        <a href="/swimming" class="card activity-card">
-            <div class="activity-icon">🏊</div>
-            <span class="activity-name">Swimming</span>
-        </a>
-
-        <a href="/walking" class="card activity-card">
-            <div class="activity-icon">🚶</div>
-            <span class="activity-name">Walking</span>
-        </a>
-
-        <a href="/gym" class="card activity-card">
-            <div class="activity-icon">🏋️</div>
-            <span class="activity-name">Gym</span>
-        </a>
-    </div>
-</section>
+        </div>
+    </section>
+    <!-- Quick Actions -->
+    <section style="margin-top: 2.5rem;">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="grid-3"
+             style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))">
+            <a href="{{ url_for("auth.user_settings") }}" class="card action-card">
+                <div class="action-icon"
+                     style="background: rgba(108, 99, 255, 0.15);
+                            color: var(--primary-light)">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <span class="action-label">My Profile</span>
+            </a>
+            <a href="{{ url_for("progress.progress_page") }}"
+               class="card action-card">
+                <div class="action-icon"
+                     style="background: rgba(0, 212, 170, 0.15);
+                            color: var(--accent)">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <span class="action-label">View Progress</span>
+            </a>
+            <a href="{{ url_for("leaderboard.leaderboard_page") }}"
+               class="card action-card">
+                <div class="action-icon"
+                     style="background: rgba(255, 179, 71, 0.15);
+                            color: var(--amber)">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <span class="action-label">Leaderboard</span>
+            </a>
+            <a href="{{ url_for("events.events_page") }}" class="card action-card">
+                <div class="action-icon"
+                     style="background: rgba(255, 179, 71, 0.15);
+                            color: var(--amber)">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <span class="action-label">Upcoming Events</span>
+            </a>
+            <!-- Added Strava and Chat Box links -->
+            <a href="{{ url_for("strava.activities") }}" class="card action-card">
+                <div class="action-icon"
+                     style="background: rgba(252, 76, 2, 0.15);
+                            color: #FC4C02">
+                    <i class="fab fa-strava"></i>
+                </div>
+                <span class="action-label">Strava</span>
+            </a>
+            <a href="{{ url_for("messages.messages") }}" class="card action-card">
+                <div class="action-icon"
+                     style="background: rgba(0, 212, 170, 0.15);
+                            color: var(--accent)">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <span class="action-label">Chat Box</span>
+            </a>
+        </div>
+    </section>
+    <!-- Recommended Activities -->
+    <section style="margin-top: 2.5rem;">
+        <h2 class="section-title">Recommended Activities</h2>
+        <div class="grid-4">
+            <a href="/running" class="card activity-card">
+                <div class="activity-icon">🏃</div>
+                <span class="activity-name">Running</span>
+            </a>
+            <a href="/cycling" class="card activity-card">
+                <div class="activity-icon">🚴</div>
+                <span class="activity-name">Cycling</span>
+            </a>
+            <a href="/swimming" class="card activity-card">
+                <div class="activity-icon">🏊</div>
+                <span class="activity-name">Swimming</span>
+            </a>
+            <a href="/walking" class="card activity-card">
+                <div class="activity-icon">🚶</div>
+                <span class="activity-name">Walking</span>
+            </a>
+            <a href="/gym" class="card activity-card">
+                <div class="activity-icon">🏋️</div>
+                <span class="activity-name">Gym</span>
+            </a>
+        </div>
+    </section>
 {% endblock %}
