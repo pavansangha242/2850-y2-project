@@ -12,22 +12,22 @@
     <h1>My Activities</h1>
 
      <!-- Summary stats -->
-    <div class="stats-container">
-        <div class="settings-card stats-card">
-            <h2>{{ stats.total_km }} km</h2>
-            <p>Distance</p>
+    <div class="grid-4" style="margin-bottom: 2rem;">
+        <div class="card stat-card">
+            <div class="stat-value">{{ stats.total_km }} km</div>
+            <div class="stat-label">Distance</div>
         </div>
-        <div class="settings-card stats-card">
-            <h2>Calories: {{ stats.total_calories }}</h2>
-            <p>Calories</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ stats.total_calories }}</div>
+            <div class="stat-label">Calories</div>
         </div>
-        <div class="settings-card stats-card">
-            <h2>{{ stats.total_activities }}</h2>
-            <p>Activities</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ stats.total_activities }}</div>
+            <div class="stat-label">Activities</div>
         </div>
-        <div class="settings-card stats-card">
-            <h2>{{ stats.total_time_mins }} min</h2>
-            <p>Time</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ stats.total_time_mins }} min</div>
+            <div class="stat-label">Time</div>
         </div>
     </div>
 
@@ -35,17 +35,17 @@
     <div class="filters-container">
 
         <a href="?period=week&type={{ activity_type }}" 
-        class="btn-login filter-btn {{ 'active-filter' if period == 'week' else 'inactive-filter' }}">
+        class="btn {{ 'btn-primary' if period == 'week' else 'btn-outline' }}">
             This Week
         </a>
 
         <a href="?period=month&type={{ activity_type }}"
-        class="btn-login filter-btn {{ 'active-filter' if period == 'month' else 'inactive-filter' }}">
+        class="btn {{ 'btn-primary' if period == 'month' else 'btn-outline' }}">
             This Month
         </a>
 
         <a href="?period=all&type={{ activity_type }}"
-        class="btn-login filter-btn {{ 'active-filter' if period == 'all' else 'inactive-filter' }}">
+        class="btn {{ 'btn-primary' if period == 'all' else 'btn-outline' }}">
             All Time
         </a>
 
@@ -63,20 +63,17 @@
     {% for a in activities %}
     <a href="{{ url_for('strava.activity_detail', strava_id=a.strava_id) }}"
        class="activity-link">
-        <div class="settings-card mt-1 clickable">
-            <div class="activity-row">
+        <div class="card mt-1 clickable" style="margin-bottom: 0.5rem;">
+            <div class="activity-row" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h3>{{ a.name }}</h3>
-                    <p class="muted-text small-margin">
+                    <h3 style="margin: 0;">{{ a.name }}</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
                         {{ a.activity_type }} · {{ a.start_date.strftime('%d %b %Y') if a.start_date else ''  }}
                     </p>
                 </div>
-                <div class="text-right">
-                    <p><strong>{{ "%.1f"|format(a.distance_m / 1000) }} km</strong></p>
-                    <p class="muted-text">{{ a.moving_time_s // 60 }} min</p>
-                    <p class="muted-text">
-                        {{ a.calories|int if a.calories is not none else 0 }} kcal
-                    </p>
+                <div style="text-align: right;">
+                    <p style="font-weight: 700; margin: 0;">{{ "%.1f"|format(a.distance_m / 1000) }} km</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">{{ a.moving_time_s // 60 }} min · {{ a.calories|int if a.calories is not none else 0 }} kcal</p>
                 </div>
             </div>
         </div>

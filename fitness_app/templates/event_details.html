@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}FitTrack — {{ event.name }}{% endblock %}
+{% block title %}Motivara — {{ event.name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -121,7 +121,7 @@
 <script>
     // ---------- Saved Events (localStorage) ----------
     function getSavedEvents() {
-        try { return JSON.parse(localStorage.getItem('fittrack_saved_events') || '[]'); }
+        try { return JSON.parse(localStorage.getItem('Motivara_saved_events') || '[]'); }
         catch(e) { return []; }
     }
 
@@ -129,7 +129,7 @@
         const saved = getSavedEvents();
         if (!saved.some(e => e.date === dateStr)) {
             saved.push({ date: dateStr, name: name });
-            localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+            localStorage.setItem('Motivara_saved_events', JSON.stringify(saved));
         }
     }
 
@@ -139,7 +139,7 @@
 
     function removeEvent(dateStr) {
         const saved = getSavedEvents().filter(e => e.date !== dateStr);
-        localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+        localStorage.setItem('Motivara_saved_events', JSON.stringify(saved));
     }
 
     // ---------- Toast Notification ----------

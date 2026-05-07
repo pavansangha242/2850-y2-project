@@ -57,27 +57,27 @@
             <div class="card mb-2">
                 <h3>Activity Goals</h3>
                 <label>Daily Step Target</label>
-                <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
+                <input type="number" name="step_target" id="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
                 <p id="step-error" class="error-text-simple">Please enter a step target.</p>
                 
                 <label>Weekly Exercise Hours</label>
-                <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
+                <input type="number" name="weekly_hours" id="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
                 <p id="weekly-error" class="error-text-simple">Please enter weekly hours.</p>
 
                 <label>Workouts per Week</label>
-                <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
+                <input type="number" name="workouts_per_week" id="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
                 <p id="workouts-error" class="error-text-simple">Please enter workouts per week.</p>
 
                 <label>Age</label>
-                <input type="number" name="age" placeholder="e.g. 18" class="input-field" required min="0" />
+                <input type="number" name="age" id="age" placeholder="e.g. 18" class="input-field" required min="0" />
                 <p id="age-error" class="error-text-simple">Please enter age.</p>
 
                 <label>Weight</label>
-                <input type="number" name="weight" placeholder="please enter in kg" class="input-field" required min="0" />
+                <input type="number" name="weight" id="weight" placeholder="please enter in kg" class="input-field" required min="0" />
                 <p id="weight-error" class="error-text-simple">Please enter weight.</p>
 
                 <label>Height</label>
-                <input type="number" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
+                <input type="number" name="height" id="height" placeholder="please enter in cm" class="input-field" required min="0" />
                 <p id="height-error" class="error-text-simple">Please enter height.</p>
 
                 <select name="sex" id="sex-select" class="input-field" required>
@@ -116,7 +116,7 @@
                 Please enter your bio.
             </p>
         </div>
-        <input type="submit" value="Register" class="btn-login" />
+        <input type="submit" value="Register" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" />
         <div class="text-center mt-2">
             <a href="/">Already have an account? Login</a>
         </div>
@@ -204,19 +204,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (role === 'customer') {
             err('step-error', document.getElementById('step_target').value.trim() === '');
-
-            // full health validation
-            err('weekly-error', document.querySelector('[name="weekly_hours"]').value.trim() === '');
-            err('workouts-error', document.querySelector('[name="workouts_per_week"]').value.trim() === '');
-            err('age-error', document.querySelector('[name="age"]').value.trim() === '');
-            err('weight-error', document.querySelector('[name="weight"]').value.trim() === '');
-            err('height-error', document.querySelector('[name="height"]').value.trim() === '');
+            err('weekly-error', document.getElementById('weekly_hours').value.trim() === '');
+            err('workouts-error', document.getElementById('workouts_per_week').value.trim() === '');
+            err('age-error', document.getElementById('age').value.trim() === '');
+            err('weight-error', document.getElementById('weight').value.trim() === '');
+            err('height-error', document.getElementById('height').value.trim() === '');
             err('sex-error', document.getElementById('sex-select').value === '');
-        }
-
-        // PT bio must be filled
-        if (role === 'pt') {
+            
+            // clear PT errors if any
+            err('bio-error', false);
+        } else if (role === 'pt') {
             err('bio-error', document.getElementById('bio').value.trim() === '');
+            
+            // clear customer errors if any
+            err('step-error', false);
+            err('weekly-error', false);
+            err('workouts-error', false);
+            err('age-error', false);
+            err('weight-error', false);
+            err('height-error', false);
+            err('sex-error', false);
+        } else {
+            // clear all role-specific errors
+            err('bio-error', false);
+            err('step-error', false);
+            err('weekly-error', false);
+            err('workouts-error', false);
+            err('age-error', false);
+            err('weight-error', false);
+            err('height-error', false);
+            err('sex-error', false);
         }
 
         if (!valid) e.preventDefault(); // block form submission if any error

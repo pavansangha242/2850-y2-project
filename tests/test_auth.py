@@ -58,6 +58,8 @@ def test_register_empty_input_handled_gracefully(client):
     response = client.post(
         "/register",
         data={
+            "first_name": "New",
+            "last_name": "User",
             "username": "newuser",
             "password": "password",
             "confirm_password": "password",

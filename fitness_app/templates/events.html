@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}FitTrack — Events{% endblock %}
+{% block title %}Motivara — Events{% endblock %}
 
 {% block content %}
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
@@ -16,7 +16,7 @@
 <div id="adminAddEvent" class="card" style="display: none; margin-bottom: 2rem; padding: 1.5rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h3 style="margin: 0;">Create New Event</h3>
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('adminAddEvent').style.display = 'none';">Cancel</button>
+        <button class="btn-outline-sm" onclick="document.getElementById('adminAddEvent').style.display = 'none';">Cancel</button>
     </div>
     <form action="{{ url_for('admin.add_event') }}" method="POST" class="grid-2" style="gap: 1rem;">
         <div class="form-group">
@@ -85,7 +85,7 @@
         <div style="display: flex; gap: 0.5rem; align-items: center;">
             <button class="btn btn-outline btn-sm" onclick="changeMonth(-1)" aria-label="Previous month" ><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
             <span id="currentMonthYear" style="font-weight: 600; min-width: 120px; text-align: center;"></span>
-            <button class="btn btn-outline btn-sm" onclick="changeMonth(1)"> aria-label="Next month"<i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+            <button class="btn btn-outline btn-sm" onclick="changeMonth(1)" aria-label="Next month"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
         </div>
     </div>
     <div class="card" style="padding: 1.5rem;">
@@ -163,7 +163,7 @@
 <script>
     // ---------- Saved Events (localStorage) ----------
     function getSavedEvents() {
-        try { return JSON.parse(localStorage.getItem('fittrack_saved_events') || '[]'); }
+        try { return JSON.parse(localStorage.getItem('Motivara_saved_events') || '[]'); }
         catch(e) { return []; }
     }
 
@@ -171,7 +171,7 @@
         const saved = getSavedEvents();
         if (!saved.some(e => e.date === dateStr)) {
             saved.push({ date: dateStr, name: name });
-            localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+            localStorage.setItem('Motivara_saved_events', JSON.stringify(saved));
         }
     }
 
@@ -181,7 +181,7 @@
 
     function removeEvent(dateStr) {
         const saved = getSavedEvents().filter(e => e.date !== dateStr);
-        localStorage.setItem('fittrack_saved_events', JSON.stringify(saved));
+        localStorage.setItem('Motivara_saved_events', JSON.stringify(saved));
     }
 
     // ---------- Toast Notification ----------

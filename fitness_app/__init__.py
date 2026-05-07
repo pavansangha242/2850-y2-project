@@ -119,7 +119,7 @@ def seed_database():
     admin = User(
         first_name="Michael",
         last_name="Brown",
-        email="michael@fittrack.com",
+        email="michael@Motivara.com",
         username="michaelbrown",
         role="administrator",
     )
@@ -128,7 +128,7 @@ def seed_database():
     trainer1 = User(
         first_name="Daniel",
         last_name="Carter",
-        email="daniel@fittrack.com",
+        email="daniel@Motivara.com",
         username="danielcarter",
         role="pt",
         approved=True,
@@ -138,7 +138,7 @@ def seed_database():
     trainer2 = User(
         first_name="Amanda",
         last_name="Clark",
-        email="amanda@fittrack.com",
+        email="amanda@Motivara.com",
         username="amandaclark",
         role="pt",
         approved=True,
@@ -148,7 +148,7 @@ def seed_database():
     trainer3 = User(
         first_name="Sarah",
         last_name="Johnson",
-        email="sarah@fittrack.com",
+        email="sarah@Motivara.com",
         username="sarahjohnson",
         role="pt",
         approved=False,
@@ -158,7 +158,7 @@ def seed_database():
     trainer4 = User(
         first_name="David",
         last_name="Lee",
-        email="david@fittrack.com",
+        email="david@Motivara.com",
         username="davidlee",
         role="pt",
         approved=False,
@@ -186,7 +186,7 @@ def seed_database():
     current_user = User(
         first_name="Ahmed",
         last_name="Ali",
-        email="ahmed@fittrack.com",
+        email="ahmed@Motivara.com",
         username="ahmed",
         role="customer",
     )
