@@ -1,3 +1,4 @@
+"""Database models and helper functions for the fitness application."""
 from datetime import date, datetime
 
 from flask import session
@@ -7,6 +8,7 @@ from fitness_app.extensions import db
 
 # Start of Pavan db model
 class User(db.Model):
+    """Application user account model."""
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True)
@@ -79,17 +81,20 @@ class User(db.Model):
     )  # link Survey to each user
 
     def set_password(self, password):
+        """Hash and store the user's password."""
         from werkzeug.security import generate_password_hash
 
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Verify a password against the stored hash."""
         from werkzeug.security import check_password_hash
 
         return check_password_hash(self.password_hash, password)
 
 
 class UserGoal(db.Model):
+    """Fitness goals and target metrics for a user."""
     __tablename__ = "user_goals"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -109,6 +114,7 @@ class UserGoal(db.Model):
 
 
 class PrivacySettings(db.Model):
+    """User privacy and data sharing preferences."""
     __tablename__ = "privacy_settings"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -121,6 +127,7 @@ class PrivacySettings(db.Model):
 
 
 class StravaActivity(db.Model):
+    """Fitness activity synced from Strava."""
     __tablename__ = "strava_activities"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -155,6 +162,7 @@ class StravaActivity(db.Model):
 
 # PTs can view surveys of customers who have share_with_pt enabled.
 class HealthSurvey(db.Model):
+    """Health and lifestyle survey completed by a user."""
     __tablename__ = "health_surveys"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -364,6 +372,7 @@ class GymWorkout(db.Model):
 
 # test user id
 def get_current_user_id():
+    """Return the currently logged-in user's ID."""
     username = session.get("username")
 
     if not username:
@@ -378,6 +387,7 @@ def get_current_user_id():
 
 
 def get_user_weight(user_id):
+    """Return the stored weight for a user."""
     user = User.query.get(user_id)
 
     if user and user.goals and user.goals.weight_kg:
@@ -388,15 +398,18 @@ def get_user_weight(user_id):
 
 # find user by id
 def get_user_by_id(user_id):
+    """Retrieve a user by their ID."""
     return User.query.get(user_id)
 
 
 # find user by username
 def get_user_by_username(username):
+    """Retrieve a user by their username."""
     return User.query.filter_by(username=username).first()
 
 
 def get_exercise_type_id(exercise_name):
+    """Return the ID for an exercise type, creating it if needed."""
     exercise = ExerciseType.query.filter_by(name=exercise_name).first()
 
     if not exercise:
