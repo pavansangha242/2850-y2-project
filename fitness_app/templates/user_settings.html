@@ -44,6 +44,25 @@
                 </span>
             </div>
         </div>
+        {% if user.role != 'administrator' %}
+            <!-- Support Section -->
+            <div class="settings-card mt-2">
+                <h2>Support & Help</h2>
+                <div class="settings-row">
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                        Need assistance with your account or have a platform issue?
+                    </p>
+                </div>
+                <div class="settings-row" style="border-top: none; padding-top: 0;">
+                    <a href="{{ url_for("messages.contact_admin") }}"
+                       class="btn-login"
+                       style="margin-top: 1rem;
+                              display: inline-block">
+                        <i class="fas fa-headset"></i> Contact Administrator
+                    </a>
+                </div>
+            </div>
+        {% endif %}
         <!-- PT specific fields for bio -->
         {% if user.role == 'pt' %}
             <div class="settings-card mt-2">

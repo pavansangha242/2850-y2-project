@@ -8,21 +8,7 @@
     <div class="msg-layout">
         <!-- Left: Conversations list -->
         <aside class="msg-sidebar">
-            <div style="display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 1rem">
-                <h2 style="margin: 0;">Conversations</h2>
-                <a href="{{ url_for("messages.contact_admin") }}"
-                   style="background: var(--primary);
-                          color: white;
-                          border-radius: 4px;
-                          padding: 4px 8px;
-                          font-size: 0.8rem;
-                          text-decoration: none">
-                    <i class="fas fa-headset"></i> Contact Admin
-                </a>
-            </div>
+            <h2 class="section-title">Conversations</h2>
             <div class="conv-list">
                 {% if conversations %}
                     {% for conv in conversations %}
