@@ -68,7 +68,7 @@ def add_to_calendar(competition_id):
     ics_content = (
         "BEGIN:VCALENDAR\r\n"
         "VERSION:2.0\r\n"
-        "PRODID:-//FitTrack//Events//EN\r\n"
+        "PRODID:-//Motivara//Events//EN\r\n"
         "BEGIN:VEVENT\r\n"
         f"DTSTART;VALUE=DATE:{event_date}\r\n"
         f"DTEND;VALUE=DATE:{event_end}\r\n"

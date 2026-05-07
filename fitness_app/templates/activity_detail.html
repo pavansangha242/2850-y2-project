@@ -37,57 +37,55 @@
     {% endif %}
 
     <!-- Stats grid -->
-    <div class="stats-grid">
+    <div class="grid-3" style="margin-top: 2rem;">
 
-        <div class="settings-card centered-card">
-            <h2>{{ "%.1f"|format(activity.distance_m / 1000) }} km</h2>
-            <p>Distance</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ "%.1f"|format(activity.distance_m / 1000) }} km</div>
+            <div class="stat-label">Distance</div>
         </div>
 
-        <div class="settings-card centered-card">
-            <h2>{{ activity.moving_time_s // 60 }} min</h2>
-            <p>Moving Time</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ activity.moving_time_s // 60 }} min</div>
+            <div class="stat-label">Moving Time</div>
         </div>
 
         {% if activity.calories %}
-        <div class="settings-card centered-card">
-            <h2>{{ activity.calories|int }}</h2>
-            <p>Calories</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ activity.calories|int }}</div>
+            <div class="stat-label">Calories</div>
         </div>
         {% endif %}
 
-        {% if activity.is_manual %}
-            <span class="warning-text">Estimated (manual workout)</span>
-        {% endif %}
-
         {% if activity.avg_heart_rate %}
-        <div class="settings-card centered-card">
-            <h2>{{ activity.avg_heart_rate|int }} bpm</h2>
-            <p>Avg Heart Rate</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ activity.avg_heart_rate|int }} bpm</div>
+            <div class="stat-label">Avg Heart Rate</div>
         </div>
         {% endif %}
 
         {% if activity.elevation_gain %}
-        <div class="settings-card centered-card">
-            <h2>{{ activity.elevation_gain|int }} m</h2>
-            <p>Elevation Gain</p>
+        <div class="card stat-card">
+            <div class="stat-value">{{ activity.elevation_gain|int }} m</div>
+            <div class="stat-label">Elevation Gain</div>
         </div>
         {% endif %}
 
         {% if activity.avg_speed %}
-        <div class="settings-card centered-card">
-
-            <!-- Convert m/s to min/km pace -->
+        <div class="card stat-card">
             {% set pace_secs = (1000 / activity.avg_speed)|int %}
-
-            <h2>
+            <div class="stat-value">
                 {{ pace_secs // 60 }}:{{ '%02d'|format(pace_secs % 60) }} /km
-            </h2>
-
-            <p>Avg Pace</p>
+            </div>
+            <div class="stat-label">Avg Pace</div>
         </div>
         {% endif %}
 
     </div>
+
+    {% if activity.is_manual %}
+        <p style="text-align: center; color: var(--warm); margin-top: 1rem; font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> Estimated (manual workout)
+        </p>
+    {% endif %}
 </div>
 {% endblock %}
