@@ -5,31 +5,37 @@ from fitness_app.models import Activity, ExerciseType, User
 
 
 def test_customer_cannot_access_trainer_dashboard(client, login_customer):
+    """Customer blocked from trainer dashboard."""
     response = client.get("/trainer-dashboard")
     assert response.status_code in [302, 403]
 
 
 def test_customer_cannot_access_pt_clients(client, login_customer):
+    """Customer blocked from PT clients page."""
     response = client.get("/pt-clients")
     assert response.status_code in [302, 403]
 
 
 def test_logged_out_user_cannot_access_progress(client):
+    """Logged out user redirected from progress."""
     response = client.get("/progress")
     assert response.status_code in [302, 401]
 
 
 def test_delete_requires_post(client, login_customer):
+    """GET request cannot delete an activity."""
     response = client.get("/running/delete/1")
     assert response.status_code in [302, 404, 405]
 
 
 def test_invalid_delete_id_does_not_crash(client, login_customer):
+    """Deleting nonexistent activity returns 404."""
     response = client.post("/running/delete/999999")
     assert response.status_code in [302, 404]
 
 
 def test_user_cannot_delete_other_users_activity(client, login_customer, app):
+    """User cannot delete someone else's activity."""
     with app.app_context():
         other_user = User(
             username="other_user",
