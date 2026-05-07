@@ -1,3 +1,9 @@
+"""Handle the progress page and progress statistics for the website.
+
+this file contains helper functions and the progress route, 
+it gets the logged in user's acticity data,
+applies sport filters, calculate summary,statistics and prepares chart data for the progress page. 
+"""
 from datetime import date, timedelta
 
 from flask import Blueprint, redirect, render_template, request, session, url_for
@@ -10,17 +16,20 @@ progress = Blueprint("progress", __name__)
 
 
 def get_week_start():
+    """Return the monday date for the current week."""
     today = date.today()
     return today - timedelta(days=today.weekday())
 
 
 def get_sport_type(sport):
+    """Find the selcted sport type from the database."""
     if sport and sport != "all":
         return ExerciseType.query.filter_by(name=sport).first()
     return None
 
 
 def build_query(user_id, sport_type):
+    """Get the user's activities and filter them by sport if needed."""
     query = Activity.query.filter_by(user_id=user_id)
     if sport_type:
         query = query.filter_by(exercise_type_id=sport_type.exercise_type_id)
@@ -29,6 +38,7 @@ def build_query(user_id, sport_type):
 
 @progress.route("/progress")
 def progress_page():
+    """Show the user's progress page with stats and chart data."""
     username = session.get("username")
 
     if not username:

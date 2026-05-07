@@ -1,5 +1,4 @@
-"""
-Messaging routes for the Motivara application.
+"""Messaging routes for the Motivara application.
 
 Handles direct messages between customers and trainers, as well as event group chats.
 """

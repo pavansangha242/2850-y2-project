@@ -1,3 +1,9 @@
+"""Handle the history page for the app.
+
+this file shows the user's saved activities, allows filtering by sport,
+and lets the user delete activities from their workout history.
+"""
+
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from sqlalchemy import func
 
@@ -11,6 +17,7 @@ PER_PAGE = 10
 
 @history.route("/history")
 def history_page():
+    """Show the user's workout history wihtout sport filters and pages."""
     username = session.get("username")
 
     if not username:
@@ -87,6 +94,7 @@ def history_page():
 
 @history.route("/history/delete/<int:activity_id>", methods=["POST"])
 def delete_activity(activity_id):
+    """Delete one activity from the user's workout history."""
     username = session.get("username")
 
     if not username:

@@ -1,3 +1,10 @@
+"""Handle trainers page, bookings, messages, and PT tools.
+
+this file showa the trainer page, let the user to book sessions and send messages,
+and gives PT users tools to manage booking, clients, profiles and 
+assigned gym exercises for the clients.
+"""
+
 from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
@@ -17,6 +24,7 @@ trainers = Blueprint("trainers", __name__)
 
 
 def get_logged_in_user():
+    """Get a trainer profile if the PT does not already have one."""
     username = session.get("username")
 
     if not username:
@@ -25,6 +33,7 @@ def get_logged_in_user():
 
 
 def ensure_trainer_profile(user):
+    """Make sure a PT user has a trainer profile."""
     if not user or user.role != "pt":
         return None
 
@@ -48,6 +57,7 @@ def ensure_trainer_profile(user):
 
 # turn trainer data into one dictionary for thr template
 def parse_trainer(user, profile):
+    """Turn trainer detailed into a dictionary for the template."""
     parts = (profile.bio or "").split("|||")
     return {
         "id": user.user_id,
@@ -63,6 +73,7 @@ def parse_trainer(user, profile):
 
 @trainers.route("/trainers")
 def trainers_page():
+    """Show the trainers page with filters, bookings and messages."""
     user = get_logged_in_user()
 
     if not user:
@@ -71,6 +82,7 @@ def trainers_page():
     uid = user.user_id
 
     if user.role == "pt":
+        """Make sure the PT has a trainer profile"""
         ensure_trainer_profile(user)
 
     search = request.args.get("q", "").strip().lower()
@@ -178,6 +190,7 @@ def trainers_page():
 
 @trainers.route("/trainers/book", methods=["POST"])
 def book_session():
+    """Book session with the selected trainer."""
     user = get_logged_in_user()
     if not user:
         return redirect(url_for("auth.login"))
@@ -230,6 +243,7 @@ def book_session():
 
 @trainers.route("/trainers/message", methods=["POST"])
 def send_message():
+    """Send a message to the selcted trainer."""
     user = get_logged_in_user()
 
     if not user:
@@ -253,6 +267,7 @@ def send_message():
 
 @trainers.route("/trainers/cancel/<int:booking_id>", methods=["POST"])
 def cancel_booking(booking_id):
+    """Cancel a trainer booking for the logged in user."""
     user = get_logged_in_user()
 
     if not user:
@@ -275,6 +290,7 @@ def cancel_booking(booking_id):
 
 @trainers.route("/pt-clients")
 def pt_clients():
+    """Show the confirmed clients for the logged in PT."""
     user = get_logged_in_user()
 
     if not user:
@@ -299,6 +315,7 @@ def pt_clients():
 
 @trainers.route("/trainer-dashboard")
 def trainer_dashboard():
+    """Show the trainer dashboard with bookings and messages."""
     user = get_logged_in_user()
 
     if not user:
@@ -342,6 +359,7 @@ def trainer_dashboard():
 
 @trainers.route("/trainers/booking/confirm/<int:booking_id>", methods=["POST"])
 def confirm_booking(booking_id):
+    """Confirm a booking and add the user as a client."""
     user = get_logged_in_user()
     if not user or user.role != "pt":
         return redirect(url_for("auth.login"))
@@ -373,6 +391,7 @@ def confirm_booking(booking_id):
 
 @trainers.route("/trainers/booking/decline/<int:booking_id>", methods=["POST"])
 def decline_booking(booking_id):
+    """Decline a booking request from a user."""
     user = get_logged_in_user()
     if not user or user.role != "pt":
         return redirect(url_for("auth.login"))
@@ -391,6 +410,7 @@ def decline_booking(booking_id):
 
 @trainers.route("/trainer-profile/edit", methods=["GET", "POST"])
 def edit_trainer_profile():
+    """Let a PT edit thier profile detailes."""
     user = get_logged_in_user()
 
     if not user:
@@ -431,6 +451,7 @@ def edit_trainer_profile():
 
 @trainers.route("/trainer/assign-exercise", methods=["GET", "POST"])
 def assign_exercise():
+    """Let a PT assign a gym exercise to a client."""
     user = get_logged_in_user()
 
     if not user:
