@@ -1,7 +1,7 @@
-"""
-Gym activity routes for the Motivara application.
+"""Gym activity routes for the Motivara application.
 
 Handles logging gym workouts, seeding default exercises,
+
 assigning exercises to clients, and displaying weekly gym stats.
 """
 from datetime import date, timedelta
@@ -32,7 +32,7 @@ def get_logged_in_user():
 
 
 def ensure_default_gym_exercises():
-    """Seeds the database with a default list of gym exercises"""
+    """Seeds the database with a default list of gym exercises."""
     if GymExercise.query.first():
         return
 
@@ -150,7 +150,9 @@ def get_week_start():
 @gym_bp.route("/gym")
 def gym_page():
     """Loads everything needed for the main gym dashboard.
-    Redirects to login if the user isn't logged in."""
+
+    Redirects to login if the user isn't logged in.
+    """
     if not session.get("username"):
         return redirect(url_for("auth.login"))
     ensure_default_gym_exercises()
@@ -272,7 +274,9 @@ def gym_page():
 @gym_bp.route("/gym/log", methods=["POST"])
 def log_gym_workout():
     """Saves a new gym workout when the user submits the log form.
-    edirects back to the dashboard with a success message once saved."""
+
+    Redirects back to the dashboard with a success message once saved.
+    """
     # loged in user
     user = get_logged_in_user()
 
@@ -317,7 +321,9 @@ def log_gym_workout():
 @gym_bp.route("/gym/assign", methods=["POST"])
 def assign_exercise():
     """Lets a PT assign a specific exercise to one of their clients with sets, reps and weight.
-    Redirects back to the gym page once the assignment is saved."""
+    
+    Redirects back to the gym page once the assignment is saved.
+    """
     # the trainer
     trainer = get_logged_in_user()
 
@@ -369,7 +375,9 @@ def assign_exercise():
 @gym_bp.route("/gym/delete/<int:gym_workout_id>", methods=["POST"])
 def delete_gym_workout(gym_workout_id):
     """Deletes a workout, but only if it actually belongs to the user.
-    Redirects back to the dashboard with a confirmation message once deleted."""
+
+    Redirects back to the dashboard with a confirmation message once deleted.
+    """
     # find the user
     user = get_logged_in_user()
 

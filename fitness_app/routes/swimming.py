@@ -1,5 +1,4 @@
-"""
-Swimming activity routes for the Motivara application.
+"""Swimming activity routes for the Motivara application.
 
 Handles logging swims, estimating distance from laps,
 calculating pace and calories, and managing swimming plans and goals.
@@ -39,7 +38,9 @@ def get_week_start():
 # work out met for swim based on pace
 def get_swimming_met(distance_km, duration_mins):
     """Picks the right MET value based on how fast the user was swimming.
-    Returns a number between 4.5 is slow and 10.0 is fast."""
+    
+    Returns a number between 4.5 is slow and 10.0 is fast.
+    """
     if distance_km and duration_mins and distance_km > 0 and duration_mins > 0:
         # convert to m and secs
         metres = distance_km * 1000
@@ -64,6 +65,7 @@ def get_swimming_met(distance_km, duration_mins):
 # cals = met x weight x hrs
 def calculate_calories(met, weight_kg, duration_mins):
     """Estimates calories burned using MET x weight x time in hours.
+    
     Returns None if any inputs are missing or zero, otherwise returns a rounded whole number.
     """
     if weight_kg and duration_mins and weight_kg > 0 and duration_mins > 0:
@@ -75,7 +77,9 @@ def calculate_calories(met, weight_kg, duration_mins):
 @swimming_bp.route("/swimming")
 def swimming_page():
     """Loads everything needed for the main swimming dashboard.
-    Redirects to login if its not user."""
+    
+    Redirects to login if its not user.
+    """
     if not session.get("username"):
         return redirect(url_for("auth.login"))
 
@@ -285,7 +289,9 @@ def swimming_page():
 @swimming_bp.route("/swimming/log", methods=["POST"])
 def log_swim():
     """Saves a new swim when the user submits the log form.
-    Redirects back to the dashboard with a success message once saved."""
+    
+    Redirects back to the dashboard with a success message once saved.
+    """
     uid = get_current_user_id()
     sw_type = get_swimming_type_id()
 
@@ -377,7 +383,9 @@ def log_swim():
 @swimming_bp.route("/swimming/plan", methods=["POST"])
 def create_swimming_plan():
     """Creates a swimming training plan.
-    Redirects back to the dashboard once saved."""
+    
+    Redirects back to the dashboard once saved.
+    """
     uid = get_current_user_id()
 
     per_week = request.form.get("swims_per_week", type=int)
@@ -421,7 +429,9 @@ def create_swimming_plan():
 @swimming_bp.route("/swimming/goal", methods=["POST"])
 def set_swimming_goal():
     """Saves the user's swimming goal.
-    Redirects back to the dashboard once done."""
+    
+    Redirects back to the dashboard once done.
+    """
     uid = get_current_user_id()
 
     g_type = request.form.get("goal_type")
@@ -464,7 +474,9 @@ def set_swimming_goal():
 @swimming_bp.route("/swimming/delete/<int:activity_id>", methods=["POST"])
 def delete_swim(activity_id):
     """Deletes a swim.
-    Redirects back to the dashboard with a confirmation message once deleted."""
+    
+    Redirects back to the dashboard with a confirmation message once deleted.
+    """
     uid = get_current_user_id()
 
     # only del if belongs to user

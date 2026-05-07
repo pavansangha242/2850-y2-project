@@ -1,4 +1,4 @@
-""" Running activity routes for the Motivara application.
+"""Running activity routes for the Motivara application.
 
 Handles logging runs, calculating pace and calories automatically,
 tracking streaks and weekly stats, and managing running plans and goals.
@@ -347,7 +347,9 @@ def log_run():
 @running_bp.route("/running/plan", methods=["POST"])
 def create_running_plan():
     """Creates a running training plan.
-    Redirects back to the dashboard once saved."""
+    
+    Redirects back to the dashboard once saved.
+    """
     uid = get_current_user_id()
 
     per_week = request.form.get("runs_per_week", type=int)
@@ -390,8 +392,10 @@ def create_running_plan():
 
 @running_bp.route("/running/goal", methods=["POST"])
 def set_running_goal():
-    """Saves the user's running goal,
-    Redirects back to the dashboard once done."""
+    """Save the users running goal.
+
+    Redirects back to the dashboard once done.
+    """
     uid = get_current_user_id()
 
     g_type = request.form.get("goal_type")
