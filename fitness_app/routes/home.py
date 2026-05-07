@@ -4,9 +4,11 @@ Home routes for the Motivara application.
 Displays the user dashboard with quick actions and fitness summary.
 """
 
-from flask import Blueprint, render_template, session, redirect, url_for
-from fitness_app.models import User, Activity
 from datetime import date, timedelta
+
+from flask import Blueprint, redirect, render_template, session, url_for
+
+from fitness_app.models import Activity, User
 
 home_bp = Blueprint("home", __name__)
 

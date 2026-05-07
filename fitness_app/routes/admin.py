@@ -5,19 +5,21 @@ Handles user management (search, delete), personal trainer
 approval/rejection, and platform statistics display.
 """
 
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from datetime import datetime
+
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+
 from fitness_app.extensions import db
 from fitness_app.models import (
-    User,
-    TrainerProfile,
+    ChatMessage,
     Competition,
     CompetitionResult,
-    ChatMessage,
-    TrainerReview,
     SessionBooking,
     TrainerMessage,
+    TrainerProfile,
+    TrainerReview,
+    User,
 )
-from datetime import datetime
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -58,10 +60,10 @@ def admin_dashboard():
             | (User.first_name.ilike(f"%{search_query}%"))
             | (User.last_name.ilike(f"%{search_query}%"))
         )
-    
+
     # Separate users by role for the template
     active_customers = users_query.filter_by(role="customer").all()
-    
+
     # Get all usernames for search suggestions
     all_user_names = [u.first_name + " " + u.last_name for u in User.query.all()]
 
@@ -267,4 +269,3 @@ def remove_event_participant(event_id, user_id):
         flash("Participant not found.", "error")
 
     return redirect(url_for("admin.event_participants", event_id=event_id))
-

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from sqlalchemy import func
 
 from fitness_app.extensions import db

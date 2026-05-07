@@ -7,11 +7,11 @@ Covers:
 - Empty input handling
 - Role-based behaviour
 
-Checks empty messages aren't saved to the db and PTs get their own 
+Checks empty messages aren't saved to the db and PTs get their own
 inbox.
 """
 
-from fitness_app.models import User, TrainerMessage
+from fitness_app.models import TrainerMessage, User
 
 
 class TestMessagesPage:
@@ -131,7 +131,7 @@ class TestSecurity:
         )
 
         response = client.get("/messages")
-        # Check that the raw script tag isn't there 
+        # Check that the raw script tag isn't there
         assert payload.encode() not in response.data
 
     def test_long_message_handled(self, client, login_customer, app):

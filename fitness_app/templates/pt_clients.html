@@ -4,31 +4,45 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px; margin: 40px auto;">
+<div class="container pt-clients-container">
+
     <!-- Show the customers that have matched with the PT, and agreed to the privacy conditions -->
     <h1>My Clients</h1>
-    <p style="color: #888; margin-bottom: 24px;">
+
+    <p class="muted-text clients-description">
         Customers who have enabled data sharing with their PT.
     </p>
 
     {% if clients %}
         {% for client in clients %}
-        <div class="settings-card mb-2" style="display: flex; justify-content: space-between; align-items: center;">
+
+        <div class="settings-card client-card">
+
             <div>
                 <strong>{{ client.username }}</strong>
-                <p style="color: #888; font-size: 0.85rem; margin: 4px 0 0;">{{ client.email }}</p>
+
+                <p class="muted-text client-email">
+                    {{ client.email }}
+                </p>
             </div>
-            <a href="{{ url_for('auth.pt_view_survey', customer_id=client.user_id) }}" class="btn-login" style="width: auto; padding: 8px 16px; margin: 0;">
+
+            <a href="{{ url_for('auth.pt_view_survey', customer_id=client.user_id) }}"
+               class="btn-login client-btn">
                 View Survey
             </a>
+
         </div>
+
         {% endfor %}
     {% else %}
         <p>No clients have shared their data with you yet.</p>
     {% endif %}
 
     <div class="text-center mt-3">
-        <a href="{{ url_for('auth.user_settings') }}">← Back to Account Settings</a>
+        <a href="{{ url_for('auth.user_settings') }}">
+            ← Back to Account Settings
+        </a>
     </div>
+
 </div>
 {% endblock %}

@@ -1,5 +1,3 @@
-
-
 class TestLeaderboard:
 
     def test_leaderboard_loads(self, client, login_customer):

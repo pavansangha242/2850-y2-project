@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, abort, render_template
 from sqlalchemy import func
 
 from fitness_app.extensions import db

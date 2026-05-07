@@ -4,63 +4,134 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px; margin: 40px auto;">
+<div class="container survey-container">
 
     <h1>{{ customer.username }}'s Health Survey</h1>
 
     {% if not survey %}
         <p>This customer has not completed their health survey yet.</p>
+
     {% else %}
-        <p style="color: #888; margin-bottom: 24px;">
+
+        <p class="muted-text survey-date">
             Submitted on {{ survey.last_updated.strftime('%d %b %Y') }}
         </p>
     
     <!-- Showing survey data to PT -->
     <div class="settings-card">
         <h2>Activity</h2>
-        <div class="settings-row"><span class="settings-label">Workout hours/day</span><span class="settings-value">{{ survey.workout_hours_per_day }}</span></div>
-        <div class="settings-row"><span class="settings-label">Days/week</span><span class="settings-value">{{ survey.workout_days_per_week }}</span></div>
-        <div class="settings-row"><span class="settings-label">Preferred type</span><span class="settings-value">{{ survey.preferred_workout_type }}</span></div>
-        <div class="settings-row"><span class="settings-label">Fitness level</span><span class="settings-value">{{ survey.fitness_level }}</span></div>
+
+        <div class="settings-row">
+            <span class="settings-label">Workout hours/day</span>
+            <span class="settings-value">{{ survey.workout_hours_per_day }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Days/week</span>
+            <span class="settings-value">{{ survey.workout_days_per_week }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Preferred type</span>
+            <span class="settings-value">{{ survey.preferred_workout_type }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Fitness level</span>
+            <span class="settings-value">{{ survey.fitness_level }}</span>
+        </div>
     </div>
 
     <div class="settings-card mt-2">
         <h2>Daily Habits</h2>
-        <div class="settings-row"><span class="settings-label">Sleep (hrs/night)</span><span class="settings-value">{{ survey.sleep_hours }}</span></div>
-        <div class="settings-row"><span class="settings-label">Water (litres/day)</span><span class="settings-value">{{ survey.water_litres }}</span></div>
-        <div class="settings-row"><span class="settings-label">Smokes</span><span class="settings-value">{{ 'Yes' if survey.smokes else 'No' }}</span></div>
-        <div class="settings-row"><span class="settings-label">Alcohol frequency</span><span class="settings-value">{{ survey.alcohol_frequency }}</span></div>
+
+        <div class="settings-row">
+            <span class="settings-label">Sleep (hrs/night)</span>
+            <span class="settings-value">{{ survey.sleep_hours }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Water (litres/day)</span>
+            <span class="settings-value">{{ survey.water_litres }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Smokes</span>
+            <span class="settings-value">{{ 'Yes' if survey.smokes else 'No' }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Alcohol frequency</span>
+            <span class="settings-value">{{ survey.alcohol_frequency }}</span>
+        </div>
     </div>
 
     <div class="settings-card mt-2">
         <h2>Diet</h2>
-        <div class="settings-row"><span class="settings-label">Diet type</span><span class="settings-value">{{ survey.diet_type }}</span></div>
-        <div class="settings-row"><span class="settings-label">Meals/day</span><span class="settings-value">{{ survey.meals_per_day }}</span></div>
+
+        <div class="settings-row">
+            <span class="settings-label">Diet type</span>
+            <span class="settings-value">{{ survey.diet_type }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Meals/day</span>
+            <span class="settings-value">{{ survey.meals_per_day }}</span>
+        </div>
     </div>
 
     <div class="settings-card mt-2">
         <h2>Health</h2>
-        <div class="settings-row"><span class="settings-label">Injuries</span><span class="settings-value">{{ 'Yes' if survey.has_injuries else 'No' }}</span></div>
+
+        <div class="settings-row">
+            <span class="settings-label">Injuries</span>
+            <span class="settings-value">{{ 'Yes' if survey.has_injuries else 'No' }}</span>
+        </div>
+
         {% if survey.has_injuries and survey.injury_details %}
-        <div class="settings-row"><span class="settings-label">Injury details</span><span class="settings-value">{{ survey.injury_details }}</span></div>
+        <div class="settings-row">
+            <span class="settings-label">Injury details</span>
+            <span class="settings-value">{{ survey.injury_details }}</span>
+        </div>
         {% endif %}
-        <div class="settings-row"><span class="settings-label">Medical conditions</span><span class="settings-value">{{ survey.medical_conditions if survey.medical_conditions else 'None' }}</span></div>
+
+        <div class="settings-row">
+            <span class="settings-label">Medical conditions</span>
+            <span class="settings-value">
+                {{ survey.medical_conditions if survey.medical_conditions else 'None' }}
+            </span>
+        </div>
     </div>
 
     <div class="settings-card mt-2">
         <h2>Goals & Motivation</h2>
-        <div class="settings-row"><span class="settings-label">Fitness goal</span><span class="settings-value">{{ survey.fitness_goal }}</span></div>
-        <div class="settings-row"><span class="settings-label">Motivation (1-10)</span><span class="settings-value">{{ survey.motivation_level }}</span></div>
-        <div class="settings-row" style="flex-direction: column; align-items: flex-start;">
+
+        <div class="settings-row">
+            <span class="settings-label">Fitness goal</span>
+            <span class="settings-value">{{ survey.fitness_goal }}</span>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-label">Motivation (1-10)</span>
+            <span class="settings-value">{{ survey.motivation_level }}</span>
+        </div>
+
+        <div class="settings-row survey-notes-row">
             <span class="settings-label">Additional notes</span>
-            <span class="settings-value">{{ survey.additional_notes if survey.additional_notes else 'None' }}</span>
+
+            <span class="settings-value">
+                {{ survey.additional_notes if survey.additional_notes else 'None' }}
+            </span>
         </div>
     </div>
 
     {% endif %}
 
     <div class="text-center mt-3">
-        <a href="{{ url_for('trainers.pt_clients') }}">← Back to My Clients</a>
+        <a href="{{ url_for('trainers.pt_clients') }}">
+            ← Back to My Clients
+        </a>
     </div>
+
 </div>
 {% endblock %}

@@ -5,11 +5,13 @@ Displays the global ranking of users based on their logged activities.
 Supports filtering by time period (week, month, all time).
 """
 
-from flask import Blueprint, render_template, request, session, redirect, url_for
-from fitness_app.extensions import db
-from fitness_app.models import User, Activity
 from datetime import date, timedelta
+
+from flask import Blueprint, redirect, render_template, request, session, url_for
 from sqlalchemy import func
+
+from fitness_app.extensions import db
+from fitness_app.models import Activity, User
 
 leaderboard_bp = Blueprint("leaderboard", __name__)
 

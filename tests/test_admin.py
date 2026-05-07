@@ -1,11 +1,12 @@
 """
 Admin-only functionality.
-Covers deleting users and the PT approval workflow. 
-These tests ensure the administrator role 
+Covers deleting users and the PT approval workflow.
+These tests ensure the administrator role
 privileges are being enforced correctly.
 """
-from fitness_app.models import User
+
 from fitness_app.extensions import db
+from fitness_app.models import User
 
 
 class TestAdmin:
@@ -15,7 +16,7 @@ class TestAdmin:
         assert client.get("/admin").status_code == 302
 
     def test_admin_access(self, client, login_admin):
-        # Uses existing login_admin 
+        # Uses existing login_admin
         assert client.get("/admin").status_code == 200
 
     def test_delete_user(self, client, login_admin, app):

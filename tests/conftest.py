@@ -7,16 +7,16 @@ import pytest
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, BASE_DIR)
 
-from run import app as flask_app # noqa: E402
-from fitness_app.extensions import db # noqa: E402
-from fitness_app.models import ( # noqa: E402
-    User,
-    ExerciseType,
-    TrainerProfile,
-    GymExercise,
+from run import app as flask_app  # noqa: E402
+from fitness_app.extensions import db  # noqa: E402
+from fitness_app.models import (  # noqa: E402
+    ChatMessage,
     Competition,
     CompetitionResult,
-    ChatMessage,
+    ExerciseType,
+    GymExercise,
+    TrainerProfile,
+    User,
 )
 
 @pytest.fixture

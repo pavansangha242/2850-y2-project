@@ -4,18 +4,19 @@ Messaging routes for the Motivara application.
 Handles direct messages between customers and trainers, as well as event group chats.
 """
 
-from flask import Blueprint, render_template, request, redirect, url_for, session
-from sqlalchemy import or_, and_
+from datetime import datetime
+
+from flask import Blueprint, redirect, render_template, request, session, url_for
+from sqlalchemy import and_, or_
 
 from fitness_app.extensions import db
 from fitness_app.models import (
-    User,
-    TrainerProfile,
-    TrainerMessage,
     ChatMessage,
     Competition,
+    TrainerMessage,
+    TrainerProfile,
+    User,
 )
-from datetime import datetime
 
 messages_bp = Blueprint("messages", __name__)
 
@@ -420,6 +421,8 @@ def send_trainer_message():
         db.session.commit()
 
     return redirect(url_for("messages.trainer_inbox") + f"?client_id={client_id}")
+
+
 @messages_bp.route("/messages/contact-admin")
 def contact_admin():
     """Redirect user to a conversation with an administrator."""

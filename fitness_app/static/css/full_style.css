@@ -3481,3 +3481,263 @@ font-size: 48px; margin-bottom: 12px; display: block;
 th {
     color: var(--text-secondary) !important;
 }
+
+.stats-container {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.stats-card {
+    flex: 1;
+    text-align: center;
+}
+
+.filter-btn {
+    width: auto;
+    padding: 8px 16px;
+}
+
+.filters-container {
+    display: flex;
+    gap: 12px;
+}
+
+.muted-text {
+    color: #888;
+}
+
+.muted-text.small-margin {
+    margin: 4px 0;
+}
+
+.auto-width {
+    width: auto;
+}
+
+.activity-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.activity-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.muted-link {
+    color: #888;
+}
+
+.top-margin {
+    margin-top: 16px;
+}
+
+.muted-text {
+    color: #888;
+}
+
+.activity-map {
+    height: 350px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.centered-card {
+    text-align: center;
+}
+
+.warning-text {
+    color: orange;
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.error-text {
+    color: red;
+}
+
+.pt-clients-container {
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.clients-description {
+    margin-bottom: 24px;
+}
+
+.client-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.client-email {
+    font-size: 0.85rem;
+    margin: 4px 0 0;
+}
+
+.client-btn {
+    width: auto;
+    padding: 8px 16px;
+    margin: 0;
+}
+
+.survey-container {
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.survey-date {
+    margin-bottom: 24px;
+}
+
+.survey-notes-row {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.register-subheading {
+    margin-top: 2px;
+}
+
+.error-text {
+    color: red;
+    display: none;
+    margin: 4px 0 8px;
+}
+
+.error-text-simple {
+    color: red;
+    display: none;
+}
+
+.checkbox-group {
+    margin-bottom: 15px;
+}
+
+.checkbox-group-large {
+    margin-bottom: 20px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: none;
+    opacity: 1;
+}
+
+.pt-fields-hidden {
+    display: none;
+}
+
+.bio-textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+.survey-container {
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.survey-subheading {
+    margin-top: 16px;
+}
+
+.survey-info {
+    margin-bottom: 24px;
+}
+
+.success-text {
+    color: green;
+    font-weight: bold;
+}
+
+.hidden-box {
+    display: none;
+}
+
+.survey-textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.role-uppercase {
+    text-transform: uppercase;
+}
+
+.status-approved {
+    color: #28a745;
+}
+
+.status-pending {
+    color: #f39c12;
+}
+
+.status-muted {
+    color: #888;
+}
+
+.settings-column {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.settings-actions {
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.small-btn {
+    width: auto;
+    padding: 8px 16px;
+    margin: 0;
+}
+
+.stats-input {
+    width: 100px;
+}
+
+.sex-select {
+    width: 160px;
+}
+
+.settings-save-row {
+    justify-content: flex-end;
+}
+
+.save-btn {
+    width: auto;
+    padding: 8px 20px;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.delete-form {
+    display: flex;
+    justify-content: center;
+}

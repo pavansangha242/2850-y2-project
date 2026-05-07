@@ -1,8 +1,9 @@
 """
-Event system 
+Event system
 Tests the logic for discovering competitions and making sure the
 registration process actually links the user to the event in the DB.
 """
+
 from fitness_app.models import CompetitionResult, User
 
 

@@ -8,48 +8,48 @@
 <div class="container">
     <h1>Welcome to the register page</h1>
     <!-- seemed too cramped between lines  -->
-    <h3 style="margin-top: 2px;">Please enter your details below to register</h3>
+    <h3 class="register-subheading">Please enter your details below to register</h3>
 
     {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p class="error-text">{{ error }}</p>
     {% endif %}
 
     <!-- disables browser's built-in popups so JS errors show instead since they don't always show  -->
-    <form action="{{ url_for('auth.register') }}" method="POST" novalidate>
+    <form action="{{ url_for('auth.register') }}" method="post" novalidate>
 
         <div class="card mb-2">
             <h3>Account details</h3>
 
             <!-- ids added so JS can read and validate the value -->
-            <h3 style="margin-top: 8px;"> </h3>
+            <h3 class="register-subheading"> </h3>
 
             <input type="text" name="first_name" id="first_name" placeholder="First Name" class="input-field" required/>
-            <p id="first-name-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter your first name.</p>
+            <p id="first-name-error" class="error-text">Please enter your first name.</p>
  
             <input type="text" name="last_name" id="last_name" placeholder="Last Name" class="input-field" required/>
-            <p id="last-name-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter your last name.</p>
+            <p id="last-name-error" class="error-text">Please enter your last name.</p>
             
             <input type="email" name="email" id="email" placeholder="Email" class="input-field" required/>
-            <p id="email-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a valid email address (must contain @).</p>
+            <p id="email-error" class="error-text">Please enter a valid email address (must contain @).</p>
 
             <input type="text" name="username" id="username" placeholder="Username" class="input-field" required/>
-            <p id="username-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a username.</p>
+            <p id="username-error" class="error-text">Please enter a username.</p>
 
             <input type="password" name="password" id="password" placeholder="Password (min. 8 characters)" class="input-field" required/>
-            <p id="password-length-error" style="color:red; display:none; margin: 4px 0 8px;">Password must be at least 8 characters.</p>
+            <p id="password-length-error" class="error-text">Password must be at least 8 characters.</p>
 
             <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" class="input-field" required/>
-            <p id="password-match-error" style="color:red; display:none; margin: 4px 0 8px;">Passwords do not match.</p>
+            <p id="password-match-error" class="error-text">Passwords do not match.</p>
 
             <input type="tel" name="phone" id="phone" placeholder="Phone Number" class="input-field" required/>
-            <p id="phone-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a phone number.</p>
+            <p id="phone-error" class="error-text">Please enter a phone number.</p>
 
             <select name="role" id="role-select" class="input-field" required>
                 <option value="" disabled selected>Select Account Type</option>
                 <option value="customer">Customer</option>
                 <option value="pt">PT (Personal Trainer)</option>
             </select>
-            <p id="role-error" style="color:red; display:none; margin: 4px 0 8px;">Please select an account type.</p>
+            <p id="role-error" class="error-text">Please select an account type.</p>
         </div>
 
         <!-- Extra fields needed for activity pages-->
@@ -58,27 +58,27 @@
                 <h3>Activity Goals</h3>
                 <label>Daily Step Target</label>
                 <input type="number" name="step_target" placeholder="e.g. 10000" class="input-field" required min="0" />
-                <p id="step-error" style="color:red; display:none; margin: 4px 0 8px;">Please enter a step target.</p>
+                <p id="step-error" class="error-text-simple">Please enter a step target.</p>
                 
                 <label>Weekly Exercise Hours</label>
                 <input type="number" name="weekly_hours" placeholder="e.g. 5" class="input-field" required min="0" />
-                <p id="weekly-error" style="color:red; display:none;">Please enter weekly hours.</p>
+                <p id="weekly-error" class="error-text-simple">Please enter weekly hours.</p>
 
                 <label>Workouts per Week</label>
                 <input type="number" name="workouts_per_week" placeholder="e.g. 3" class="input-field" required min="0" />
-                <p id="workouts-error" style="color:red; display:none;">Please enter workouts per week.</p>
+                <p id="workouts-error" class="error-text-simple">Please enter workouts per week.</p>
 
                 <label>Age</label>
                 <input type="number" name="age" placeholder="e.g. 18" class="input-field" required min="0" />
-                <p id="age-error" style="color:red; display:none;">Please enter age.</p>
+                <p id="age-error" class="error-text-simple">Please enter age.</p>
 
                 <label>Weight</label>
                 <input type="number" name="weight" placeholder="please enter in kg" class="input-field" required min="0" />
-                <p id="weight-error" style="color:red; display:none;">Please enter weight.</p>
+                <p id="weight-error" class="error-text-simple">Please enter weight.</p>
 
                 <label>Height</label>
                 <input type="number" name="height" placeholder="please enter in cm" class="input-field" required min="0" />
-                <p id="height-error" style="color:red; display:none;">Please enter height.</p>
+                <p id="height-error" class="error-text-simple">Please enter height.</p>
 
                 <select name="sex" id="sex-select" class="input-field" required>
                     <option value="" disabled selected>Select your sex</option>
@@ -87,20 +87,20 @@
                     <option value="other">Other</option>
                     <option value="prefer_not_to_say">Prefer not to say</option>
                 </select>
-                <p id="sex-error" style="color:red; display:none;">Please select your sex.</p>
+                <p id="sex-error" class="error-text-simple">Please select your sex.</p>
 
                 <hr class="mb-2">
                 
                 <!-- Ensuring data and meetings can only be scheduled with consent -->
                 <h3>Privacy & Permissions</h3>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
                         <input type="checkbox" name="share_with_pt"> 
                         Allow PT to see my health and profile data
                     </label>
                 </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: flex; align-items: center; gap: 10px; text-transform: none; opacity: 1;">
+                <div class="checkbox-group-large">
+                    <label class="checkbox-label">
                         <input type="checkbox" name="allow_meetings"> 
                         Allow PTs to request meetings with me
                     </label>
@@ -108,11 +108,11 @@
             </div>
         </div>
 
-        <div id="pt-fields" class="card mb-2" style="display: none;">
+        <div id="pt-fields" class="card mb-2 pt-fields-hidden">
             <h3>Professional Profile</h3>
             <label>About You / Bio</label>
-            <textarea name="bio" id="bio" placeholder="Tell us about your experience..." class="input-field" style="height: 120px; resize: vertical;"></textarea>
-            <p id="bio-error" style="color:red; display:none; margin: 4px 0 8px;">
+            <textarea name="bio" id="bio" placeholder="Tell us about your experience..." class="input-field bio-textarea"></textarea>
+            <p id="bio-error" class="error-text" >
                 Please enter your bio.
             </p>
         </div>

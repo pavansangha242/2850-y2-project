@@ -1,5 +1,5 @@
-from fitness_app.models import Activity, User
 from fitness_app.extensions import db
+from fitness_app.models import Activity, User
 
 
 class TestHomePage:
@@ -19,7 +19,7 @@ class TestHomePage:
                 user_id=user.user_id,
                 calories=200,
                 distance_km=5,
-                exercise_type_id=1,  
+                exercise_type_id=1,
             )
             db.session.add(activity)
             db.session.commit()

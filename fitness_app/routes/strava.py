@@ -1,5 +1,4 @@
-"""
-Strava Blueprint
+"""Strava Blueprint.
 
 This blueprint handles integration with the Strava API.
 
@@ -18,21 +17,23 @@ The blueprint also includes:
 All routes ensure that only authenticated users can access their own data.
 """
 
+import os
 import time
+from datetime import datetime, timedelta
+
 import requests
 from flask import (
     Blueprint,
+    jsonify,
     redirect,
+    render_template,
     request,
     session,
     url_for,
-    jsonify,
-    render_template,
 )
+
 from fitness_app.extensions import db
-import os
-from fitness_app.models import User, StravaActivity
-from datetime import datetime, timedelta
+from fitness_app.models import StravaActivity, User
 
 CLIENT_ID = os.environ.get("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.environ.get("STRAVA_CLIENT_SECRET")
@@ -44,6 +45,7 @@ strava_bp = Blueprint("strava", __name__)
 # Get a valid access token for the current user
 # Key function, it automatically refreshes if expired
 def get_valid_token(user):
+    """Return a valid Strava access token, refreshing it if expired."""
     now = int(time.time())  # current time as Unix timestamp
 
     # Check if token is expired (or will expire in next 60 seconds) - if so then treat it as though it has already expired
@@ -79,6 +81,7 @@ def get_valid_token(user):
 # Send user to Strava to log in
 @strava_bp.route("/connect-strava")
 def connect_strava():
+    """Redirect the user to Strava OAuth for account connection."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
     print("CLIENT_ID:", CLIENT_ID)
@@ -102,6 +105,7 @@ def connect_strava():
 # Strava redirects back here with a code
 @strava_bp.route("/strava-callback")
 def strava_callback():
+    """Handle Strava OAuth callback and store user tokens."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -142,6 +146,7 @@ def strava_callback():
 # Disconnect Strava
 @strava_bp.route("/disconnect-strava", methods=["POST"])
 def disconnect_strava():
+    """Disconnect the user's Strava account and clear tokens."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -158,6 +163,7 @@ def disconnect_strava():
 # For Asma to get activities for her pages
 @strava_bp.route("/strava-activities")
 def get_activities():
+    """Fetch recent activities from Strava API for the logged-in user."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -181,6 +187,7 @@ def get_activities():
 
 @strava_bp.route("/sync-strava")
 def sync_strava():
+    """Synchronise user activities from Strava into the local database."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -306,6 +313,7 @@ def sync_strava():
 # Dashboard to check visualisation
 @strava_bp.route("/activity/<int:activity_id>")
 def activity_map(activity_id):
+    """Display a map view of a specific activity."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -323,6 +331,7 @@ def activity_map(activity_id):
 
 @strava_bp.route("/activities")
 def activities():
+    """Display filtered activity history and summary statistics."""
     # Need to use username from user that is logged in to connect to strava
     if "username" not in session:
         return redirect(url_for("auth.login"))
@@ -371,6 +380,7 @@ def activities():
 
 @strava_bp.route("/activities/<int:strava_id>")
 def activity_detail(strava_id):
+    """Display detailed information for a specific activity."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 

@@ -4,25 +4,25 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px; margin: 40px auto;">
+<div class="container survey-container">
 
     <!-- Extra fields for PTs to gather information about client to personalise plan -->
     <h1>Health & Lifestyle Survey</h1>
-    <h3 style="margin-top: 16px;">Help your PT understand you better by filling in the details below.</h3>
-    <p style="color: #888; margin-bottom: 24px;">
+    <h3 class="survey-subheading">Help your PT understand you better by filling in the details below.</h3>
+    <p class="muted-text survey-info">
         Your answers are only visible to PTs if you have enabled data sharing in your 
         <a href="{{ url_for('auth.user_settings') }}">account settings</a>.
     </p>
 
     {% if success %}
-        <p style="color: green; font-weight: bold;">Survey saved successfully!</p>
+        <p class="success-text">Survey saved successfully!</p>
     {% endif %}
 
     {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p class="error-text">{{ error }}</p>
     {% endif %}
 
-    <form action="{{ url_for('auth.survey') }}" method="POST">
+    <form action="{{ url_for('auth.survey') }}" method="post">
 
         <!-- ACTIVITY -->
         <div class="card mb-2">
@@ -114,14 +114,14 @@
                 <option value="false" {% if survey and survey.has_injuries == False %}selected{% endif %}>No</option>
             </select>
 
-            <div id="injury-details-box" style="display: none;">
+            <div id="injury-details-box" class="hidden-box">
                 <label>Please describe your injuries</label>
-                <textarea name="injury_details" class="input-field" style="height: 80px; resize: vertical;"
+                <textarea name="injury_details" class="input-field survey-textarea"
                           placeholder="e.g. knee injury from 2022...">{{ survey.injury_details if survey and survey.injury_details else '' }}</textarea>
             </div>
 
             <label>Any relevant medical conditions? (leave blank if none)</label>
-            <textarea name="medical_conditions" class="input-field" style="height: 80px; resize: vertical;"
+            <textarea name="medical_conditions" class="input-field survey-textarea"
                       placeholder="e.g. asthma, diabetes...">{{ survey.medical_conditions if survey and survey.medical_conditions else '' }}</textarea>
         </div>
 
@@ -143,7 +143,7 @@
                    value="{{ survey.motivation_level if survey else '' }}" />
 
             <label>Anything else you want your PT to know?</label>
-            <textarea name="additional_notes" class="input-field"; style="resize: vertical;"
+            <textarea name="additional_notes" class="input-field survey-textarea"
                       placeholder="Any other information that might help your PT...">{{ survey.additional_notes if survey and survey.additional_notes else '' }}</textarea>
         </div>
 

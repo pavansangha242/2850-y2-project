@@ -1,21 +1,26 @@
-from fitness_app.routes.running import (
-    calculate_calories as running_calories,
-    get_running_met,
-)
-
-from fitness_app.routes.walking import (
-    calculate_calories as walking_calories,
-    get_walking_met,
-)
-
 from fitness_app.routes.cycling import (
     calculate_calories as cycling_calories,
+)
+from fitness_app.routes.cycling import (
     get_cycling_met,
 )
-
+from fitness_app.routes.running import (
+    calculate_calories as running_calories,
+)
+from fitness_app.routes.running import (
+    get_running_met,
+)
 from fitness_app.routes.swimming import (
     calculate_calories as swimming_calories,
+)
+from fitness_app.routes.swimming import (
     get_swimming_met,
+)
+from fitness_app.routes.walking import (
+    calculate_calories as walking_calories,
+)
+from fitness_app.routes.walking import (
+    get_walking_met,
 )
 
 

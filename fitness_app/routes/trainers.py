@@ -1,16 +1,16 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 
 from fitness_app.extensions import db
 from fitness_app.models import (
-    User,
-    TrainerProfile,
+    GymAssignment,
+    GymExercise,
     SessionBooking,
     TrainerMessage,
+    TrainerProfile,
     TrainingClient,
-    GymExercise,
-    GymAssignment,
+    User,
 )
 
 trainers = Blueprint("trainers", __name__)
@@ -324,10 +324,7 @@ def trainer_dashboard():
     client_ids = {b.client_id for b in bookings}
 
     clients = (
-        User.query
-        .filter(User.user_id.in_(client_ids))
-        .all()
-        if client_ids else []
+        User.query.filter(User.user_id.in_(client_ids)).all() if client_ids else []
     )
 
     client_names = {
@@ -339,7 +336,7 @@ def trainer_dashboard():
         "trainer_dashboard.html",
         bookings=bookings,
         messages=messages,
-        client_names=client_names
+        client_names=client_names,
     )
 
 

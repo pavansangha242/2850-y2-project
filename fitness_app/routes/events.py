@@ -4,20 +4,22 @@ Event management routes for the Motivara application.
 Handles event listing, details, registration, and group chat.
 """
 
+from datetime import date, datetime, timedelta
+
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    make_response,
     flash,
-    request,
     jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
     session,
+    url_for,
 )
+
 from fitness_app.extensions import db
-from fitness_app.models import Competition, CompetitionResult, User, ChatMessage
-from datetime import date, datetime, timedelta
+from fitness_app.models import ChatMessage, Competition, CompetitionResult, User
 
 events_bp = Blueprint("events", __name__)
 

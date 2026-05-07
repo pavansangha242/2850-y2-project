@@ -2,6 +2,7 @@
 Community chat.
 The chat tests ensure only logged in users can participate in the feed.
 """
+
 from fitness_app.models import ChatMessage
 
 
@@ -25,7 +26,7 @@ class TestEventChat:
             assert msg is not None
 
     def test_empty_message_handled(self, client, login_customer, sample_event):
-        # Using the ID directly 
+        # Using the ID directly
         response = client.post(
             f"/events/{sample_event}/chat/send", data={"message": ""}
         )

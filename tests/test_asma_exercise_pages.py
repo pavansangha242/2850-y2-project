@@ -1,7 +1,7 @@
 from datetime import date
 
 from fitness_app.extensions import db
-from fitness_app.models import User, Activity, ExerciseType
+from fitness_app.models import Activity, ExerciseType, User
 
 
 def test_swimming_page_requires_login(client):

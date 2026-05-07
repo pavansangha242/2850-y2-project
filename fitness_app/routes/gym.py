@@ -1,15 +1,15 @@
 from datetime import date, timedelta
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from sqlalchemy import func
 
 from fitness_app.extensions import db
 from fitness_app.models import (
-    User,
-    GymExercise,
     GymAssignment,
+    GymExercise,
     GymWorkout,
     SessionBooking,
+    User,
 )
 
 gym_bp = Blueprint("gym", __name__)

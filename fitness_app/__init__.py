@@ -1,19 +1,21 @@
 import os
+from datetime import date, datetime, timedelta
+
 from flask import Flask
+
 from fitness_app.extensions import db
 from fitness_app.models import (
-    User,
-    TrainingPlan,
-    PlannedWorkout,
-    TrainingClient,
-    ExerciseType,
     Activity,
+    ChatMessage,
     Competition,
     CompetitionResult,
-    ChatMessage,
+    ExerciseType,
+    PlannedWorkout,
     TrainerProfile,
+    TrainingClient,
+    TrainingPlan,
+    User,
 )
-from datetime import date, datetime, timedelta
 
 
 # set up the flask app
@@ -34,24 +36,24 @@ def create_app():
     db.init_app(app)
 
     # bring in all the blueprints
-    from fitness_app.routes.home import home_bp
-    from fitness_app.routes.events import events_bp
-    from fitness_app.routes.leaderboard import leaderboard_bp
     from fitness_app.routes.admin import admin_bp
-    from fitness_app.routes.swimming import swimming_bp
-    from fitness_app.routes.cycling import cycling_bp
-    from fitness_app.routes.running import running_bp
-    from fitness_app.routes.walking import walking_bp
-    from fitness_app.routes.gym import gym_bp
 
     # register all the blueprints
     from fitness_app.routes.auth import auth
-    from fitness_app.routes.progress import progress
+    from fitness_app.routes.cycling import cycling_bp
+    from fitness_app.routes.events import events_bp
+    from fitness_app.routes.gym import gym_bp
     from fitness_app.routes.history import history
-    from fitness_app.routes.sport_stats import sport_stats
-    from fitness_app.routes.trainers import trainers
+    from fitness_app.routes.home import home_bp
+    from fitness_app.routes.leaderboard import leaderboard_bp
     from fitness_app.routes.messages import messages_bp
+    from fitness_app.routes.progress import progress
+    from fitness_app.routes.running import running_bp
+    from fitness_app.routes.sport_stats import sport_stats
     from fitness_app.routes.strava import strava_bp
+    from fitness_app.routes.swimming import swimming_bp
+    from fitness_app.routes.trainers import trainers
+    from fitness_app.routes.walking import walking_bp
 
     # register all
     app.register_blueprint(home_bp)

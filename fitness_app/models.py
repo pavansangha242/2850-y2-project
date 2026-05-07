@@ -1,6 +1,7 @@
-from datetime import datetime
-from datetime import date
+from datetime import date, datetime
+
 from flask import session
+
 from fitness_app.extensions import db
 
 

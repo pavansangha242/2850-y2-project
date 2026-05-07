@@ -1,5 +1,4 @@
-"""
-Auth Blueprint
+"""Auth Blueprint.
 
 This blueprint handles all user-related functionality for the application.
 It is responsible for authentication (login, register, logout), account
@@ -14,15 +13,16 @@ Additionally, it ensures user session handling and makes the current user's
 role available globally for template rendering.
 """
 
-from flask import Blueprint, render_template, request, redirect, session, url_for, g
+from flask import Blueprint, g, redirect, render_template, request, session, url_for
+
 from fitness_app.extensions import db
 from fitness_app.models import (
-    User,
-    UserGoal,
-    PrivacySettings,
     HealthSurvey,
+    PrivacySettings,
     StravaActivity,
     TrainingClient,
+    User,
+    UserGoal,
 )
 
 auth = Blueprint("auth", __name__)
@@ -30,6 +30,7 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/")
 def root():
+    """Redirect to the login page."""
     return redirect(url_for("auth.login"))
 
 
@@ -46,6 +47,7 @@ def load_nav_user():
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
+    """Handle user login and session creation."""
     if "username" in session:
         return redirect(url_for("home.index"))
 
@@ -67,6 +69,7 @@ def login():
 
 @auth.route("/register", methods=["GET", "POST"])
 def register():
+    """Register a new user account with validation and role handling."""
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -191,6 +194,7 @@ def register():
 
 @auth.route("/settings")
 def user_settings():
+    """Display the current user's account settings page."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
     user = User.query.filter_by(username=session["username"]).first()
@@ -202,6 +206,7 @@ def user_settings():
 
 @auth.route("/update_privacy", methods=["POST"])
 def update_privacy():
+    """Update the user's privacy preferences."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -215,12 +220,14 @@ def update_privacy():
 
 @auth.route("/logout")
 def logout():
+    """Log the user out and clear the session."""
     session.pop("username", None)
     return redirect(url_for("auth.login"))
 
 
 @auth.route("/delete_account", methods=["POST"])
 def delete_account():
+    """Delete the user's account and all related data."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -249,6 +256,7 @@ def delete_account():
 
 @auth.route("/update_stats", methods=["POST"])
 def update_stats():
+    """Update the user's personal statistics."""
     if "username" not in session:
         return redirect(url_for("auth.login"))
 
@@ -268,6 +276,7 @@ def update_stats():
 
 @auth.route("/survey", methods=["GET", "POST"])
 def survey():
+    """Create or update a user's health survey."""
     # Only customers can fill in the survey
     if "username" not in session:
         return redirect(url_for("auth.login"))
@@ -316,6 +325,7 @@ def survey():
 
 @auth.route("/clients")
 def pt_clients():
+    """Display a list of clients assigned to the personal trainer."""
     # Only PTs can see the client list
     if "username" not in session:
         return redirect(url_for("auth.login"))
@@ -342,6 +352,7 @@ def pt_clients():
 
 @auth.route("/clients/<int:customer_id>/survey")
 def pt_view_survey(customer_id):
+    """Allow a PT to view a customer's shared survey."""
     # Only PTs can view a customer's survey
     if "username" not in session:
         return redirect(url_for("auth.login"))
