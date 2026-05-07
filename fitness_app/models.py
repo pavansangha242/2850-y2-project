@@ -557,10 +557,12 @@ class Competition(db.Model):
 
     @property
     def days_remaining(self):
+        """Calculate the number of days until the competition starts."""
         delta = self.date - date.today()
         return max(delta.days, 0)
 
     def __repr__(self):
+        """Show the competition as a text representation."""
         return f"<Competition {self.name}>"
 
 
@@ -579,6 +581,7 @@ class CompetitionResult(db.Model):
     personal_best = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
+        """Show the competition result as a text representation."""
         return f"<CompetitionResult user={self.user_id} comp={self.competition_id}>"
 
 
@@ -608,6 +611,7 @@ class ChatMessage(db.Model):
     )
 
     def __repr__(self):
+        """Show the chat message as a text representation."""
         return f"<ChatMessage {self.message_id} by User {self.user_id}>"
 
 
