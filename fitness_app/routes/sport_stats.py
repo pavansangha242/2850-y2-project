@@ -1,3 +1,12 @@
+"""Handle the sport stats page and per sport statistics for the website.
+
+This file contains helper functions and the sport stats route,
+it gets the logged in user's activity data for a given sport,
+calculates streaks, weekly distance, personal bests and prepers
+chart and breakdown data for the stats page.
+"""
+
+
 from datetime import date, timedelta
 
 from flask import Blueprint, abort, render_template
@@ -10,12 +19,14 @@ sport_stats = Blueprint("sport_stats", __name__)
 
 
 def get_week_start():
+    """Return the date of the most recent monday."""
     today = date.today()
     return today - timedelta(days=today.weekday())
 
 
 # count streak days, with at least one activity
 def calc_streak(user_id, sport_type):
+    """Count how many consecutive days the user has logged an activity."""
     current_streak = 0
 
     rows = (
@@ -47,6 +58,7 @@ def calc_streak(user_id, sport_type):
 
 # return km per day for the current week 7 values
 def get_daily_distances(user_id, sport_type):
+    """Return the total distance logged per day for the current week as a list of 7 values."""
     monday = get_week_start()
     daily_distances = []
 
@@ -71,6 +83,7 @@ def get_daily_distances(user_id, sport_type):
 
 # grap the last n sessions for chart data
 def get_recent_sessions(user_id, sport_type, n=8):
+    """Return the most recent n sessions for a given user and sport."""
     return (
         Activity.query.filter_by(
             user_id=user_id, exercise_type_id=sport_type.exercise_type_id
@@ -82,6 +95,7 @@ def get_recent_sessions(user_id, sport_type, n=8):
 
 
 def fmt_pace(seconds):
+    """Format a pace in seconds as a mm:ss/km string."""
     if not seconds:
         return "—"
     return f"{int(seconds // 60)}:{int(seconds % 60):02d}/km"
@@ -89,6 +103,7 @@ def fmt_pace(seconds):
 
 # one function per sport returns none if no data
 def _running_stats(user_id, sport_type):
+    """Return running stats for a user, or None if no data exists."""
     sessions = get_recent_sessions(user_id, sport_type)
     if not sessions:
         return None
@@ -223,6 +238,7 @@ def _running_stats(user_id, sport_type):
 
 
 def _walking_stats(user_id, sport_type):
+    """Return walking stats for a user, or none if no data exists."""
     sessions = get_recent_sessions(user_id, sport_type)
     if not sessions:
         return None
@@ -356,6 +372,7 @@ def _walking_stats(user_id, sport_type):
 
 
 def _cycling_stats(user_id, sport_type):
+    """Return cycling stats for a user, or None if no data exists."""
     sessions = get_recent_sessions(user_id, sport_type)
     if not sessions:
         return None
@@ -491,6 +508,7 @@ def _cycling_stats(user_id, sport_type):
 
 
 def _swimming_stats(user_id, sport_type):
+    """Return swimming stats for a user, or None if no data exists."""
     sessions = get_recent_sessions(user_id, sport_type)
     if not sessions:
         return None
@@ -670,6 +688,7 @@ SPORT_THEMES = {
 
 @sport_stats.route("/stats/<sport_slug>")
 def sport_stats_page(sport_slug):
+    """Render the stats page for a given sport slug."""
     user = User.query.first()
     if not user:
         return "No users found in database."
