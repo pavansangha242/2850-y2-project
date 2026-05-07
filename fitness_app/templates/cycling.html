@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block title %}Cycling - Motivara{% endblock %}
+{% block extra_css %}{% endblock %}
+{% block content %}
+    <div class="page-header">
+        <h1>Cycling</h1>
+        <p>Set your cycling goals, log your rides, and track your progress</p>
+    </div>
+    <div class="main-content">
+        <div class="grid-2x2">
+            <!--log a cycle-->
+            <div class="card">
+                <h2>Log a cycle</h2>
+                <form action="{{ url_for("cycling.log_ride") }}" method="POST">
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distance">Distance (km):</label>
+                        <input type="number"
+                               id="distance"
+                               name="distance"
+                               step="0.1"
+                               placeholder="e.g. 25.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes):</label>
+                        <input type="number" id="duration" name="duration" placeholder="e.g. 60">
+                    </div>
+                    <div class="form-group">
+                        <label for="average_speed">Average speed (km/h):</label>
+                        <input type="number"
+                               id="average_speed"
+                               name="average_speed"
+                               step="0.1"
+                               placeholder="e.g. 25.0">
+                    </div>
+                    <div class="calorie-note">&#128293; Calories are auto-calculated from your profile weight using the MET formula</div>
+                    <div class="form-group">
+                        <label for="calories">Calories (leave blank to auto-calculate):</label>
+                        <input type="number"
+                               id="calories"
+                               name="calories"
+                               placeholder="auto-calculated">
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes:</label>
+                        <textarea id="notes" name="notes" placeholder="How did it go?"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Log Workout</button>
+                </form>
+                <p class="text-muted">Average speed will be calculated if not entered.</p>
+            </div>
+            <!--goal progress-->
+            <div class="card">
+                <h2>Goal progress</h2>
+                <p class="progress-text">
+                    You have completed <strong>{{ rides_this_week }}</strong> out of
+                    <strong>{{ workouts_target }}</strong> rides this week.
+                </p>
+                {% set progress_pct = (rides_this_week / workouts_target * 100) if workouts_target > 0 else 0 %}
+                {% if progress_pct > 100 %}
+                    {% set progress_pct = 100 %}
+                {% endif %}
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: {{ progress_pct }}%;"></div>
+                </div>
+                <div class="distance-breakdown">
+                    <h3>Rides per distance:</h3>
+                    <div class="distance-row">
+                        <span>10km</span><span>{{ rides_10km }}</span>
+                    </div>
+                    <div class="distance-row">
+                        <span>25km</span><span>{{ rides_25km }}</span>
+                    </div>
+                    <div class="distance-row">
+                        <span>50km</span><span>{{ rides_50km }}</span>
+                    </div>
+                    <div class="distance-row">
+                        <span>100km+</span><span>{{ rides_100km }}</span>
+                    </div>
+                </div>
+                {% if cycling_goal %}
+                    <div class="info-box-blue">
+                        <p>
+                            <strong>Current goal:</strong> {{ cycling_goal.goal_type }}
+                            {% if cycling_goal.target_date %}by {{ cycling_goal.target_date }}{% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+            <!--trainng plan-->
+            <div class="card">
+                <h2>Enter your training plan</h2>
+                {% if training_plan %}
+                    <div class="info-box-green">
+                        <p class="label" style="margin-bottom:4px;">Current plan:</p>
+                        <p class="value">Rides per week: {{ training_plan.swims_per_week or 'Not set' }}</p>
+                        <p class="value">Weekly distance: {{ training_plan.weekly_distance or 'Not set' }} km</p>
+                        <p class="value">Target speed: {{ training_plan.target_pace or 'Not set' }}</p>
+                    </div>
+                {% endif %}
+                <form action="{{ url_for("cycling.create_cycling_plan") }}" method="POST">
+                    <div class="form-group">
+                        <label for="rides_per_week">Amount of rides per week:</label>
+                        <input type="number"
+                               id="rides_per_week"
+                               name="rides_per_week"
+                               placeholder="e.g. 5">
+                    </div>
+                    <div class="form-group">
+                        <label for="weekly_distance">Distance to cycle this week (km):</label>
+                        <input type="number"
+                               id="weekly_distance"
+                               name="weekly_distance"
+                               step="0.1"
+                               placeholder="e.g. 50.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="target_speed">Desired average speed (km/h):</label>
+                        <input type="text"
+                               id="target_speed"
+                               name="target_speed"
+                               placeholder="e.g. 25 km/h">
+                    </div>
+                    <button type="submit" class="btn">Save Plan</button>
+                </form>
+            </div>
+            <!--goals-->
+            <div class="card">
+                <h2>Enter your goals</h2>
+                <form action="{{ url_for("cycling.set_cycling_goal") }}" method="POST">
+                    <div class="form-group">
+                        <label>What are you training for:</label>
+                        <div class="goal-options">
+                            <input type="radio"
+                                   name="goal_type"
+                                   value="10km"
+                                   id="goal_10km"
+                                   class="goal-option">
+                            <label for="goal_10km" class="goal-label">10km</label>
+                            <input type="radio"
+                                   name="goal_type"
+                                   value="25km"
+                                   id="goal_25km"
+                                   class="goal-option">
+                            <label for="goal_25km" class="goal-label">25km</label>
+                            <input type="radio"
+                                   name="goal_type"
+                                   value="50km"
+                                   id="goal_50km"
+                                   class="goal-option">
+                            <label for="goal_50km" class="goal-label">50km</label>
+                            <input type="radio"
+                                   name="goal_type"
+                                   value="100km"
+                                   id="goal_100km"
+                                   class="goal-option">
+                            <label for="goal_100km" class="goal-label">100km</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="workouts_per_week">Rides per week:</label>
+                        <input type="number"
+                               id="workouts_per_week"
+                               name="workouts_per_week"
+                               placeholder="e.g. 5">
+                    </div>
+                    <div class="form-group">
+                        <label for="target_date">When do you want to achieve it?</label>
+                        <input type="date" id="target_date" name="target_date">
+                    </div>
+                    <button type="submit" class="btn">Set Goal</button>
+                </form>
+            </div>
+        </div>
+        <!--stats-->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Total km this week</div>
+                <div class="stat-value">{{ total_km_week }}</div>
+                <div class="stat-sub">km</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Cycling streak</div>
+                <div class="stat-value">{{ streak }}</div>
+                <div class="stat-sub">days</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Speed progress</div>
+                <div class="stat-value {% if speed_progress > 0 %}positive{% elif speed_progress < 0 %}negative{% endif %}">
+                    {% if speed_progress > 0 %}
+                        &#8593;
+                    {% elif speed_progress < 0 %}
+                        &#8595;
+                    {% endif %}
+                    {{ speed_progress }}%
+                </div>
+                <div class="stat-sub">from last week</div>
+            </div>
+        </div>
+        <!--strava link-->
+        <a href="{{ url_for("strava.activities") }}" class="card action-card">
+            <div class="action-icon"
+                 style="background: rgba(252, 76, 2, 0.15);
+                        color: #FC4C02">
+                <i class="fab fa-strava"></i>
+            </div>
+            <span class="action-label">Strava</span>
+        </a>
+        <!--rides table-->
+        <div class="recent-activity card">
+            <h2>Recent rides</h2>
+            {% if activities %}
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Distance</th>
+                            <th>Duration</th>
+                            <th>Avg Speed</th>
+                            <th>Calories</th>
+                            <th>Notes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in activities %}
+                            <tr>
+                                <td>{{ activity.date }}</td>
+                                <td>{{ activity.distance_km or '-' }} km</td>
+                                <td>{{ activity.duration_minutes or '-' }} min</td>
+                                <td>
+                                    {% if activity.average_speed_kmh %}
+                                        {{ "%.1f"|format(activity.average_speed_kmh) }} km/h
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ activity.calories or '-' }}</td>
+                                <td>{{ activity.notes or '-' }}</td>
+                                <td>
+                                    <form action="{{ url_for('cycling.delete_ride', activity_id=activity.activity_id) }}"
+                                          method="POST"
+                                          style="display:inline">
+                                        <button type="submit"
+                                                class="btn btn-danger"
+                                                onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-message">No rides logged yet. Log your first ride above!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <!--set date to today-->
+    <script>document.getElementById('date').valueAsDate = new Date();</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block extra_css %}{% endblock %}
+{% block content %}
+    <!-- Viewing maps -->
+    <div class="container">
+        <h1>My Activities</h1>
+        <!-- Summary stats -->
+        <div class="grid-4 activities-stats">
+            <div class="card stat-card">
+                <div class="stat-value">{{ stats.total_km }} km</div>
+                <div class="stat-label">Distance</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-value">{{ stats.total_calories }}</div>
+                <div class="stat-label">Calories</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-value">{{ stats.total_activities }}</div>
+                <div class="stat-label">Activities</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-value">{{ stats.total_time_mins }} min</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+        <!-- Filters -->
+        <div class="filters-container">
+            <a href="?period=week&type={{ activity_type }}"
+               class="btn {{ 'btn-primary' if period == 'week' else 'btn-outline' }}">This Week</a>
+            <a href="?period=month&type={{ activity_type }}"
+               class="btn {{ 'btn-primary' if period == 'month' else 'btn-outline' }}">This Month</a>
+            <a href="?period=all&type={{ activity_type }}"
+               class="btn {{ 'btn-primary' if period == 'all' else 'btn-outline' }}">All Time</a>
+            <select onchange="window.location='?period={{ period }}&type='+this.value"
+                    class="input-field auto-width">
+                <option value="all" {% if activity_type == 'all' %}selected{% endif %}>All Types</option>
+                <option value="Run" {% if activity_type == 'Run' %}selected{% endif %}>Runs</option>
+                <option value="Ride" {% if activity_type == 'Ride' %}selected{% endif %}>Rides</option>
+                <option value="Swim" {% if activity_type == 'Swim' %}selected{% endif %}>Swims</option>
+                <option value="Walk" {% if activity_type == 'Walk' %}selected{% endif %}>Walks</option>
+            </select>
+        </div>
+        <!-- Activity list -->
+        {% for a in activities %}
+            <a href="{{ url_for('strava.activity_detail', strava_id=a.strava_id) }}"
+               class="activity-link">
+                <div class="card mt-1 clickable activity-card">
+                    <div class="activity-row">
+                        <div>
+                            <h3 class="activity-title">{{ a.name }}</h3>
+                            <p class="activity-meta">
+                                {{ a.activity_type }} ·
+                                {{ a.start_date.strftime("%d %b %Y") if a.start_date else '' }}
+                            </p>
+                        </div>
+                        <div class="activity-stats">
+                            <p class="activity-distance">{{ "%.1f"|format(a.distance_m / 1000) }} km</p>
+                            <p class="activity-details">
+                                {{ a.moving_time_s // 60 }} min ·
+                                {{ a.calories|int if a.calories is not none else 0 }} kcal
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% else %}
+            <p>No activities found. Try syncing or changing your filters.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

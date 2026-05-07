@@ -1,0 +1,116 @@
+"""Handle the history page for the app.
+
+this file shows the user's saved activities, allows filtering by sport,
+and lets the user delete activities from their workout history.
+"""
+
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from sqlalchemy import func
+
+from fitness_app.extensions import db
+from fitness_app.models import Activity, ExerciseType, User
+
+history = Blueprint("history", __name__)
+
+PER_PAGE = 10
+
+
+@history.route("/history")
+def history_page():
+    """Show the user's workout history wihtout sport filters and pages."""
+    username = session.get("username")
+
+    if not username:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return redirect(url_for("auth.login"))
+
+    uid = user.user_id
+
+    uid = user.user_id
+    selected_sport = request.args.get("sport", "all")
+    current_page = int(request.args.get("page", 1))
+    offset = (current_page - 1) * PER_PAGE
+
+    # join sport name so template can access it
+    query = (
+        db.session.query(Activity, ExerciseType.name.label("sport_name"))
+        .join(ExerciseType, Activity.exercise_type_id == ExerciseType.exercise_type_id)
+        .filter(Activity.user_id == uid)
+    )
+
+    if selected_sport and selected_sport != "all":
+        query = query.filter(ExerciseType.name == selected_sport)
+
+    total_count = query.count()
+    rows = query.order_by(Activity.date.desc()).limit(PER_PAGE).offset(offset).all()
+
+    # convert rows to dicts so the template can access sport_name easily
+    activities = []
+    for act, sport_name in rows:
+        activity_dict = {c.name: getattr(act, c.name) for c in act.__table__.columns}
+        activity_dict["sport_name"] = sport_name
+        activities.append(activity_dict)
+
+    # avoid querying sport twice
+    sport_type = (
+        ExerciseType.query.filter_by(name=selected_sport).first()
+        if selected_sport != "all"
+        else None
+    )
+    sport_filter = (
+        [Activity.exercise_type_id == sport_type.exercise_type_id] if sport_type else []
+    )
+
+    best_pace = (
+        db.session.query(func.min(Activity.pace_per_km))
+        .filter(Activity.user_id == uid, Activity.pace_per_km > 0, *sport_filter)
+        .scalar()
+    )
+
+    longest_run = (
+        db.session.query(func.max(Activity.distance_km))
+        .filter(Activity.user_id == uid, *sport_filter)
+        .scalar()
+    )
+
+    best_pace_shown = round(best_pace, 1) if best_pace else None
+    longest_shown = round(longest_run, 1) if longest_run else None
+    total_pages = max(1, -(-total_count // PER_PAGE))
+
+    return render_template(
+        "history.html",
+        activities=activities,
+        active_sport=selected_sport,
+        current_page=current_page,
+        total_pages=total_pages,
+        best_pace_shown=best_pace_shown,
+        longest_shown=longest_shown,
+    )
+
+
+@history.route("/history/delete/<int:activity_id>", methods=["POST"])
+def delete_activity(activity_id):
+    """Delete one activity from the user's workout history."""
+    username = session.get("username")
+
+    if not username:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return redirect(url_for("auth.login"))
+
+    act = Activity.query.filter_by(
+        activity_id=activity_id, user_id=user.user_id
+    ).first_or_404()
+
+    db.session.delete(act)
+    db.session.commit()
+
+    flash("Session deleted.", "success")
+    return redirect(url_for("history.history_page"))

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ sport_name }} Stats - Motivara</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    </head>
+    <body>
+        <!-- navbar -->
+        <nav class="navbar">
+            <div class="logo">
+                <span>&#10010;</span> Motivara
+            </div>
+            <ul class="nav-links">
+                <li>
+                    <a href="/">&#127968; Home</a>
+                </li>
+                <li>
+                    <a href="/swimming">&#127946; Swimming</a>
+                </li>
+                <li>
+                    <a href="/cycling">&#128690; Cycling</a>
+                </li>
+                <li>
+                    <a href="/running">&#127939; Running</a>
+                </li>
+                <li>
+                    <a href="/walking">&#128694; Walking</a>
+                </li>
+                <li>
+                    <a href="/progress">&#128200; Progress</a>
+                </li>
+                <li>
+                    <a href="/history">&#128203; History</a>
+                </li>
+            </ul>
+            <div class="profile-icon">&#9679;</div>
+        </nav>
+        <div class="main-content">
+            <!-- hero -->
+            <div class="stats-hero">
+                <div>
+                    <h1>{{ sport_name }} Statistics</h1>
+                    <p>All your {{ sport_name | lower }} data in one place</p>
+                    {% if streak > 0 %}<div class="streak-badge" style="margin-top:12px;">🔥 {{ streak }}-day streak</div>{% endif %}
+                </div>
+                <div class="hero-icon">{{ sport_icon }}</div>
+            </div>
+            <!-- sport nav -->
+            <div class="sport-nav">
+                <a href="/stats/running"
+                   {% if sport_name == 'Running' %}class="active"{% endif %}>&#127939; Running</a>
+                <a href="/stats/walking"
+                   {% if sport_name == 'Walking' %}class="active"{% endif %}>&#128694; Walking</a>
+                <a href="/stats/cycling"
+                   {% if sport_name == 'Cycling' %}class="active"{% endif %}>&#128690; Cycling</a>
+                <a href="/stats/swimming"
+                   {% if sport_name == 'Swimming' %}class="active"{% endif %}>&#127946; Swimming</a>
+            </div>
+            {% if has_data %}
+                <!-- stat tiles -->
+                <div class="stat-tiles">
+                    <div class="stat-tile">
+                        <div class="tile-value">{{ tile1_value }}</div>
+                        <div class="tile-label">{{ tile1_label }}</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="tile-value">{{ tile2_value }}</div>
+                        <div class="tile-label">{{ tile2_label }}</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="tile-value">{{ total_sessions }}</div>
+                        <div class="tile-label">Total Sessions</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="tile-value">{{ total_distance }} km</div>
+                        <div class="tile-label">Total Distance</div>
+                    </div>
+                </div>
+                <!-- charts -->
+                <div class="charts-grid">
+                    <!-- main metric over time -->
+                    <div class="chart-card">
+                        <h2>{{ chart1_title }}</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="chart1"></canvas>
+                        </div>
+                    </div>
+                    <!-- distance over time -->
+                    <div class="chart-card">
+                        <h2>Distance per Session</h2>
+                        <div class="chart-wrapper">
+                            <canvas id="chart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- this week + personal bests -->
+                <div class="bottom-grid">
+                    <!-- weekly bars -->
+                    <div class="info-card">
+                        <h2>This Week</h2>
+                        <div class="week-bars">
+                            {% set days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] %}
+                            {% for i in range(7) %}
+                                {% set val = week_daily[i] if week_daily else 0 %}
+                                {% set max_val = week_max if week_max and week_max > 0 else 1 %}
+                                {% set pct = ((val / max_val) * 80)|int if val > 0 else 4 %}
+                                <div class="day-bar-wrap">
+                                    <div class="day-val">
+                                        {% if val > 0 %}{{ val }}{% endif %}
+                                    </div>
+                                    <div class="day-bar {% if val == 0 %}rest{% endif %}"
+                                         style="height:{{ pct }}px"></div>
+                                    <div class="day-label">{{ days[i] }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- distance breakdown -->
+                    <div class="info-card">
+                        <h2>{{ breakdown_title }}</h2>
+                        {% for row in breakdown_rows %}
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">{{ row.label }}</span>
+                                <span class="breakdown-count">{{ row.count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- personal bests -->
+                <div class="info-card" style="margin-bottom:28px;">
+                    <h2>Personal Bests</h2>
+                    <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:0;">
+                        {% for pb in personal_bests %}
+                            <div class="pb-item">
+                                <div class="pb-dot {{ pb.dot_class }}"></div>
+                                <div>
+                                    <div class="pb-text">{{ pb.label }}</div>
+                                    <div class="pb-sub">{{ pb.sub }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <!-- no data state -->
+                <div class="no-data-hero">
+                    <span class="nd-icon">{{ sport_icon }}</span>
+                    <h2>No {{ sport_name }} history yet</h2>
+                    <p>
+                        You haven't logged any {{ sport_name | lower }} sessions yet. Head over to the {{ sport_name }} page and log your first one to see your stats here.
+                    </p>
+                    <a href="/{{ sport_name | lower }}">Log your first {{ sport_name | lower }} →</a>
+                </div>
+            {% endif %}
+        </div>
+        <!-- footer -->
+        <div class="footer">
+            <div class="footer-logo">&#10010; Motivara</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="footer-copy">&copy; 2026 Motivara. All rights reserved.</div>
+        </div>
+        {% if has_data %}
+            <script>
+    const accentColor = '{{ accent }}';
+    const accent2Color = '{{ accent2 }}';
+
+    <!-- chart 1: main metric -->
+    const ctx1 = document.getElementById('chart1').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: {{ chart1_labels | tojson }},
+            datasets: [{
+                label: '{{ chart1_metric }}',
+                data: {{ chart1_values | tojson }},
+                backgroundColor: accentColor + 'cc',
+                borderColor: accentColor,
+                borderWidth: 1,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#666', font: { size: 11 } }, grid: { color: '#1e1c3a' } },
+                y: { ticks: { color: '#666', font: { size: 11 },
+                        callback: function(v) { return '{{ chart1_unit }}' ? v + ' {{ chart1_unit }}' : v; }
+                     }, grid: { color: '#1e1c3a' }, beginAtZero: false }
+            }
+        }
+    });
+
+    <!-- chart 2: distance per session -->
+    const ctx2 = document.getElementById('chart2').getContext('2d');
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: {{ chart2_labels | tojson }},
+            datasets: [{
+                label: 'Distance (km)',
+                data: {{ chart2_values | tojson }},
+                borderColor: accent2Color,
+                backgroundColor: accent2Color + '22',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: accent2Color,
+                pointRadius: 5,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#666', font: { size: 11 } }, grid: { color: '#1e1c3a' } },
+                y: { ticks: { color: '#666', font: { size: 11 },
+                        callback: function(v) { return v + ' km'; }
+                     }, grid: { color: '#1e1c3a' }, beginAtZero: true }
+            }
+        }
+    });
+            </script>
+        {% endif %}
+    </body>
+</html>

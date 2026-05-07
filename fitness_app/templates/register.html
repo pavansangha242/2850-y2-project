@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block extra_css %}
+    <style>
+.server-error {
+    color: #d93025;
+    background-color: #ffeaea;
+    border: 1px solid #f5b5b5;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* keep JS validation errors hidden initially */
+.error-text,
+.error-text-simple {
+    display: none;
+}
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Welcome to the register page</h1>
+        <!-- seemed too cramped between lines  -->
+        <h3 class="register-subheading">Please enter your details below to register</h3>
+        {% if error %}<p class="server-error">{{ error }}</p>{% endif %}
+        <!-- disables browser's built-in popups so JS errors show instead since they don't always show  -->
+        <form action="{{ url_for("auth.register") }}" method="post" novalidate>
+            <div class="card mb-2">
+                <h3>Account details</h3>
+                <!-- ids added so JS can read and validate the value -->
+                <h3 class="register-subheading"></h3>
+                <input type="text"
+                       name="first_name"
+                       id="first_name"
+                       placeholder="First Name"
+                       class="input-field"
+                       required />
+                <p id="first-name-error" class="error-text">Please enter your first name.</p>
+                <input type="text"
+                       name="last_name"
+                       id="last_name"
+                       placeholder="Last Name"
+                       class="input-field"
+                       required />
+                <p id="last-name-error" class="error-text">Please enter your last name.</p>
+                <input type="email"
+                       name="email"
+                       id="email"
+                       placeholder="Email"
+                       class="input-field"
+                       required />
+                <p id="email-error" class="error-text">Please enter a valid email address (must contain @).</p>
+                <input type="text"
+                       name="username"
+                       id="username"
+                       placeholder="Username"
+                       class="input-field"
+                       required />
+                <p id="username-error" class="error-text">Please enter a username.</p>
+                <input type="password"
+                       name="password"
+                       id="password"
+                       placeholder="Password (min. 8 characters)"
+                       class="input-field"
+                       required />
+                <p id="password-length-error" class="error-text">Password must be at least 8 characters.</p>
+                <input type="password"
+                       name="confirm_password"
+                       id="confirm_password"
+                       placeholder="Confirm Password"
+                       class="input-field"
+                       required />
+                <p id="password-match-error" class="error-text">Passwords do not match.</p>
+                <input type="tel"
+                       name="phone"
+                       id="phone"
+                       placeholder="Phone Number"
+                       class="input-field"
+                       required />
+                <p id="phone-error" class="error-text">Please enter a phone number.</p>
+                <select name="role" id="role-select" class="input-field" required>
+                    <option value="" disabled selected>Select Account Type</option>
+                    <option value="customer">Customer</option>
+                    <option value="pt">PT (Personal Trainer)</option>
+                </select>
+                <p id="role-error" class="error-text">Please select an account type.</p>
+            </div>
+            <!-- Extra fields needed for activity pages-->
+            <div id="extra-fields">
+                <div class="card mb-2">
+                    <h3>Activity Goals</h3>
+                    <label>Daily Step Target</label>
+                    <input type="number"
+                           id="step_target"
+                           name="step_target"
+                           placeholder="e.g. 10000"
+                           class="input-field"
+                           required
+                           min="0" />
+                    <p id="step-error" class="error-text-simple">Please enter a step target.</p>
+                    <label>Weekly Exercise Hours</label>
+                    <input type="number"
+                           id="weekly_hours"
+                           name="weekly_hours"
+                           placeholder="e.g. 5"
+                           class="input-field"
+                           required
+                           min="0" />
+                    <p id="weekly-error" class="error-text-simple">Please enter weekly hours.</p>
+                    <label>Workouts per Week</label>
+                    <input type="number"
+                           id="workouts_per_week"
+                           name="workouts_per_week"
+                           placeholder="e.g. 3"
+                           class="input-field"
+                           required
+                           min="0" />
+                    <p id="workouts-error" class="error-text-simple">Please enter workouts per week.</p>
+                    <label>Age</label>
+                    <input type="number"
+                           id="age"
+                           name="age"
+                           placeholder="e.g. 18"
+                           class="input-field"
+                           required
+                           min="0" />
+                    <p id="age-error" class="error-text-simple">Please enter age.</p>
+                    <label>Weight</label>
+                    <input type="number"
+                           id="weight"
+                           name="weight"
+                           placeholder="please enter in kg"
+                           class="input-field"
+                           required
+                           min="0" />
+                    <p id="weight-error" class="error-text-simple">Please enter weight.</p>
+                    <label>Height</label>
+                    <input type="number"
+                           id="height"
+                           name="height"
+                           placeholder="please enter in cm"
+                           class="input-field"
+                           required
+                           min="0" />
+                    <p id="height-error" class="error-text-simple">Please enter height.</p>
+                    <select name="sex" id="sex-select" class="input-field" required>
+                        <option value="" disabled selected>Select your sex</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer_not_to_say">Prefer not to say</option>
+                    </select>
+                    <p id="sex-error" class="error-text-simple">Please select your sex.</p>
+                    <hr class="mb-2">
+                    <!-- Ensuring data and meetings can only be scheduled with consent -->
+                    <h3>Privacy & Permissions</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="share_with_pt">
+                            Allow PT to see my health and profile data
+                        </label>
+                    </div>
+                    <div class="checkbox-group-large">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_meetings">
+                            Allow PTs to request meetings with me
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="pt-fields" class="card mb-2 pt-fields-hidden">
+                <h3>Professional Profile</h3>
+                <label>About You / Bio</label>
+                <textarea name="bio"
+                          id="bio"
+                          placeholder="Tell us about your experience..."
+                          class="input-field bio-textarea"></textarea>
+                <p id="bio-error" class="error-text">Please enter your bio.</p>
+            </div>
+            <input type="submit"
+                   value="Register"
+                   class="btn btn-primary register-submit-btn" />
+            <div class="text-center mt-2">
+                <a href="/">Already have an account? Login</a>
+            </div>
+        </form>
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Roles select ---
+    function toggleFields() {
+        const roleSelect = document.getElementById('role-select');
+        if (!roleSelect) return;
+
+        const role = roleSelect.value;
+        const extraFields = document.getElementById('extra-fields');
+        const ptFields = document.getElementById('pt-fields');
+        
+        if (role === 'pt') {
+            extraFields.style.display = 'none';
+            ptFields.style.display = 'block';
+        } else if (role === 'administrator') {
+            extraFields.style.display = 'none';
+            ptFields.style.display = 'none';
+        } else {
+            extraFields.style.display = 'block';
+            ptFields.style.display = 'none';
+        }
+
+        const customerInputs = extraFields.querySelectorAll('input, select');
+        customerInputs.forEach(input => {
+            input.disabled = (extraFields.style.display === 'none');
+        });
+
+        const ptInputs = ptFields.querySelectorAll('textarea, input');
+        ptInputs.forEach(input => {
+            input.disabled = (ptFields.style.display === 'none');
+        });
+        
+    }
+
+    const roleSelect = document.getElementById('role-select');
+    roleSelect.addEventListener('change', toggleFields);
+
+    toggleFields();
+
+    // --- Form validation on submit ---
+    // the browser won't show its own popups, red error messages below each field show instead. (novalidate)
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let valid = true;
+
+        // show or hide an error paragraph
+        function err(id, show) {
+            document.getElementById(id).style.display = show ? 'block' : 'none';
+            if (show) valid = false;
+        }
+
+        // First name: must not be empty
+        err('first-name-error', document.getElementById('first_name').value.trim() === '');
+
+        // Last name: must not be empty
+        err('last-name-error', document.getElementById('last_name').value.trim() === '');
+
+        // Email: must contain @ and a dot after it
+        const email = document.getElementById('email').value.trim();
+        err('email-error', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+
+        // Username: must not be empty
+        err('username-error', document.getElementById('username').value.trim() === '');
+
+        // Password: must be 8+ characters
+        const pw = document.getElementById('password').value;
+        err('password-length-error', pw.length < 8);
+
+        // Confirm password: must match password
+        err('password-match-error', pw !== document.getElementById('confirm_password').value);
+
+        // Phone: must not be empty
+        err('phone-error', document.getElementById('phone').value.trim() === '');
+
+        // Role: must be selected
+        err('role-error', document.getElementById('role-select').value === '');
+
+        // Only validate health data for customers
+        const role = document.getElementById('role-select').value;
+
+        if (role === 'customer') {
+            err('step-error', document.getElementById('step_target').value.trim() === '');
+            err('weekly-error', document.getElementById('weekly_hours').value.trim() === '');
+            err('workouts-error', document.getElementById('workouts_per_week').value.trim() === '');
+            err('age-error', document.getElementById('age').value.trim() === '');
+            err('weight-error', document.getElementById('weight').value.trim() === '');
+            err('height-error', document.getElementById('height').value.trim() === '');
+            err('sex-error', document.getElementById('sex-select').value === '');
+            
+            // clear PT errors if any
+            err('bio-error', false);
+        } else if (role === 'pt') {
+            err('bio-error', document.getElementById('bio').value.trim() === '');
+            
+            // clear customer errors if any
+            err('step-error', false);
+            err('weekly-error', false);
+            err('workouts-error', false);
+            err('age-error', false);
+            err('weight-error', false);
+            err('height-error', false);
+            err('sex-error', false);
+        } else {
+            // clear all role-specific errors
+            err('bio-error', false);
+            err('step-error', false);
+            err('weekly-error', false);
+            err('workouts-error', false);
+            err('age-error', false);
+            err('weight-error', false);
+            err('height-error', false);
+            err('sex-error', false);
+        }
+
+        if (!valid) e.preventDefault(); // block form submission if any error
+    });
+
+    // hide match error as soon as passwords match while typing
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        if (this.value === document.getElementById('password').value) {
+            document.getElementById('password-match-error').style.display = 'none';
+        }
+    });
+
+    // hide length error once password reaches 8 characters
+    document.getElementById('password').addEventListener('input', function() {
+        if (this.value.length >= 8) {
+            document.getElementById('password-length-error').style.display = 'none';
+        }
+    });
+});
+    </script>
+{% endblock %}

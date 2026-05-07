@@ -1,0 +1,64 @@
+"""Leaderboard routes for the Motivara application.
+
+Displays the global ranking of users based on their logged activities.
+Supports filtering by time period (week, month, all time).
+"""
+
+from datetime import date, timedelta
+
+from flask import Blueprint, redirect, render_template, request, session, url_for
+from sqlalchemy import func
+
+from fitness_app.extensions import db
+from fitness_app.models import Activity, User
+
+leaderboard_bp = Blueprint("leaderboard", __name__)
+
+
+@leaderboard_bp.route("/leaderboard")
+def leaderboard_page():
+    """Leaderboard page — rank users by workouts in the selected period."""
+    if not session.get("username"):
+        return redirect(url_for("auth.login"))
+
+    period = request.args.get("period", "week")
+
+    # Work out the start date based on the selected period
+    today = date.today()
+    if period == "week":
+        start_date = today - timedelta(days=today.weekday())
+    elif period == "month":
+        start_date = today.replace(day=1)
+    else:
+        start_date = date(2000, 1, 1)  # All time
+
+    # Query: count workouts, total calories, total distance per user
+    rankings = (
+        db.session.query(
+            User.user_id,
+            User.first_name,
+            User.last_name,
+            User.username,
+            func.count(Activity.activity_id).label("workout_count"),
+            func.coalesce(func.sum(Activity.calories), 0).label("total_calories"),
+            func.coalesce(func.sum(Activity.distance_km), 0).label("total_distance"),
+        )
+        .outerjoin(
+            Activity, (User.user_id == Activity.user_id) & (Activity.date >= start_date)
+        )
+        .filter(User.role == "customer")
+        .group_by(User.user_id)
+        .order_by(
+            func.count(Activity.activity_id).desc(),
+            func.coalesce(func.sum(Activity.distance_km), 0).desc(),
+            func.coalesce(func.sum(Activity.calories), 0).desc(),
+        )
+        .all()
+    )
+
+    # Get the current user to highlight their row
+    current_user = User.query.filter_by(username=session.get("username")).first()
+
+    return render_template(
+        "leaderboard.html", rankings=rankings, period=period, current_user=current_user
+    )
