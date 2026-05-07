@@ -7,16 +7,10 @@
         <p class="muted-text clients-description">Customers who have enabled data sharing with their PT.</p>
         {% if clients %}
             {% for client in clients %}
-                <div class="card client-card"
-                     style="display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            margin-bottom: 1rem">
+                <div class="card client-card">
                     <div>
                         <strong>{{ client.username }}</strong>
-                        <p style="color: var(--text-secondary);
-                                  font-size: 0.85rem;
-                                  margin-top: 4px">{{ client.email }}</p>
+                        <p class="client-email">{{ client.email }}</p>
                     </div>
                     <a href="{{ url_for('auth.pt_view_survey', customer_id=client.user_id) }}"
                        class="btn btn-primary btn-sm">View Survey</a>
