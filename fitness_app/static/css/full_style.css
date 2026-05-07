@@ -2736,9 +2736,6 @@ color: #4ade80;
 display: flex; flex-direction: column; gap: 8px;
 }
 
-.booking-row {
-display: flex; gap: 8px;
-}
 
 .booking-form input, .booking-form textarea {
 width: 100%; padding: 9px 12px; border: 1px solid #2a2850; border-radius: 8px; background: #0d0c1d; color: #ffffff; font-size: 12px;
@@ -2758,6 +2755,27 @@ height: 52px; resize: none;
 
 .booking-actions {
 display: flex; gap: 8px;
+}
+.booking-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.booking-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.booking-field label {
+    font-size: 13px;
+    color: #cfd3ff;
+    font-weight: 600;
+}
+
+.booking-field input {
+    min-height: 44px;
 }
 
 .btn-cancel {
@@ -3004,7 +3022,36 @@ font-size: 12px; color: #888;
 .send-btn:hover {
     background: #6d28d9;
 }
+.book-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    min-width: 130px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-left: auto;
+    flex-shrink: 0;
+}
 
+.btn-book {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-book:focus,
+.btn-book:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+}
 .view-profile-btn:hover {
 background: #6d28d9;
 }

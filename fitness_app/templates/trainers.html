@@ -75,7 +75,7 @@
 
 <!-- booking -->
 <div class="booking-section">
-<h1>&#128197; Book a Session</h1>
+<h2>&#128197; Book a Session</h2>
 {% if booking %}
 <div class="booking-existing">
 ✅ <strong>Upcoming:</strong> {{ booking['date'] }} at {{ booking['time'] }} — {{ booking['status'] | capitalize }}</div>
@@ -160,4 +160,3 @@ const bookDate = document.getElementById('bookDate');
 if (bookDate) { bookDate.min = new Date().toISOString().split('T')[0]; bookDate.value = bookDate.min; }
 </script>
 {% endblock %}
-}
