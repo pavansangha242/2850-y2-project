@@ -33,10 +33,12 @@ def test_progress_page_requires_login(client):
     response = client.get("/progress")
     assert response.status_code in [302, 401]
 
+
 def test_gym_page_requires_login(client):
     """Redirects if not logged in."""
     response = client.get("/gym")
     assert response.status_code in [302, 401]
+
 
 def test_swimming_page_loads_for_logged_in_user(client, login_customer):
     """Logged in user sees swimming page."""
@@ -65,11 +67,13 @@ def test_walking_page_loads_for_logged_in_user(client, login_customer):
     assert response.status_code == 200
     assert b"Walking" in response.data
 
+
 def test_gym_page_loads_for_logged_in_user(client, login_customer):
     """Logged in user sees gym page."""
     response = client.get("/gym")
     assert response.status_code == 200
     assert b"Gym" in response.data or b"gym" in response.data
+
 
 def test_progress_page_empty_state_for_logged_in_user(client, login_customer):
     """Empty progress page loads without crashing."""
