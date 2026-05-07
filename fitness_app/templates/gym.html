@@ -1,18 +1,12 @@
 {% extends "base.html" %}
-
 {% block title %}Gym - Motivara{% endblock %}
-
-{% block extra_css %}
-{% endblock %}
-
+{% block extra_css %}{% endblock %}
 {% block content %}
     <div class="page-header">
         <h1>Gym</h1>
         <p>Log your gym sessions, follow PT assignments, and learn proper form</p>
     </div>
-
     <div class="main-content">
-
         <!--stats-->
         <div class="stats-row" style="margin-bottom: 20px;">
             <div class="stat-card">
@@ -31,9 +25,7 @@
                 <div class="stat-sub">this week</div>
             </div>
         </div>
-
         <div class="grid-2x2">
-
             <!--log gym workout-->
             <div class="card">
                 <h2>Log a gym workout</h2>
@@ -42,178 +34,205 @@
                         <label for="date">Date:</label>
                         <input type="date" id="date" name="date" required>
                     </div>
-
                     <div class="form-group">
                         <label for="gym_exercise_id">Exercise:</label>
                         <select id="gym_exercise_id" name="gym_exercise_id" required>
                             <option value="">-- Pick an exercise --</option>
                             {% for exercise in exercises %}
-                                <option value="{{ exercise.gym_exercise_id }}">
-                                    {{ exercise.name }} ({{ exercise.muscle_group }})
-                                </option>
+                                <option value="{{ exercise.gym_exercise_id }}">{{ exercise.name }} ({{ exercise.muscle_group }})</option>
                             {% endfor %}
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="assignment_id">Match to PT assignment:</label>
                         <select id="assignment_id" name="assignment_id">
                             <option value="">-- None --</option>
                             {% for a in assignments %}
-                                <option value="{{ a.assignment_id }}">
-                                    {{ a.exercise_name }} - {{ a.trainer_name }}
-                                </option>
+                                <option value="{{ a.assignment_id }}">{{ a.exercise_name }} - {{ a.trainer_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="sets_completed">Sets:</label>
-                        <input type="number" id="sets_completed" name="sets_completed" placeholder="e.g. 3">
+                        <input type="number"
+                               id="sets_completed"
+                               name="sets_completed"
+                               placeholder="e.g. 3">
                     </div>
-
                     <div class="form-group">
                         <label for="reps_completed">Reps per set:</label>
-                        <input type="number" id="reps_completed" name="reps_completed" placeholder="e.g. 10">
+                        <input type="number"
+                               id="reps_completed"
+                               name="reps_completed"
+                               placeholder="e.g. 10">
                     </div>
-
                     <div class="form-group">
                         <label for="weight_kg">Weight (kg):</label>
-                        <input type="number" id="weight_kg" name="weight_kg" step="0.5" placeholder="e.g. 40">
+                        <input type="number"
+                               id="weight_kg"
+                               name="weight_kg"
+                               step="0.5"
+                               placeholder="e.g. 40">
                     </div>
-
                     <div class="form-group">
                         <label for="duration">Duration (minutes):</label>
                         <input type="number" id="duration" name="duration" placeholder="e.g. 10">
                     </div>
-
                     <div class="form-group">
                         <label for="notes">Notes:</label>
                         <textarea id="notes" name="notes" placeholder="How did it feel?"></textarea>
                     </div>
-
                     <button type="submit" class="btn">Log Workout</button>
                 </form>
             </div>
-
             <!--pt assignments-->
             <div class="card">
                 <h2>PT assignments</h2>
                 {% if assignments %}
                     {% for a in assignments %}
-                    <div class="assignment-card">
-                        <div class="assignment-header">
-                            <strong>{{ a.exercise_name }}</strong>
-                            <span class="muscle-tag">{{ a.muscle_group }}</span>
+                        <div class="assignment-card">
+                            <div class="assignment-header">
+                                <strong>{{ a.exercise_name }}</strong>
+                                <span class="muscle-tag">{{ a.muscle_group }}</span>
+                            </div>
+                            <div class="assignment-details">
+                                <span>{{ a.sets or '-' }} sets</span>
+                                <span>{{ a.reps or '-' }} reps</span>
+                                {% if a.weight_kg %}<span>{{ a.weight_kg }} kg</span>{% endif %}
+                            </div>
+                            {% if a.notes %}<p class="assignment-notes">PT notes: {{ a.notes }}</p>{% endif %}
+                            <p class="text-muted">Assigned by {{ a.trainer_name }} on {{ a.date_assigned }}</p>
                         </div>
-                        <div class="assignment-details">
-                            <span>{{ a.sets or '-' }} sets</span>
-                            <span>{{ a.reps or '-' }} reps</span>
-                            {% if a.weight_kg %}<span>{{ a.weight_kg }} kg</span>{% endif %}
-                        </div>
-                        {% if a.notes %}
-                        <p class="assignment-notes">PT notes: {{ a.notes }}</p>
-                        {% endif %}
-                        <p class="text-muted">Assigned by {{ a.trainer_name }} on {{ a.date_assigned }}</p>
-                    </div>
                     {% endfor %}
                 {% else %}
                     <p class="empty-message">No exercises assigned yet. Your PT will add them after a session.</p>
                 {% endif %}
             </div>
-
         </div>
-
         <!--exer library-->
         <div class="card" style="margin-top: 20px;">
             <h2>Exercise library</h2>
             <p class="text-muted" style="margin-bottom: 15px;">Click on an exercise to see the proper form video</p>
-
             <!--filter btns-->
             <div class="muscle-filters">
-                <button type="button" class="filter-btn active" onclick="filterExercises(event, 'all')">All</button>
+                <button type="button"
+                        class="filter-btn active"
+                        onclick="filterExercises(event, 'all')">All</button>
                 {% for mg in muscle_groups %}
-                    <button type="button" class="filter-btn" onclick="filterExercises(event, '{{ mg }}')">{{ mg }}</button>
+                    <button type="button"
+                            class="filter-btn"
+                            onclick="filterExercises(event, '{{ mg }}')">{{ mg }}</button>
                 {% endfor %}
             </div>
-
             <div class="exercise-grid">
                 {% for exercise in exercises %}
-                <div class="exercise-card" data-muscle="{{ exercise.muscle_group }}" onclick="toggleVideo(this)">
-                    <div class="exercise-info">
-                        <strong>{{ exercise.name }}</strong>
-                        <span class="muscle-tag">{{ exercise.muscle_group }}</span>
+                    <div class="exercise-card"
+                         data-muscle="{{ exercise.muscle_group }}"
+                         onclick="toggleVideo(this)">
+                        <div class="exercise-info">
+                            <strong>{{ exercise.name }}</strong>
+                            <span class="muscle-tag">{{ exercise.muscle_group }}</span>
+                        </div>
+                        <p class="exercise-desc">{{ exercise.description }}</p>
+                        {% if exercise.video_url %}
+                            <!--thumbnail that links to youtube-->
+                            <div class="exercise-video" style="display: none;">
+                                {% set video_id = exercise.video_url.split('/embed/')[1] %}
+                                <a href="https://www.youtube.com/watch?v={{ video_id }}"
+                                   target="_blank"
+                                   style="position:relative;
+                                          display:block"
+                                   onclick="event.stopPropagation();">
+                                    <img src="https://img.youtube.com/vi/{{ video_id }}/hqdefault.jpg"
+                                         alt="{{ exercise.name }}"
+                                         style="width:100%;
+                                                border-radius:8px;
+                                                display:block">
+                                    <div style="position:absolute;
+                                                top:50%;
+                                                left:50%;
+                                                transform:translate(-50%,-50%);
+                                                background:rgba(0,0,0,0.7);
+                                                border-radius:50%;
+                                                width:60px;
+                                                height:60px;
+                                                display:flex;
+                                                align-items:center;
+                                                justify-content:center;
+                                                color:white;
+                                                font-size:24px">&#9654;</div>
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
-                    <p class="exercise-desc">{{ exercise.description }}</p>
-                    {% if exercise.video_url %}
-                    <!--thumbnail that links to youtube-->
-                    <div class="exercise-video" style="display: none;">
-                        {% set video_id = exercise.video_url.split('/embed/')[1] %}
-                        <a href="https://www.youtube.com/watch?v={{ video_id }}" target="_blank" style="position:relative; display:block;" onclick="event.stopPropagation();">
-                            <img src="https://img.youtube.com/vi/{{ video_id }}/hqdefault.jpg" alt="{{ exercise.name }}" style="width:100%; border-radius:8px; display:block;">
-                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.7); border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; color:white; font-size:24px;">&#9654;</div>
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
                 {% endfor %}
             </div>
         </div>
-
         <!--strava link-->
         <a href="{{ url_for('strava.activities') }}" class="card action-card">
-            <div class="action-icon" style="background: rgba(252, 76, 2, 0.15); color: #FC4C02;">
+            <div class="action-icon"
+                 style="background: rgba(252, 76, 2, 0.15);
+                        color: #FC4C02">
                 <i class="fab fa-strava"></i>
             </div>
             <span class="action-label">Strava</span>
         </a>
-        
         <!--workouts table-->
         <div class="recent-activity card">
             <h2>Recent gym workouts</h2>
             {% if workouts %}
-            <table class="activity-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Exercise</th>
-                        <th>Muscle</th>
-                        <th>Sets</th>
-                        <th>Reps</th>
-                        <th>Weight</th>
-                        <th>Duration</th>
-                        <th>Notes</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for w in workouts %}
-                    <tr>
-                        <td>{{ w.date }}</td>
-                        <td>{{ w.exercise_name }}</td>
-                        <td><span class="muscle-tag">{{ w.muscle_group }}</span></td>
-                        <td>{{ w.sets_completed or '-' }}</td>
-                        <td>{{ w.reps_completed or '-' }}</td>
-                        <td>{% if w.weight_kg %}{{ w.weight_kg }} kg{% else %}-{% endif %}</td>
-                        <td>{{ w.duration_minutes or '-' }} min</td>
-                        <td>{{ w.notes or '-' }}</td>
-                        <td>
-                            <form action="{{ url_for('gym.delete_gym_workout', gym_workout_id=w.gym_workout_id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Exercise</th>
+                            <th>Muscle</th>
+                            <th>Sets</th>
+                            <th>Reps</th>
+                            <th>Weight</th>
+                            <th>Duration</th>
+                            <th>Notes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for w in workouts %}
+                            <tr>
+                                <td>{{ w.date }}</td>
+                                <td>{{ w.exercise_name }}</td>
+                                <td>
+                                    <span class="muscle-tag">{{ w.muscle_group }}</span>
+                                </td>
+                                <td>{{ w.sets_completed or '-' }}</td>
+                                <td>{{ w.reps_completed or '-' }}</td>
+                                <td>
+                                    {% if w.weight_kg %}
+                                        {{ w.weight_kg }} kg
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ w.duration_minutes or '-' }} min</td>
+                                <td>{{ w.notes or '-' }}</td>
+                                <td>
+                                    <form action="{{ url_for('gym.delete_gym_workout', gym_workout_id=w.gym_workout_id) }}"
+                                          method="POST"
+                                          style="display:inline">
+                                        <button type="submit"
+                                                class="btn btn-danger"
+                                                onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
-            <p class="empty-message">No gym workouts logged yet. Log your first one above!</p>
+                <p class="empty-message">No gym workouts logged yet. Log your first one above!</p>
             {% endif %}
         </div>
-
     </div>
 {% endblock %}
-
 {% block scripts %}
     <script>
         //set date to today

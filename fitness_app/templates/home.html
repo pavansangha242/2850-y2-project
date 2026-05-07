@@ -41,7 +41,7 @@
         <h2 class="section-title">Quick Actions</h2>
         <div class="grid-3"
              style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))">
-            <a href="{{ url_for("auth.user_settings") }}" class="card action-card">
+            <a href="{{ url_for('auth.user_settings') }}" class="card action-card">
                 <div class="action-icon"
                      style="background: rgba(108, 99, 255, 0.15);
                             color: var(--primary-light)">
@@ -49,7 +49,7 @@
                 </div>
                 <span class="action-label">My Profile</span>
             </a>
-            <a href="{{ url_for("progress.progress_page") }}"
+            <a href="{{ url_for('progress.progress_page') }}"
                class="card action-card">
                 <div class="action-icon"
                      style="background: rgba(0, 212, 170, 0.15);
@@ -58,7 +58,7 @@
                 </div>
                 <span class="action-label">View Progress</span>
             </a>
-            <a href="{{ url_for("leaderboard.leaderboard_page") }}"
+            <a href="{{ url_for('leaderboard.leaderboard_page') }}"
                class="card action-card">
                 <div class="action-icon"
                      style="background: rgba(255, 179, 71, 0.15);
@@ -67,7 +67,7 @@
                 </div>
                 <span class="action-label">Leaderboard</span>
             </a>
-            <a href="{{ url_for("events.events_page") }}" class="card action-card">
+            <a href="{{ url_for('events.events_page') }}" class="card action-card">
                 <div class="action-icon"
                      style="background: rgba(255, 179, 71, 0.15);
                             color: var(--amber)">
@@ -76,7 +76,7 @@
                 <span class="action-label">Upcoming Events</span>
             </a>
             <!-- Added Strava and Chat Box links -->
-            <a href="{{ url_for("strava.activities") }}" class="card action-card">
+            <a href="{{ url_for('strava.activities') }}" class="card action-card">
                 <div class="action-icon"
                      style="background: rgba(252, 76, 2, 0.15);
                             color: #FC4C02">
@@ -84,7 +84,7 @@
                 </div>
                 <span class="action-label">Strava</span>
             </a>
-            <a href="{{ url_for("messages.messages") }}" class="card action-card">
+            <a href="{{ url_for('messages.messages') }}" class="card action-card">
                 <div class="action-icon"
                      style="background: rgba(0, 212, 170, 0.15);
                             color: var(--accent)">

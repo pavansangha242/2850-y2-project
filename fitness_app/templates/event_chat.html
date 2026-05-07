@@ -1,66 +1,84 @@
 {% extends 'base.html' %}
-
 {% block title %}Motivara — {{ event.name }} Chat{% endblock %}
-
 {% block content %}
-<div class="page-header">
-    <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}" class="btn btn-outline btn-sm"
-        style="margin-bottom: 1rem;">
-        <i class="fas fa-arrow-left"></i> Back to Event
-    </a>
-    <h1><i class="fas fa-comments" style="color: var(--primary);"></i> {{ event.name }} — Group Chat</h1>
-    <p style="color: var(--text-secondary); margin-top: 0.25rem;">
-        <i class="fas fa-calendar"></i> {{ event.date.strftime('%B %d, %Y') }} &middot;
-        <i class="fas fa-map-marker-alt"></i> {{ event.location if event.location else 'TBA' }}
-    </p>
-</div>
-
-<!-- Chat Container -->
-<div class="chat-container">
-    <!-- Chat Messages Area -->
-    <div class="chat-messages" id="chatMessages">
-        {% if messages %}
-        {% for msg in messages %}
-        <div class="chat-bubble {{ 'mine' if msg.user_id == current_user.user_id else 'theirs' }}"
-            data-id="{{ msg.message_id }}">
-            {% if msg.user_id == current_user.user_id %}
-            <button class="chat-delete" onclick="deleteMessage({{ msg.message_id }}, this)"
-                title="Delete message">&times;</button>
-            {% endif %}
-            {% if msg.user_id != current_user.user_id %}
-            <a href="{{ url_for('messages.messages') }}?user_id={{ msg.user_id }}" class="chat-author" style="text-decoration: none; color: var(--primary); font-weight: 600;">
-                {{ msg.author.first_name }}
-                {% if msg.author.role == 'administrator' %}
-                <span style="color: red; font-size: 0.85em; margin-left: 4px; border: 1px solid red; border-radius: 4px; padding: 0 4px;">Admin</span>
-                {% endif %}
-            </a>
-            {% endif %}
-            <div class="chat-text">{{ msg.content }}</div>
-            <div class="chat-time">{{ msg.timestamp.strftime('%H:%M') }}</div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="chat-empty" id="chatEmpty">
-            <i class="fas fa-comments" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
-            <p>No messages yet. Start the conversation!</p>
-        </div>
-        {% endif %}
+    <div class="page-header">
+        <a href="{{ url_for('events.event_details', competition_id=event.competition_id) }}"
+           class="btn btn-outline btn-sm"
+           style="margin-bottom: 1rem">
+            <i class="fas fa-arrow-left"></i> Back to Event
+        </a>
+        <h1>
+            <i class="fas fa-comments" style="color: var(--primary);"></i> {{ event.name }} — Group Chat
+        </h1>
+        <p style="color: var(--text-secondary); margin-top: 0.25rem;">
+            <i class="fas fa-calendar"></i> {{ event.date.strftime("%B %d, %Y") }} &middot;
+            <i class="fas fa-map-marker-alt"></i> {{ event.location if event.location else 'TBA' }}
+        </p>
     </div>
-
-    <!-- Message Input -->
-    <form class="chat-input-bar" action="{{ url_for('events.send_message', competition_id=event.competition_id) }}"
-        method="POST" id="chatForm">
-        <input type="text" name="message" class="chat-input" placeholder="Type a message..." autocomplete="off" required
-            id="chatInput">
-        <button type="submit" class="btn btn-primary chat-send" id="chatSendBtn">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    </form>
-</div>
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <!-- Chat Messages Area -->
+        <div class="chat-messages" id="chatMessages">
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="chat-bubble {{ 'mine' if msg.user_id == current_user.user_id else 'theirs' }}"
+                         data-id="{{ msg.message_id }}">
+                        {% if msg.user_id == current_user.user_id %}
+                            <button class="chat-delete"
+                                    onclick="deleteMessage({{ msg.message_id }}, this)"
+                                    title="Delete message">&times;</button>
+                        {% endif %}
+                        {% if msg.user_id != current_user.user_id %}
+                            <a href="{{ url_for("messages.messages") }}?user_id={{ msg.user_id }}"
+                               class="chat-author"
+                               style="text-decoration: none;
+                                      color: var(--primary);
+                                      font-weight: 600">
+                                {{ msg.author.first_name }}
+                                {% if msg.author.role == 'administrator' %}
+                                    <span style="color: red;
+                                                 font-size: 0.85em;
+                                                 margin-left: 4px;
+                                                 border: 1px solid red;
+                                                 border-radius: 4px;
+                                                 padding: 0 4px">Admin</span>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                        <div class="chat-text">{{ msg.content }}</div>
+                        <div class="chat-time">{{ msg.timestamp.strftime("%H:%M") }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="chat-empty" id="chatEmpty">
+                    <i class="fas fa-comments"
+                       style="font-size: 2.5rem;
+                              color: var(--text-muted);
+                              margin-bottom: 0.75rem"></i>
+                    <p>No messages yet. Start the conversation!</p>
+                </div>
+            {% endif %}
+        </div>
+        <!-- Message Input -->
+        <form class="chat-input-bar"
+              action="{{ url_for('events.send_message', competition_id=event.competition_id) }}"
+              method="POST"
+              id="chatForm">
+            <input type="text"
+                   name="message"
+                   class="chat-input"
+                   placeholder="Type a message..."
+                   autocomplete="off"
+                   required
+                   id="chatInput">
+            <button type="submit" class="btn btn-primary chat-send" id="chatSendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     // Auto-scroll to the bottom of chat on load
     const chatBox = document.getElementById('chatMessages');
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -170,5 +188,5 @@
                 }
             });
     }
-</script>
+    </script>
 {% endblock %}

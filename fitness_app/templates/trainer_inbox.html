@@ -1,110 +1,118 @@
 {% extends "base.html" %}
 {% block title %}Trainer Inbox - Motivara{% endblock %}
-
 {% block content %}
-<div class="msg-page-container">
-
-    <div class="msg-hero">
-        <h1>📥 Trainer Inbox</h1>
-        <p>Messages from your clients</p>
-    </div>
-
-    <div class="msg-layout">
-
-        <!-- Left: Client list -->
-        <aside class="msg-sidebar">
-            <div class="msg-sidebar-header">
-                <h1>Clients
-                    {% if total_unread > 0 %}
-                    <span class="msg-badge">{{ total_unread }}</span>
-                    {% endif %}
-                </h1>
-            </div>
-
-            <!-- Search -->
-            <form method="GET" action="{{ url_for('messages.trainer_inbox') }}" class="msg-search-form">
-                {% if selected_id %}<input type="hidden" name="client_id" value="{{ selected_id }}">{% endif %}
-                <input class="msg-search-input" type="text" name="q" value="{{ search }}" placeholder="🔍 Search clients...">
-            </form>
-
-            <div class="conv-list">
-                {% if conversations %}
-                    {% for conv in conversations %}
-                    {% set c = conv.client %}
-                    <a class="conv-item {% if selected_id == c.user_id %}active{% endif %}"
-                       href="{{ url_for('messages.trainer_inbox') }}?client_id={{ c.user_id }}">
-                        <div class="conv-avatar">{{ c.first_name[0] if c.first_name else '?' }}</div>
-                        <div class="conv-info">
-                            <div class="conv-name">{{ c.first_name }} {{ c.last_name }}</div>
-                            <div class="conv-sub">{% if conv.goal %}Goal: {{ conv.goal }}{% else %}Customer{% endif %}</div>
-                            {% if conv.latest %}
-                            <div class="conv-preview">{{ conv.latest.message[:40] }}{% if conv.latest.message|length > 40 %}...{% endif %}</div>
-                            {% endif %}
-                        </div>
-                        {% if conv.unread > 0 %}
-                        <span class="msg-badge">{{ conv.unread }}</span>
-                        {% endif %}
-                    </a>
-                    {% endfor %}
-                {% else %}
-                    <div class="conv-empty">
-                        <span>📭</span>
-                        No messages from clients yet.
-                    </div>
-                {% endif %}
-            </div>
-        </aside>
-
-        <!-- Right: Conversation thread -->
-        <div class="msg-thread-panel">
-            {% if selected_client %}
-
-            <div class="thread-header">
-                <div class="thread-avatar">{{ selected_client.first_name[0] if selected_client.first_name else '?' }}</div>
-                <div>
-                    <div class="thread-name">{{ selected_client.first_name }} {{ selected_client.last_name }}</div>
-                    <div class="thread-sub">Customer{% if selected_goal %} • Goal: {{ selected_goal }}{% endif %}</div>
-                </div>
-            </div>
-
-            <div class="thread-messages" id="msgThread">
-                {% if messages %}
-                    {% for msg in messages %}
-                    <div class="msg-row {% if msg.sender_id == current_user.user_id %}sent{% else %}received{% endif %}">
-                        <div class="msg-bubble">
-                            {{ msg.message }}
-                            <div class="msg-time">{{ msg.sent_at.strftime('%d %b %H:%M') if msg.sent_at else '' }}</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="thread-empty">
-                        <span>👋</span>
-                        Start the conversation with {{ selected_client.first_name }}!
-                    </div>
-                {% endif %}
-            </div>
-
-            <form class="msg-input-bar" method="POST" action="{{ url_for('messages.send_trainer_message') }}">
-                <input type="hidden" name="client_id" value="{{ selected_client.user_id }}">
-                <input type="text" name="message" placeholder="Reply to {{ selected_client.first_name }}..." autocomplete="off" required>
-                <button type="submit">Send ➤</button>
-            </form>
-
-            {% else %}
-            <div class="thread-empty-full">
-                <span>📥</span>
-                <p>Select a client to view their messages</p>
-            </div>
-            {% endif %}
+    <div class="msg-page-container">
+        <div class="msg-hero">
+            <h1>📥 Trainer Inbox</h1>
+            <p>Messages from your clients</p>
         </div>
-
+        <div class="msg-layout">
+            <!-- Left: Client list -->
+            <aside class="msg-sidebar">
+                <div class="msg-sidebar-header">
+                    <h1>
+                        Clients
+                        {% if total_unread > 0 %}<span class="msg-badge">{{ total_unread }}</span>{% endif %}
+                    </h1>
+                </div>
+                <!-- Search -->
+                <form method="GET"
+                      action="{{ url_for('messages.trainer_inbox') }}"
+                      class="msg-search-form">
+                    {% if selected_id %}<input type="hidden" name="client_id" value="{{ selected_id }}">{% endif %}
+                    <input class="msg-search-input"
+                           type="text"
+                           name="q"
+                           value="{{ search }}"
+                           placeholder="🔍 Search clients...">
+                </form>
+                <div class="conv-list">
+                    {% if conversations %}
+                        {% for conv in conversations %}
+                            {% set c = conv.client %}
+                            <a class="conv-item {% if selected_id == c.user_id %}active{% endif %}"
+                               href="{{ url_for('messages.trainer_inbox') }}?client_id={{ c.user_id }}">
+                                <div class="conv-avatar">{{ c.first_name[0] if c.first_name else '?' }}</div>
+                                <div class="conv-info">
+                                    <div class="conv-name">{{ c.first_name }} {{ c.last_name }}</div>
+                                    <div class="conv-sub">
+                                        {% if conv.goal %}
+                                            Goal: {{ conv.goal }}
+                                        {% else %}
+                                            Customer
+                                        {% endif %}
+                                    </div>
+                                    {% if conv.latest %}
+                                        <div class="conv-preview">
+                                            {{ conv.latest.message[:40] }}
+                                            {% if conv.latest.message|length > 40 %}...{% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% if conv.unread > 0 %}<span class="msg-badge">{{ conv.unread }}</span>{% endif %}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="conv-empty">
+                            <span>📭</span>
+                            No messages from clients yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </aside>
+            <!-- Right: Conversation thread -->
+            <div class="msg-thread-panel">
+                {% if selected_client %}
+                    <div class="thread-header">
+                        <div class="thread-avatar">{{ selected_client.first_name[0] if selected_client.first_name else '?' }}</div>
+                        <div>
+                            <div class="thread-name">{{ selected_client.first_name }} {{ selected_client.last_name }}</div>
+                            <div class="thread-sub">
+                                Customer
+                                {% if selected_goal %}• Goal: {{ selected_goal }}{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="thread-messages" id="msgThread">
+                        {% if messages %}
+                            {% for msg in messages %}
+                                <div class="msg-row {% if msg.sender_id == current_user.user_id %}sent{% else %}received{% endif %}">
+                                    <div class="msg-bubble">
+                                        {{ msg.message }}
+                                        <div class="msg-time">{{ msg.sent_at.strftime("%d %b %H:%M") if msg.sent_at else '' }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="thread-empty">
+                                <span>👋</span>
+                                Start the conversation with {{ selected_client.first_name }}!
+                            </div>
+                        {% endif %}
+                    </div>
+                    <form class="msg-input-bar"
+                          method="POST"
+                          action="{{ url_for('messages.send_trainer_message') }}">
+                        <input type="hidden" name="client_id" value="{{ selected_client.user_id }}">
+                        <input type="text"
+                               name="message"
+                               placeholder="Reply to {{ selected_client.first_name }}..."
+                               autocomplete="off"
+                               required>
+                        <button type="submit">Send ➤</button>
+                    </form>
+                {% else %}
+                    <div class="thread-empty-full">
+                        <span>📥</span>
+                        <p>Select a client to view their messages</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     const thread = document.getElementById('msgThread');
     if (thread) thread.scrollTop = thread.scrollHeight;
 
@@ -115,11 +123,10 @@
             this._t = setTimeout(() => this.form.submit(), 400);
         });
     }
-</script>
+    </script>
 {% endblock %}
-
 {% block extra_css %}
-<style>
+    <style>
     .msg-page-container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
     .msg-hero {
         background: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
@@ -178,5 +185,5 @@
     .msg-input-bar input::placeholder { opacity: 0.4; }
     .msg-input-bar button { padding: 14px 22px; background: #7c3aed; color: #fff; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
     .msg-input-bar button:hover { background: #6d28d9; }
-</style>
+    </style>
 {% endblock %}

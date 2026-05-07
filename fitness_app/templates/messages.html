@@ -1,148 +1,180 @@
 {% extends "base.html" %}
 {% block title %}My Messages - Motivara{% endblock %}
-
 {% block content %}
-
-<div class="page-hero">
-    <h1>💬 My Messages</h1>
-    <p>Chat with your trainers and fellow members</p>
-</div>
-
-<div class="msg-layout">
-
-    <!-- Left: Conversations list -->
-    <aside class="msg-sidebar">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h1 style="margin: 0;">Conversations</h1>
-            <a href="{{ url_for('messages.contact_admin') }}" style="background: var(--primary); color: white; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; text-decoration: none;">
-                <i class="fas fa-headset"></i> Contact Admin
-            </a>
-        </div>
-        <div class="conv-list">
-            {% if conversations %}
-                {% for conv in conversations %}
-                {% if conv.type == 'dm' %}
-                    {% set c = conv.contact %}
-                    <a class="conv-item {% if selected_id == c.user_id %}active{% endif %}"
-                       href="{{ url_for('messages.messages') }}?user_id={{ c.user_id }}">
-                        <div class="conv-avatar">{{ c.first_name[0] }}</div>
-                        <div class="conv-info">
-                            <div class="conv-name">{{ c.first_name }} {{ c.last_name }}</div>
-                            <div class="conv-sub">
-                                {% if conv.profile %}{{ conv.profile.specialty }}{% else %}{{ c.role|title }}{% endif %}
-                            </div>
-                            <div class="conv-preview">{{ conv.latest_msg[:40] }}{% if conv.latest_msg|length > 40 %}...{% endif %}</div>
-                        </div>
-                        {% if conv.unread > 0 %}
-                        <span class="unread-badge">{{ conv.unread }}</span>
-                        {% endif %}
-                    </a>
-                {% else %}
-                    {% set g = conv.group %}
-                    <a class="conv-item {% if selected_group_id == g.competition_id %}active{% endif %}"
-                       href="{{ url_for('messages.messages') }}?group_id={{ g.competition_id }}">
-                        <div class="conv-avatar" style="background-color: var(--primary);">#</div>
-                        <div class="conv-info">
-                            <div class="conv-name">{{ g.name }}</div>
-                            <div class="conv-sub">Group Chat</div>
-                            <div class="conv-preview">{{ conv.latest_msg[:40] }}{% if conv.latest_msg|length > 40 %}...{% endif %}</div>
-                        </div>
-                    </a>
-                {% endif %}
-                {% endfor %}
-            {% else %}
-                <div class="no-conv">
-                    <span>💬</span>
-                    No conversations yet.<br>
-                    <a href="{{ url_for('trainers.trainers_page') }}">Find a trainer →</a>
-                </div>
-            {% endif %}
-        </div>
-    </aside>
-
-    <!-- Right: Conversation thread -->
-    <div class="msg-thread-panel">
-        {% if selected_contact or selected_group %}
-        {% if selected_contact %}
-
-        <!-- Header -->
-        <div class="thread-header">
-            <div class="thread-avatar">{{ selected_contact.first_name[0] }}</div>
-            <div>
-                <div class="thread-name">{{ selected_contact.first_name }} {{ selected_contact.last_name }}</div>
-                <div class="thread-sub">
-                    {% if selected_profile %}{{ selected_profile.specialty }}{% else %}{{ selected_contact.role|title }}{% endif %}
-                </div>
-            </div>
-            {% if selected_contact.role == 'pt' %}
-            <a href="{{ url_for('trainers.trainers_page') }}?trainer_id={{ selected_contact.user_id }}" class="view-profile-btn">View Profile</a>
-            {% endif %}
-        </div>
-        {% elif selected_group %}
-        <!-- Group Header -->
-        <div class="thread-header">
-            <div class="thread-avatar" style="background-color: var(--primary);">#</div>
-            <div>
-                <div class="thread-name">{{ selected_group.name }}</div>
-                <div class="thread-sub">Group Chat &middot; {{ selected_group.location }}</div>
-            </div>
-            <a href="{{ url_for('events.event_chat', competition_id=selected_group.competition_id) }}" class="view-profile-btn">Open Chat Page</a>
-        </div>
-        {% endif %}
-
-        <!-- Messages -->
-        <div class="thread-messages" id="msgThread">
-            {% if messages %}
-                {% for msg in messages %}
-                <div class="msg-row {% if msg.is_mine %}sent{% else %}received{% endif %}">
-                    {% if not msg.is_mine and selected_group %}
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 0.5rem; margin-bottom: 2px;">
-                        {{ msg.author_name }}
-                        {% if msg.author_role == 'administrator' %}
-                        <span style="color: red; font-size: 0.85em; margin-left: 4px; border: 1px solid red; border-radius: 4px; padding: 0 4px;">Admin</span>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    <div class="msg-bubble">
-                        {{ msg.text }}
-                        <div class="msg-time">{{ msg.time.strftime('%d %b %H:%M') if msg.time else '' }}</div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="no-messages"></div>
-            {% endif %}
-        </div>
-
-        <!-- Input bar -->
-        {% if selected_contact %}
-        <form class="msg-input-bar" method="POST" action="{{ url_for('messages.send_user_message') }}">
-            <input type="hidden" name="user_id" value="{{ selected_contact.user_id }}">
-            <input type="text" name="message" placeholder="Type a message to {{ selected_contact.first_name }}..." autocomplete="off" required>
-            <button type="submit">Send ➤</button>
-        </form>
-        {% else %}
-        <form class="msg-input-bar" method="POST" action="{{ url_for('events.send_message', competition_id=selected_group.competition_id) }}">
-            <input type="text" name="message" placeholder="Post to group chat..." autocomplete="off" required>
-            <button type="submit">Post ➤</button>
-        </form>
-        {% endif %}
-
-        {% else %}
-        <div class="no-conv-selected">
-            <span>💬</span>
-            <p>Select a conversation to start messaging</p>
-        </div>
-        {% endif %}
+    <div class="page-hero">
+        <h1>💬 My Messages</h1>
+        <p>Chat with your trainers and fellow members</p>
     </div>
-
-</div>
-
+    <div class="msg-layout">
+        <!-- Left: Conversations list -->
+        <aside class="msg-sidebar">
+            <div style="display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 1rem">
+                <h1 style="margin: 0;">Conversations</h1>
+                <a href="{{ url_for('messages.contact_admin') }}"
+                   style="background: var(--primary);
+                          color: white;
+                          border-radius: 4px;
+                          padding: 4px 8px;
+                          font-size: 0.8rem;
+                          text-decoration: none">
+                    <i class="fas fa-headset"></i> Contact Admin
+                </a>
+            </div>
+            <div class="conv-list">
+                {% if conversations %}
+                    {% for conv in conversations %}
+                        {% if conv.type == 'dm' %}
+                            {% set c = conv.contact %}
+                            <a class="conv-item {% if selected_id == c.user_id %}active{% endif %}"
+                               href="{{ url_for("messages.messages") }}?user_id={{ c.user_id }}">
+                                <div class="conv-avatar">{{ c.first_name[0] }}</div>
+                                <div class="conv-info">
+                                    <div class="conv-name">{{ c.first_name }} {{ c.last_name }}</div>
+                                    <div class="conv-sub">
+                                        {% if conv.profile %}
+                                            {{ conv.profile.specialty }}
+                                        {% else %}
+                                            {{ c.role|title }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="conv-preview">
+                                        {{ conv.latest_msg[:40] }}
+                                        {% if conv.latest_msg|length > 40 %}...{% endif %}
+                                    </div>
+                                </div>
+                                {% if conv.unread > 0 %}<span class="unread-badge">{{ conv.unread }}</span>{% endif %}
+                            </a>
+                        {% else %}
+                            {% set g = conv.group %}
+                            <a class="conv-item {% if selected_group_id == g.competition_id %}active{% endif %}"
+                               href="{{ url_for("messages.messages") }}?group_id={{ g.competition_id }}">
+                                <div class="conv-avatar" style="background-color: var(--primary);">#</div>
+                                <div class="conv-info">
+                                    <div class="conv-name">{{ g.name }}</div>
+                                    <div class="conv-sub">Group Chat</div>
+                                    <div class="conv-preview">
+                                        {{ conv.latest_msg[:40] }}
+                                        {% if conv.latest_msg|length > 40 %}...{% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="no-conv">
+                        <span>💬</span>
+                        No conversations yet.
+                        <br>
+                        <a href="{{ url_for('trainers.trainers_page') }}">Find a trainer →</a>
+                    </div>
+                {% endif %}
+            </div>
+        </aside>
+        <!-- Right: Conversation thread -->
+        <div class="msg-thread-panel">
+            {% if selected_contact or selected_group %}
+                {% if selected_contact %}
+                    <!-- Header -->
+                    <div class="thread-header">
+                        <div class="thread-avatar">{{ selected_contact.first_name[0] }}</div>
+                        <div>
+                            <div class="thread-name">{{ selected_contact.first_name }} {{ selected_contact.last_name }}</div>
+                            <div class="thread-sub">
+                                {% if selected_profile %}
+                                    {{ selected_profile.specialty }}
+                                {% else %}
+                                    {{ selected_contact.role|title }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if selected_contact.role == 'pt' %}
+                            <a href="{{ url_for('trainers.trainers_page') }}?trainer_id={{ selected_contact.user_id }}"
+                               class="view-profile-btn">View Profile</a>
+                        {% endif %}
+                    </div>
+                {% elif selected_group %}
+                    <!-- Group Header -->
+                    <div class="thread-header">
+                        <div class="thread-avatar" style="background-color: var(--primary);">#</div>
+                        <div>
+                            <div class="thread-name">{{ selected_group.name }}</div>
+                            <div class="thread-sub">Group Chat &middot; {{ selected_group.location }}</div>
+                        </div>
+                        <a href="{{ url_for('events.event_chat', competition_id=selected_group.competition_id) }}"
+                           class="view-profile-btn">Open Chat Page</a>
+                    </div>
+                {% endif %}
+                <!-- Messages -->
+                <div class="thread-messages" id="msgThread">
+                    {% if messages %}
+                        {% for msg in messages %}
+                            <div class="msg-row {% if msg.is_mine %}sent{% else %}received{% endif %}">
+                                {% if not msg.is_mine and selected_group %}
+                                    <div style="font-size: 0.75rem;
+                                                color: var(--text-secondary);
+                                                margin-left: 0.5rem;
+                                                margin-bottom: 2px">
+                                        {{ msg.author_name }}
+                                        {% if msg.author_role == 'administrator' %}
+                                            <span style="color: red;
+                                                         font-size: 0.85em;
+                                                         margin-left: 4px;
+                                                         border: 1px solid red;
+                                                         border-radius: 4px;
+                                                         padding: 0 4px">Admin</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                <div class="msg-bubble">
+                                    {{ msg.text }}
+                                    <div class="msg-time">{{ msg.time.strftime("%d %b %H:%M") if msg.time else '' }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-messages"></div>
+                    {% endif %}
+                </div>
+                <!-- Input bar -->
+                {% if selected_contact %}
+                    <form class="msg-input-bar"
+                          method="POST"
+                          action="{{ url_for('messages.send_user_message') }}">
+                        <input type="hidden" name="user_id" value="{{ selected_contact.user_id }}">
+                        <input type="text"
+                               name="message"
+                               placeholder="Type a message to {{ selected_contact.first_name }}..."
+                               autocomplete="off"
+                               required>
+                        <button type="submit">Send ➤</button>
+                    </form>
+                {% else %}
+                    <form class="msg-input-bar"
+                          method="POST"
+                          action="{{ url_for('events.send_message', competition_id=selected_group.competition_id) }}">
+                        <input type="text"
+                               name="message"
+                               placeholder="Post to group chat..."
+                               autocomplete="off"
+                               required>
+                        <button type="submit">Post ➤</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <div class="no-conv-selected">
+                    <span>💬</span>
+                    <p>Select a conversation to start messaging</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     const thread = document.getElementById('msgThread');
     if (thread) thread.scrollTop = thread.scrollHeight;
-</script>
+    </script>
 {% endblock %}

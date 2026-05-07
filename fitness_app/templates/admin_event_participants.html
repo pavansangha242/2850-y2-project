@@ -1,41 +1,78 @@
 {% extends 'base.html' %}
-
 {% block title %}Motivara — Event Participants{% endblock %}
-
 {% block content %}
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline btn-sm" style="margin-bottom: 1rem; display: inline-block;">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        <h1>Participants for "{{ event.name }}"</h1>
-    </div>
-</div>
-
-<div class="card" style="margin-top: 1rem; padding: 1.5rem;">
-    {% if participants %}
-        {% for user in participants %}
-        <div class="user-item" style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <div style="background: var(--primary-light); color: var(--primary); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; flex-shrink: 0;">
-                {{ user.first_name[0] }}{{ user.last_name[0] }}
-            </div>
-            <div style="flex: 1; min-width: 0;">
-                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ user.first_name }} {{ user.last_name }}</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ user.email }}</div>
-            </div>
-            <span style="font-size: 0.75rem; background: rgba(108,99,255,0.15); color: var(--primary-light); padding: 2px 8px; border-radius: 8px; flex-shrink: 0;">{{ user.role|title }}</span>
-            <form action="{{ url_for('admin.remove_event_participant', event_id=event.competition_id, user_id=user.user_id) }}" method="POST" style="flex-shrink: 0;">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove {{ user.first_name }} {{ user.last_name }} from this event?')" style="padding: 0.3rem 0.6rem;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </form>
+    <div class="page-header"
+         style="display: flex;
+                justify-content: space-between;
+                align-items: center">
+        <div>
+            <a href="{{ url_for('admin.admin_dashboard') }}"
+               class="btn btn-outline btn-sm"
+               style="margin-bottom: 1rem;
+                      display: inline-block">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <h1>Participants for "{{ event.name }}"</h1>
         </div>
-        {% endfor %}
-    {% else %}
-    <div style="text-align: center; padding: 3rem;">
-        <i class="fas fa-users-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
-        <p style="color: var(--text-muted); font-size: 1.1rem;">No users have registered for this event yet.</p>
     </div>
-    {% endif %}
-</div>
+    <div class="card" style="margin-top: 1rem; padding: 1.5rem;">
+        {% if participants %}
+            {% for user in participants %}
+                <div class="user-item"
+                     style="display: flex;
+                            align-items: center;
+                            gap: 1rem;
+                            padding: 0.75rem 0;
+                            border-bottom: 1px solid rgba(255,255,255,0.05)">
+                    <div style="background: var(--primary-light);
+                                color: var(--primary);
+                                width: 36px;
+                                height: 36px;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-weight: bold;
+                                font-size: 0.8rem;
+                                flex-shrink: 0">{{ user.first_name[0] }}{{ user.last_name[0] }}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis">{{ user.first_name }} {{ user.last_name }}</div>
+                        <div style="font-size: 0.8rem;
+                                    color: var(--text-muted);
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis">{{ user.email }}</div>
+                    </div>
+                    <span style="font-size: 0.75rem;
+                                 background: rgba(108,99,255,0.15);
+                                 color: var(--primary-light);
+                                 padding: 2px 8px;
+                                 border-radius: 8px;
+                                 flex-shrink: 0">{{ user.role|title }}</span>
+                    <form action="{{ url_for('admin.remove_event_participant', event_id=event.competition_id, user_id=user.user_id) }}"
+                          method="POST"
+                          style="flex-shrink: 0">
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Remove {{ user.first_name }} {{ user.last_name }} from this event?')"
+                                style="padding: 0.3rem 0.6rem">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 3rem;">
+                <i class="fas fa-users-slash"
+                   style="font-size: 3rem;
+                          color: var(--text-muted);
+                          margin-bottom: 1rem;
+                          display: block"></i>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">No users have registered for this event yet.</p>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

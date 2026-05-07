@@ -1,27 +1,26 @@
 {% extends "base.html" %}
-
 {% block title %}History - Motivara{% endblock %}
-
 {% block content %}
-
     <div class="page-hero">
         <h1>Workout History</h1>
         <p>Review, filter and manage all your logged sessions</p>
     </div>
-
     <div class="history-layout">
-
         <!-- sidebar -->
         <aside>
             <div class="history-sidebar">
                 <h1>Workout History</h1>
-                <button class="sidebar-btn {% if active_sport == 'all' %}active{% endif %}" onclick="location.href='/history'">Overview</button>
-                <button class="sidebar-btn {% if active_sport == 'Running' %}active{% endif %}" onclick="location.href='/history?sport=Running'">Running</button>
-                <button class="sidebar-btn {% if active_sport == 'Walking' %}active{% endif %}" onclick="location.href='/history?sport=Walking'">Walking</button>
-                <button class="sidebar-btn {% if active_sport == 'Cycling' %}active{% endif %}" onclick="location.href='/history?sport=Cycling'">Cycling</button>
-                <button class="sidebar-btn {% if active_sport == 'Swimming' %}active{% endif %}" onclick="location.href='/history?sport=Swimming'">Swimming</button>
+                <button class="sidebar-btn {% if active_sport == 'all' %}active{% endif %}"
+                        onclick="location.href='/history'">Overview</button>
+                <button class="sidebar-btn {% if active_sport == 'Running' %}active{% endif %}"
+                        onclick="location.href='/history?sport=Running'">Running</button>
+                <button class="sidebar-btn {% if active_sport == 'Walking' %}active{% endif %}"
+                        onclick="location.href='/history?sport=Walking'">Walking</button>
+                <button class="sidebar-btn {% if active_sport == 'Cycling' %}active{% endif %}"
+                        onclick="location.href='/history?sport=Cycling'">Cycling</button>
+                <button class="sidebar-btn {% if active_sport == 'Swimming' %}active{% endif %}"
+                        onclick="location.href='/history?sport=Swimming'">Swimming</button>
             </div>
-
             <!-- summary stats -->
             <div style="margin-top:16px;" class="summary-cards">
                 <div class="summary-stat">
@@ -36,42 +35,36 @@
                     </div>
                     <div class="ss-label">Best Pace</div>
                 </div>
-
                 <div class="summary-stat">
                     <div class="ss-value">
-                        {{ longest_shown or '—' }}{% if longest_shown %} km{% endif %}
+                        {{ longest_shown or '—' }}
+                        {% if longest_shown %}km{% endif %}
                     </div>
                     <div class="ss-label">Longest</div>
                 </div>
             </div>
         </aside>
-
         <!-- sessions panel -->
         <div class="sessions-panel">
             <div class="sessions-header">
                 <h2>Recent Sessions</h2>
             </div>
-
             <!-- filter bar -->
             <div class="filter-bar">
                 <div class="date-picker-wrap">
-                    <input
-                        class="filter-input"
-                        type="text"
-                        id="filterDate"
-                        placeholder="Filter by date"
-                        readonly
-                        onclick="toggleCalendar()"
-                    />
+                    <input class="filter-input"
+                           type="text"
+                           id="filterDate"
+                           placeholder="Filter by date"
+                           readonly
+                           onclick="toggleCalendar()" />
                     <span class="cal-icon" onclick="toggleCalendar()">📅</span>
-
                     <div class="mini-calendar" id="miniCalendar">
                         <div class="cal-header">
                             <button class="cal-nav" onclick="changeMonth(-1)">&#8249;</button>
                             <span id="calMonthYear"></span>
                             <button class="cal-nav" onclick="changeMonth(1)">&#8250;</button>
                         </div>
-
                         <div class="cal-weekdays">
                             <span>Mo</span>
                             <span>Tu</span>
@@ -81,62 +74,52 @@
                             <span>Sa</span>
                             <span>Su</span>
                         </div>
-
                         <div class="cal-days" id="calDays"></div>
                         <button class="cal-clear" onclick="clearDate()">Clear</button>
                     </div>
                 </div>
-
                 <div class="filter-bar-row">
-                    <input
-                        class="filter-input"
-                        type="text"
-                        id="filterDuration"
-                        placeholder="Filter by duration"
-                        onkeyup="filterSessions()"
-                    />
-                    <input
-                        class="filter-input"
-                        type="text"
-                        id="filterDistance"
-                        placeholder="Filter by distance"
-                        onkeyup="filterSessions()"
-                    />
+                    <input class="filter-input"
+                           type="text"
+                           id="filterDuration"
+                           placeholder="Filter by duration"
+                           onkeyup="filterSessions()" />
+                    <input class="filter-input"
+                           type="text"
+                           id="filterDistance"
+                           placeholder="Filter by distance"
+                           onkeyup="filterSessions()" />
                     <button class="filter-btn" onclick="filterSessions()">Filter</button>
                 </div>
             </div>
-
             <!-- session list -->
             <div id="sessionList">
                 {% if activities %}
                     {% for act in activities %}
                         {% set sport_name = act['sport_name'] | lower %}
-                        <div
-                            class="session-card"
-                            data-date="{{ act['date'] }}"
-                            data-duration="{{ act['duration_minutes'] or '' }}"
-                            data-distance="{{ act['distance_km'] or '' }}"
-                        >
+                        <div class="session-card"
+                             data-date="{{ act['date'] }}"
+                             data-duration="{{ act['duration_minutes'] or '' }}"
+                             data-distance="{{ act['distance_km'] or '' }}">
                             <div class="session-row">
                                 <div class="session-field">
                                     <div class="sf-label">Date</div>
                                     <div class="sf-value">{{ act['date'] }}</div>
                                 </div>
-
                                 <div class="session-field">
                                     <div class="sf-label">Distance</div>
                                     <div class="sf-value">
-                                        {{ act['distance_km'] or '—' }}{% if act['distance_km'] %} km{% endif %}
+                                        {{ act['distance_km'] or '—' }}
+                                        {% if act['distance_km'] %}km{% endif %}
                                     </div>
                                 </div>
-
                                 <div class="session-field">
                                     <div class="sf-label">Time</div>
                                     <div class="sf-value">
-                                        {{ act['duration_minutes'] or '—' }}{% if act['duration_minutes'] %} min{% endif %}
+                                        {{ act['duration_minutes'] or '—' }}
+                                        {% if act['duration_minutes'] %}min{% endif %}
                                     </div>
                                 </div>
-
                                 <div class="session-field">
                                     <div class="sf-label">Avg Pace</div>
                                     <div class="sf-value">
@@ -152,26 +135,14 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="session-meta">
                                 <span class="sport-badge {{ sport_name }}">{{ act['sport_name'] }}</span>
-
-                                {% if act['notes'] %}
-                                    <span class="session-notes">{{ act['notes'] }}</span>
-                                {% endif %}
-
-                                {% if act['calories'] %}
-                                    <span class="session-notes">🔥 {{ act['calories'] }} kcal</span>
-                                {% endif %}
-
-                                <form
-                                    method="POST"
-                                    action="{{ url_for('history.delete_activity', activity_id=act['activity_id']) }}"
-                                    style="display:inline;"
-                                >
-                                    <button type="submit" class="delete-btn">
-                                        Delete
-                                    </button>
+                                {% if act['notes'] %}<span class="session-notes">{{ act['notes'] }}</span>{% endif %}
+                                {% if act['calories'] %}<span class="session-notes">🔥 {{ act['calories'] }} kcal</span>{% endif %}
+                                <form method="POST"
+                                      action="{{ url_for('history.delete_activity', activity_id=act['activity_id']) }}"
+                                      style="display:inline">
+                                    <button type="submit" class="delete-btn">Delete</button>
                                 </form>
                             </div>
                         </div>
@@ -183,15 +154,12 @@
                     </div>
                 {% endif %}
             </div>
-
             <!-- pagination -->
             {% if total_pages > 1 %}
                 <div class="pagination">
                     {% for p in range(1, total_pages + 1) %}
-                        <button
-                            class="page-btn {% if p == current_page %}active{% endif %}"
-                            onclick="location.href='/history?sport={{ active_sport }}&page={{ p }}'"
-                        >
+                        <button class="page-btn {% if p == current_page %}active{% endif %}"
+                                onclick="location.href='/history?sport={{ active_sport }}&page={{ p }}'">
                             {{ p }}
                         </button>
                     {% endfor %}
@@ -199,11 +167,9 @@
             {% endif %}
         </div>
     </div>
-
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     // calendar logic
     let calDate = new Date();
     let selectedDate = null;
@@ -301,5 +267,5 @@
             card.style.display = match ? '' : 'none';
         });
     }
-</script>
+    </script>
 {% endblock %}

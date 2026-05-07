@@ -1,140 +1,254 @@
 {% extends "base.html" %}
-
 {% block title %}Progress - Motivara{% endblock %}
-
 {% block extra_js_head %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 {% endblock %}
-
 {% block content %}
-
     <div class="page-hero">
         <h1>Stats &amp; Personal Bests</h1>
-        <p>{% if active_sport == 'all' %}Your fitness journey at a glance — all sports combined{% else %}Showing stats for: <strong>{{ active_sport }}</strong>{% endif %}</p>
+        <p>
+            {% if active_sport == 'all' %}
+                Your fitness journey at a glance — all sports combined
+            {% else %}
+                Showing stats for: <strong>{{ active_sport }}</strong>
+            {% endif %}
+        </p>
     </div>
-
     <!-- sport tabs -->
     <div class="sport-tabs">
-        <a class="sport-tab {% if active_sport == 'all' %}active{% endif %}" href="/progress?sport=all">All Sports</a>
-        <a class="sport-tab {% if active_sport == 'Running' %}active{% endif %}" href="/progress?sport=Running">&#127939; Running</a>
-        <a class="sport-tab {% if active_sport == 'Walking' %}active{% endif %}" href="/progress?sport=Walking">&#128694; Walking</a>
-        <a class="sport-tab {% if active_sport == 'Cycling' %}active{% endif %}" href="/progress?sport=Cycling">&#128690; Cycling</a>
-        <a class="sport-tab {% if active_sport == 'Swimming' %}active{% endif %}" href="/progress?sport=Swimming">&#127946; Swimming</a>
+        <a class="sport-tab {% if active_sport == 'all' %}active{% endif %}"
+           href="/progress?sport=all">All Sports</a>
+        <a class="sport-tab {% if active_sport == 'Running' %}active{% endif %}"
+           href="/progress?sport=Running">&#127939; Running</a>
+        <a class="sport-tab {% if active_sport == 'Walking' %}active{% endif %}"
+           href="/progress?sport=Walking">&#128694; Walking</a>
+        <a class="sport-tab {% if active_sport == 'Cycling' %}active{% endif %}"
+           href="/progress?sport=Cycling">&#128690; Cycling</a>
+        <a class="sport-tab {% if active_sport == 'Swimming' %}active{% endif %}"
+           href="/progress?sport=Swimming">&#127946; Swimming</a>
     </div>
-
     <!-- empty state -->
     {% if not has_data %}
-    <div style="background:#1A1A2E;border:2px dashed #4B44DB;border-radius:16px;padding:80px 40px;text-align:center;margin-bottom:28px;">
-        <div style="font-size:60px;margin-bottom:16px;">{% if active_sport == 'Running' %}🏃{% elif active_sport == 'Walking' %}🚶{% elif active_sport == 'Cycling' %}🚴{% elif active_sport == 'Swimming' %}🏊{% else %}📊{% endif %}</div>
-        <h2 style="font-size:22px;color:#EAEAFF;margin-bottom:10px;">No {{ active_sport if active_sport != 'all' else '' }} data yet</h2>
-        <p style="font-size:14px;color:#A0A0C0;max-width:360px;margin:0 auto 24px;line-height:1.6;">{% if active_sport != 'all' %}You haven't logged any {{ active_sport | lower }} sessions yet.{% else %}You haven't logged any workouts yet!{% endif %}</p>
-        {% if active_sport != 'all' %}<a href="/{{ active_sport | lower }}" style="display:inline-block;padding:11px 28px;background:#6C63FF;color:#EAEAFF;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;">Log your first {{ active_sport | lower }} →</a>{% endif %}
-    </div>
-
-    {% else %}
-
-    <!-- stat tiles -->
-    <div class="stat-tiles">
-        <div class="stat-tile purple">
-            <div class="tile-value">{% if best_pace %}{% set mins = (best_pace // 60)|int %}{% set secs = (best_pace % 60)|int %}{{ mins }}:{{ "%02d"|format(secs) }}/km{% else %}—{% endif %}</div>
-            <div class="tile-label">Best Average Pace</div>
-        </div>
-        <div class="stat-tile pink">
-            <div class="tile-value">{{ longest_run or '—' }}{% if longest_run %} km{% endif %}</div>
-            <div class="tile-label">Longest Run</div>
-        </div>
-        <div class="stat-tile green">
-            <div class="tile-value">{{ total_sessions }}</div>
-            <div class="tile-label">Total Sessions</div>
-        </div>
-        <div class="stat-tile amber">
-            <div class="tile-value">{{ total_distance }}{% if total_distance %} km{% endif %}</div>
-            <div class="tile-label">Total Distance</div>
-        </div>
-    </div>
-
-    <!-- pace chart + personal bests -->
-    <div class="progress-grid">
-        <div class="chart-card">
-            <h2>Pace by Session</h2>
-            {% if chart_labels %}<div class="chart-wrapper"><canvas id="paceChart"></canvas></div>
-            {% else %}<div class="empty-state"><span>📊</span>Log sessions to see your pace chart</div>{% endif %}
-        </div>
-        <div class="personal-bests">
-            <h2>Personal Best</h2>
-            {% if best_pace %}<div class="pb-item"><div class="pb-dot"></div><div><div class="pb-text">Best pace: {% set mins = (best_pace // 60)|int %}{% set secs = (best_pace % 60)|int %}{{ mins }}:{{ "%02d"|format(secs) }} /km</div><div class="pb-sub">Running</div></div></div>{% endif %}
-            {% if longest_run %}<div class="pb-item"><div class="pb-dot pink"></div><div><div class="pb-text">Longest: {{ longest_run }} km</div><div class="pb-sub">All sports</div></div></div>{% endif %}
-            {% if total_sessions > 0 %}<div class="pb-item"><div class="pb-dot green"></div><div><div class="pb-text">{{ total_sessions }} sessions logged</div><div class="pb-sub">Keep it up!</div></div></div>{% endif %}
-            {% if current_streak > 0 %}<div class="pb-item"><div class="pb-dot amber"></div><div><div class="pb-text">{{ current_streak }}-day streak 🔥</div><div class="pb-sub">Consecutive days</div></div></div>{% endif %}
-            {% if total_calories %}<div class="pb-item"><div class="pb-dot"></div><div><div class="pb-text">{{ total_calories }} kcal burned</div><div class="pb-sub">All time</div></div></div>{% endif %}
-        </div>
-    </div>
-
-    <!-- weekly summary -->
-    <div class="weekly-summary">
-        <h2>This Week — Daily Activity</h2>
-        <div class="week-bars">
-            {% set days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %}
-            {% for i in range(7) %}
-            {% set km = week_daily_km[i] if week_daily_km else 0 %}
-            {% set pct = ((km / (week_max_km if week_max_km else 1)) * 80)|int if km > 0 else 4 %}
-            <div class="day-bar-wrap">
-                <div class="day-km">{% if km > 0 %}{{ km }}{% endif %}</div>
-                <div class="day-bar {% if km == 0 %}rest{% endif %}" style="height:{{ pct }}px;"></div>
-                <div class="day-label">{{ days[i] }}</div>
+        <div style="background:#1A1A2E;
+                    border:2px dashed #4B44DB;
+                    border-radius:16px;
+                    padding:80px 40px;
+                    text-align:center;
+                    margin-bottom:28px">
+            <div style="font-size:60px;margin-bottom:16px;">
+                {% if active_sport == 'Running' %}
+                    🏃
+                {% elif active_sport == 'Walking' %}
+                    🚶
+                {% elif active_sport == 'Cycling' %}
+                    🚴
+                {% elif active_sport == 'Swimming' %}
+                    🏊
+                {% else %}
+                    📊
+                {% endif %}
             </div>
-            {% endfor %}
+            <h2 style="font-size:22px;color:#EAEAFF;margin-bottom:10px;">
+                No {{ active_sport if active_sport != 'all' else '' }} data yet
+            </h2>
+            <p style="font-size:14px;
+                      color:#A0A0C0;
+                      max-width:360px;
+                      margin:0 auto 24px;
+                      line-height:1.6">
+                {% if active_sport != 'all' %}
+                    You haven't logged any {{ active_sport | lower }} sessions yet.
+                {% else %}
+                    You haven't logged any workouts yet!
+                {% endif %}
+            </p>
+            {% if active_sport != 'all' %}
+                <a href="/{{ active_sport | lower }}"
+                   style="display:inline-block;
+                          padding:11px 28px;
+                          background:#6C63FF;
+                          color:#EAEAFF;
+                          border-radius:10px;
+                          text-decoration:none;
+                          font-size:13px;
+                          font-weight:700">Log your first {{ active_sport | lower }} →</a>
+            {% endif %}
         </div>
-    </div>
-
-    <!-- sport breakdown + weekly trend -->
-    <div class="progress-grid">
-        <div class="chart-card">
-            <h2>Distance by Sport</h2>
-            {% if sport_labels %}<div class="chart-wrapper"><canvas id="sportChart"></canvas></div>
-            {% else %}<div class="empty-state"><span>🥧</span>Log across sports to see breakdown</div>{% endif %}
+    {% else %}
+        <!-- stat tiles -->
+        <div class="stat-tiles">
+            <div class="stat-tile purple">
+                <div class="tile-value">
+                    {% if best_pace %}
+                        {% set mins = (best_pace // 60)|int %}{% set secs = (best_pace % 60)|int %}{{ mins }}:{{ "%02d"|format(secs) }}/km
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+                <div class="tile-label">Best Average Pace</div>
+            </div>
+            <div class="stat-tile pink">
+                <div class="tile-value">
+                    {{ longest_run or '—' }}
+                    {% if longest_run %}km{% endif %}
+                </div>
+                <div class="tile-label">Longest Run</div>
+            </div>
+            <div class="stat-tile green">
+                <div class="tile-value">{{ total_sessions }}</div>
+                <div class="tile-label">Total Sessions</div>
+            </div>
+            <div class="stat-tile amber">
+                <div class="tile-value">
+                    {{ total_distance }}
+                    {% if total_distance %}km{% endif %}
+                </div>
+                <div class="tile-label">Total Distance</div>
+            </div>
         </div>
-        <div class="chart-card">
-            <h2>Sessions per Week (Last 8 Weeks)</h2>
-            {% if weekly_labels %}<div class="chart-wrapper"><canvas id="weeklyChart"></canvas></div>
-            {% else %}<div class="empty-state"><span>📈</span>Keep logging to see weekly trend</div>{% endif %}
+        <!-- pace chart + personal bests -->
+        <div class="progress-grid">
+            <div class="chart-card">
+                <h2>Pace by Session</h2>
+                {% if chart_labels %}
+                    <div class="chart-wrapper">
+                        <canvas id="paceChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span>📊</span>Log sessions to see your pace chart
+                    </div>
+                {% endif %}
+            </div>
+            <div class="personal-bests">
+                <h2>Personal Best</h2>
+                {% if best_pace %}
+                    <div class="pb-item">
+                        <div class="pb-dot"></div>
+                        <div>
+                            <div class="pb-text">
+                                Best pace: {% set mins = (best_pace // 60)|int %}{% set secs = (best_pace % 60)|int %}{{ mins }}:{{ "%02d"|format(secs) }} /km
+                            </div>
+                            <div class="pb-sub">Running</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if longest_run %}
+                    <div class="pb-item">
+                        <div class="pb-dot pink"></div>
+                        <div>
+                            <div class="pb-text">Longest: {{ longest_run }} km</div>
+                            <div class="pb-sub">All sports</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if total_sessions > 0 %}
+                    <div class="pb-item">
+                        <div class="pb-dot green"></div>
+                        <div>
+                            <div class="pb-text">{{ total_sessions }} sessions logged</div>
+                            <div class="pb-sub">Keep it up!</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if current_streak > 0 %}
+                    <div class="pb-item">
+                        <div class="pb-dot amber"></div>
+                        <div>
+                            <div class="pb-text">{{ current_streak }}-day streak 🔥</div>
+                            <div class="pb-sub">Consecutive days</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if total_calories %}
+                    <div class="pb-item">
+                        <div class="pb-dot"></div>
+                        <div>
+                            <div class="pb-text">{{ total_calories }} kcal burned</div>
+                            <div class="pb-sub">All time</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-    </div>
-
+        <!-- weekly summary -->
+        <div class="weekly-summary">
+            <h2>This Week — Daily Activity</h2>
+            <div class="week-bars">
+                {% set days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] %}
+                {% for i in range(7) %}
+                    {% set km = week_daily_km[i] if week_daily_km else 0 %}
+                    {% set pct = ((km / (week_max_km if week_max_km else 1)) * 80)|int if km > 0 else 4 %}
+                    <div class="day-bar-wrap">
+                        <div class="day-km">
+                            {% if km > 0 %}{{ km }}{% endif %}
+                        </div>
+                        <div class="day-bar {% if km == 0 %}rest{% endif %}"
+                             style="height:{{ pct }}px"></div>
+                        <div class="day-label">{{ days[i] }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- sport breakdown + weekly trend -->
+        <div class="progress-grid">
+            <div class="chart-card">
+                <h2>Distance by Sport</h2>
+                {% if sport_labels %}
+                    <div class="chart-wrapper">
+                        <canvas id="sportChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span>🥧</span>Log across sports to see breakdown
+                    </div>
+                {% endif %}
+            </div>
+            <div class="chart-card">
+                <h2>Sessions per Week (Last 8 Weeks)</h2>
+                {% if weekly_labels %}
+                    <div class="chart-wrapper">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span>📈</span>Keep logging to see weekly trend
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     {% endif %}
-
 {% endblock %}
-
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<!-- pace chart -->
-{% if has_data and chart_labels %}
-<script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- pace chart -->
+    {% if has_data and chart_labels %}
+        <script>
 new Chart(document.getElementById('paceChart').getContext('2d'), {
     type: 'bar',
     data: { labels: {{ chart_labels | tojson }}, datasets: [{ data: {{ chart_pace_values | tojson }}, backgroundColor: ['#6C63FF','#8B83FF','#FF6B6B','#FFB347','#00D4AA','#4B44DB'], borderRadius: 6, borderSkipped: false }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#A0A0C0', font: { size: 11 } }, grid: { color: '#1A1A2E' } }, y: { ticks: { color: '#A0A0C0', font: { size: 11 } }, grid: { color: '#1A1A2E' } } } }
 });
-</script>
-{% endif %}
-<!-- sport chart -->
-{% if has_data and sport_labels %}
-<script>
+        </script>
+    {% endif %}
+    <!-- sport chart -->
+    {% if has_data and sport_labels %}
+        <script>
 new Chart(document.getElementById('sportChart').getContext('2d'), {
     type: 'doughnut',
     data: { labels: {{ sport_labels | tojson }}, datasets: [{ data: {{ sport_distances | tojson }}, backgroundColor: ['#6C63FF','#FF6B6B','#00D4AA','#FFB347'], borderColor: '#0F0F1A', borderWidth: 3 }] },
     options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { color: '#A0A0C0', font: { size: 12 }, padding: 16 } } } }
 });
-</script>
-{% endif %}
-<!-- weekly chart -->
-{% if has_data and weekly_labels %}
-<script>
+        </script>
+    {% endif %}
+    <!-- weekly chart -->
+    {% if has_data and weekly_labels %}
+        <script>
 new Chart(document.getElementById('weeklyChart').getContext('2d'), {
     type: 'line',
     data: { labels: {{ weekly_labels | tojson }}, datasets: [{ data: {{ weekly_counts | tojson }}, borderColor: '#6C63FF', backgroundColor: 'rgba(108,99,255,0.15)', fill: true, tension: 0.4, pointBackgroundColor: '#6C63FF', pointRadius: 5 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#A0A0C0', font: { size: 11 } }, grid: { color: '#1A1A2E' } }, y: { ticks: { color: '#A0A0C0', font: { size: 11 }, stepSize: 1 }, grid: { color: '#1A1A2E' }, beginAtZero: true } } }
 });
-</script>
-{% endif %}
+        </script>
+    {% endif %}
 {% endblock %}

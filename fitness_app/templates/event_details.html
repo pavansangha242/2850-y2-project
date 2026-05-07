@@ -1,124 +1,140 @@
 {% extends 'base.html' %}
-
 {% block title %}Motivara — {{ event.name }}{% endblock %}
-
 {% block content %}
-<div class="page-header">
-    <a href="{{ url_for('events.events_page') }}" class="btn btn-outline btn-sm" style="margin-bottom: 1rem;">
-        <i class="fas fa-arrow-left"></i> Back to Events
-    </a>
-    <h1><i class="fas fa-trophy" style="color: var(--primary);"></i> {{ event.name }}</h1>
-</div>
-
-<!-- Event Details Card -->
-<div class="featured-event">
-    <span class="event-tag">Competition Details</span>
-
-    <h3>{{ event.name }}</h3>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin: 1.5rem 0;">
-        <!-- Date -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--primary);">
-                <i class="fas fa-calendar"></i>
-            </div>
-            <div class="stat-value" style="color: var(--primary-light); font-size: 1.3rem;">
-                {{ event.date.strftime('%B %d, %Y') }}
-            </div>
-            <div class="stat-label">Event Date</div>
-        </div>
-
-        <!-- Location -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--accent);">
-                <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div class="stat-value" style="color: var(--accent-light); font-size: 1.3rem;">
-                {{ event.location if event.location else 'TBA' }}
-            </div>
-            <div class="stat-label">Location</div>
-        </div>
-
-        <!-- Distance -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--warm);">
-                <i class="fas fa-route"></i>
-            </div>
-            <div class="stat-value" style="color: var(--warm-light); font-size: 1.3rem;">
-                {{ event.distance }} km
-            </div>
-            <div class="stat-label">Distance</div>
-        </div>
-
-        <!-- Days Remaining -->
-        <div class="card stat-card">
-            <div class="stat-icon" style="color: var(--amber);">
-                <i class="fas fa-hourglass-half"></i>
-            </div>
-            <div class="stat-value" style="color: var(--amber-light); font-size: 1.3rem;">
-                {{ event.days_remaining }}
-            </div>
-            <div class="stat-label">Days Remaining</div>
-        </div>
+    <div class="page-header">
+        <a href="{{ url_for('events.events_page') }}"
+           class="btn btn-outline btn-sm"
+           style="margin-bottom: 1rem">
+            <i class="fas fa-arrow-left"></i> Back to Events
+        </a>
+        <h1>
+            <i class="fas fa-trophy" style="color: var(--primary);"></i> {{ event.name }}
+        </h1>
     </div>
-
-    <!-- Registration Status -->
-    <div style="margin: 1.5rem 0;">
-        {% if is_registered %}
-            <div class="card" style="padding: 1rem 1.25rem; border-left: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fas fa-check-circle" style="color: var(--accent); font-size: 1.3rem;"></i>
-                    <span style="color: var(--accent); font-weight: 600;">You are registered for this event!</span>
+    <!-- Event Details Card -->
+    <div class="featured-event">
+        <span class="event-tag">Competition Details</span>
+        <h3>{{ event.name }}</h3>
+        <div style="display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 1.5rem;
+                    margin: 1.5rem 0">
+            <!-- Date -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--primary);">
+                    <i class="fas fa-calendar"></i>
                 </div>
-                <form action="{{ url_for('events.unregister_event', competition_id=event.competition_id) }}" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        <i class="fas fa-times"></i> Unregister
+                <div class="stat-value"
+                     style="color: var(--primary-light);
+                            font-size: 1.3rem">{{ event.date.strftime("%B %d, %Y") }}</div>
+                <div class="stat-label">Event Date</div>
+            </div>
+            <!-- Location -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--accent);">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-value"
+                     style="color: var(--accent-light);
+                            font-size: 1.3rem">{{ event.location if event.location else 'TBA' }}</div>
+                <div class="stat-label">Location</div>
+            </div>
+            <!-- Distance -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--warm);">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="stat-value"
+                     style="color: var(--warm-light);
+                            font-size: 1.3rem">{{ event.distance }} km</div>
+                <div class="stat-label">Distance</div>
+            </div>
+            <!-- Days Remaining -->
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: var(--amber);">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-value"
+                     style="color: var(--amber-light);
+                            font-size: 1.3rem">{{ event.days_remaining }}</div>
+                <div class="stat-label">Days Remaining</div>
+            </div>
+        </div>
+        <!-- Registration Status -->
+        <div style="margin: 1.5rem 0;">
+            {% if is_registered %}
+                <div class="card"
+                     style="padding: 1rem 1.25rem;
+                            border-left: 3px solid var(--accent);
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 0.75rem">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-check-circle"
+                           style="color: var(--accent);
+                                  font-size: 1.3rem"></i>
+                        <span style="color: var(--accent); font-weight: 600;">You are registered for this event!</span>
+                    </div>
+                    <form action="{{ url_for('events.unregister_event', competition_id=event.competition_id) }}"
+                          method="POST"
+                          style="display: inline">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-times"></i> Unregister
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="card"
+                     style="padding: 1rem 1.25rem;
+                            border-left: 3px solid var(--text-muted);
+                            display: flex;
+                            align-items: center;
+                            gap: 0.75rem">
+                    <i class="fas fa-info-circle"
+                       style="color: var(--text-muted);
+                              font-size: 1.3rem"></i>
+                    <span style="color: var(--text-secondary);">You have not registered yet.</span>
+                </div>
+            {% endif %}
+        </div>
+        <!-- Action Buttons -->
+        <div class="event-actions">
+            <button type="button"
+                    class="btn btn-outline"
+                    id="addToCalBtn"
+                    data-event-date="{{ event.date.isoformat() }}"
+                    data-event-name="{{ event.name }}"
+                    style="justify-content: center">
+                <i class="fas fa-calendar-plus"></i> Add to Calendar
+            </button>
+            {% if not is_registered %}
+                <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}"
+                      method="POST"
+                      style="display: flex">
+                    <button type="submit" class="btn btn-primary" style="justify-content: center">
+                        <i class="fas fa-envelope"></i> Register Now
                     </button>
                 </form>
-            </div>
-        {% else %}
-            <div class="card" style="padding: 1rem 1.25rem; border-left: 3px solid var(--text-muted); display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fas fa-info-circle" style="color: var(--text-muted); font-size: 1.3rem;"></i>
-                <span style="color: var(--text-secondary);">You have not registered yet.</span>
-            </div>
-        {% endif %}
+            {% endif %}
+            <a href="{{ url_for('events.event_chat', competition_id=event.competition_id) }}"
+               class="btn btn-success"
+               style="justify-content: center">
+                <i class="fas fa-comments"></i> Group Chat
+            </a>
+        </div>
     </div>
-
-    <!-- Action Buttons -->
-    <div class="event-actions">
-        <button type="button" class="btn btn-outline" id="addToCalBtn"
-                data-event-date="{{ event.date.isoformat() }}"
-                data-event-name="{{ event.name }}"
-                style="justify-content: center;">
-            <i class="fas fa-calendar-plus"></i> Add to Calendar
-        </button>
-
-        {% if not is_registered %}
-        <form action="{{ url_for('events.register_event', competition_id=event.competition_id) }}" method="POST" style="display: flex;">
-            <button type="submit" class="btn btn-primary" style="justify-content: center;">
-                <i class="fas fa-envelope"></i> Register Now
-            </button>
-        </form>
-        {% endif %}
-
-        <a href="{{ url_for('events.event_chat', competition_id=event.competition_id) }}" class="btn btn-success" style="justify-content: center;">
-            <i class="fas fa-comments"></i> Group Chat
-        </a>
+    <!-- Toast Notification -->
+    <div class="calendar-toast" id="calendarToast">
+        <i class="fas fa-calendar-check toast-icon"></i>
+        <div>
+            <div class="toast-text" id="toastText">Added to Calendar!</div>
+            <div class="toast-sub" id="toastSub">This date is now highlighted on your calendar.</div>
+        </div>
     </div>
-</div>
-
-<!-- Toast Notification -->
-<div class="calendar-toast" id="calendarToast">
-    <i class="fas fa-calendar-check toast-icon"></i>
-    <div>
-        <div class="toast-text" id="toastText">Added to Calendar!</div>
-        <div class="toast-sub" id="toastSub">This date is now highlighted on your calendar.</div>
-    </div>
-</div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
     // ---------- Saved Events (localStorage) ----------
     function getSavedEvents() {
         try { return JSON.parse(localStorage.getItem('Motivara_saved_events') || '[]'); }
@@ -191,5 +207,5 @@
             addBtn.classList.add('btn-danger');
         }
     }
-</script>
+    </script>
 {% endblock %}
