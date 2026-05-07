@@ -39,7 +39,9 @@ def messages():
     if not user:
         return redirect(url_for("auth.login"))
 
-    selected_id = request.args.get("user_id", type=int) or request.args.get("trainer_id", type=int)
+    selected_id = request.args.get("user_id", type=int) or request.args.get(
+        "trainer_id", type=int
+    )
     selected_group_id = request.args.get("group_id", type=int)
 
     # find all trainers this user has talked to
@@ -247,7 +249,9 @@ def send_user_message():
     if not user:
         return redirect(url_for("auth.login"))
 
-    trainer_id = request.form.get("user_id", type=int) or request.form.get("trainer_id", type=int)
+    trainer_id = request.form.get("user_id", type=int) or request.form.get(
+        "trainer_id", type=int
+    )
     message_txt = request.form.get("message", "").strip()
 
     if trainer_id and message_txt:

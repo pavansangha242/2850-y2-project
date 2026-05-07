@@ -82,7 +82,7 @@ def add_to_calendar(competition_id):
     response = make_response(ics_content)
     response.headers["Content-Type"] = "text/calendar; charset=utf-8"
     response.headers["Content-Disposition"] = (
-        f'attachment; filename={competition.name.replace(" ", "_")}.ics'
+        f"attachment; filename={competition.name.replace(' ', '_')}.ics"
     )
     return response
 
