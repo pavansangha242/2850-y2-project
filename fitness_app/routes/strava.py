@@ -83,7 +83,7 @@ def get_valid_token(user):
 def connect_strava():
     """Redirect the user to Strava OAuth for account connection."""
     if "username" not in session:
-        return redirect(url_for("auth.user_settings"))
+        return redirect(url_for("auth.login"))
 
     #  the callback URL has to exactly match what's registered on the Strava app dashboard, must be specific to codespace name or local server if running off vs code app
     callback_url = url_for("strava.strava_callback", _external=True)
