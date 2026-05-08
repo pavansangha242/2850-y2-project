@@ -277,8 +277,8 @@ def walking_page():
 
     # target walks per wk
     target = 5
-    if goal and goal.workouts_per_week_target:
-        target = goal.workouts_per_week_target
+    if goal and goal.workouts_per_week:
+        target = goal.workouts_per_week
 
     return render_template(
         "walking.html",
@@ -453,14 +453,14 @@ def set_walking_goal():
     if goal:
         goal.goal_type = full_type
         goal.target_date = full_date
-        goal.workouts_per_week_target = per_week or 5
+        goal.workouts_per_week = per_week or 5
         goal.step_target = step_goal or 0
     else:
         goal = UserGoal(
             user_id=uid,
             goal_type=full_type,
             target_date=full_date,
-            workouts_per_week_target=per_week or 5,
+            workouts_per_week=per_week or 5,
             step_target=step_goal or 0,
         )
         db.session.add(goal)

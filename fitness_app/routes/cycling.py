@@ -267,8 +267,8 @@ def cycling_page():
 
     # default if no goal
     target = 5
-    if goal and goal.workouts_per_week_target:
-        target = goal.workouts_per_week_target
+    if goal and goal.workouts_per_week:
+        target = goal.workouts_per_week
 
     return render_template(
         "cycling.html",
@@ -452,13 +452,13 @@ def set_cycling_goal():
     if goal:
         goal.goal_type = full_type
         goal.target_date = full_date
-        goal.workouts_per_week_target = per_week or 5
+        goal.workouts_per_week = per_week or 5
     else:
         goal = UserGoal(
             user_id=uid,
             goal_type=full_type,
             target_date=full_date,
-            workouts_per_week_target=per_week or 5,
+            workouts_per_week=per_week or 5,
         )
         db.session.add(goal)
 
